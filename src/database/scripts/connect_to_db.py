@@ -1,5 +1,6 @@
 import psycopg2
 from src.database.scripts.config.config import config
+import sys
 
 # Create connection object
 

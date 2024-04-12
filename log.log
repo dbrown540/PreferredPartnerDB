@@ -1,10 +1,10 @@
-2024-04-11 21:48:16,177 - INFO - 
+2024-04-12 10:59:16,920 - INFO - 
 Service path: C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//chromedriver-win64//chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x0000017DFF407A10>
-2024-04-11 21:48:24,646 - INFO - self.last_known_index (links)= 0
-2024-04-11 21:48:25,398 - INFO - self.last_known_index = 0
-2024-04-11 21:48:25,422 - INFO - Length of names: 20
-2024-04-11 21:48:25,422 - INFO - Last known index: 0
-2024-04-11 21:48:25,422 - INFO - Length of new elements: 20
-2024-04-11 21:48:25,621 - INFO - Total links fetched: 20
-2024-04-11 21:48:25,621 - INFO - Total names fetched: 20
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000024768A47FB0>
+2024-04-12 10:59:28,415 - INFO - self.last_known_index (links)= 0
+2024-04-12 10:59:29,291 - INFO - self.last_known_index = 0
+2024-04-12 10:59:29,317 - INFO - Length of names: 20
+2024-04-12 10:59:29,317 - INFO - Last known index: 0
+2024-04-12 10:59:29,317 - INFO - Length of new elements: 20
+2024-04-12 10:59:29,527 - INFO - Total links fetched: 20
+2024-04-12 10:59:29,527 - INFO - Total names fetched: 20
