@@ -1,6 +1,7 @@
 from src.scout.scout import Scout
 from src.database.scripts.insert import Insert
-from src.bots.config.create_email_login import BotCredentialsManager
+from src.bots.config.create_email_header_and_login import BotCredentialsManager
+from src.bots.config.create_proton_mail_account import Proton
 
 def main():
     # Check Scout data already exists
@@ -38,6 +39,10 @@ def main():
         bot_manager.export_to_csv(first_names_list, last_names_list, email_list, password_list)
 
         bot_manager.insert_bot_email_credentials()
+
+    # Create proton object
+    proton = Proton()
+    proton.access_proton_mail()
 
 
 if __name__ == '__main__':

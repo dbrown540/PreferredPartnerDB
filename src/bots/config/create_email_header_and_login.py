@@ -76,7 +76,7 @@ class BotCredentialsManager:
         zipped_list = list(zip(first_names_list, last_names_list, email_list, password_list))
         with open('csv/email_credentials.csv', 'w', newline='') as file:
             write = csv.writer(file)
-            write.writerow(['bot_first_name', 'bot_last_name', 'bot_email', 'bot_email_password'])
+            write.writerow(['bot_first_name', 'bot_last_name', 'bot_email_header', 'bot_email_password'])
             write.writerows(zipped_list)
 
         return zipped_list
@@ -113,7 +113,7 @@ class BotCredentialsManager:
             next(reader)  # Skip the header row
             for row in reader:
                 self.crsr.execute(
-                    f"INSERT INTO bots (bot_first_name, bot_last_name, bot_email, bot_email_password) VALUES (%s, %s, %s, %s)",
+                    f"INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password) VALUES (%s, %s, %s, %s)",
                     (row[0], row[1], row[2], row[3])
                 )
 

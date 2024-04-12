@@ -48,6 +48,7 @@ CREATE TABLE bots(
     bot_id SERIAL PRIMARY KEY,
     bot_first_name VARCHAR(100),
     bot_last_name VARCHAR(100),
+    bot_email_header VARCHAR(255),
     bot_email VARCHAR(255),
     bot_email_password VARCHAR(50)
 );
