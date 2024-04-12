@@ -102,11 +102,9 @@ class BotCredentialsManager:
         
 
         if count == 0:
-            # Put insert function in here
-            self.insert_bot_email_credentials()
-
-        # Close the cursor and connection
-        self.crsr.close()
+            return False
+        
+        return True
 
     def insert_bot_email_credentials(self):
         # Insert data from the CSV file into the table
