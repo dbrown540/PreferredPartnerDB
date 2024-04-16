@@ -1,5 +1,4 @@
 from src.scout.scout import Scout
-from src.database.scripts.insert import Insert
 from src.bots.config.bot_credentials_manager import BotCredentialsManager
 from src.bots.config.proton_mail_manager import Proton
 
