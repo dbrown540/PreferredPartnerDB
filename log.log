@@ -1,67 +1,61 @@
-2024-04-16 16:28:24,108 - INFO - 
-Service path: C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//chromedriver-win64//chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000001C20920A480>
-2024-04-16 16:28:25,459 - INFO - 
-Service path: C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//chromedriver-win64//chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000001C20A15CDA0>
-2024-04-16 16:28:52,810 - INFO - 
-Service path: C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//chromedriver-win64//chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000001C20A133A10>
-2024-04-16 16:29:09,726 - ERROR - Error occurred while interacting with password input fields:
+2024-04-16 17:35:22,793 - INFO - 
+Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001DD4FD338C0>
+2024-04-16 17:35:24,227 - INFO - 
+Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001DD4FD593D0>
+2024-04-16 17:35:40,910 - ERROR - Error occurred while interacting with password input fields:
 Message: no such window: target window already closed
 from unknown error: web view not found
   (Session info: chrome=123.0.6312.123)
 Stacktrace:
-	GetHandleVerifier [0x00007FF6F3B4AD22+56930]
-	(No symbol) [0x00007FF6F3ABF622]
-	(No symbol) [0x00007FF6F39742E5]
-	(No symbol) [0x00007FF6F3951D4C]
-	(No symbol) [0x00007FF6F39E23F7]
-	(No symbol) [0x00007FF6F39F7891]
-	(No symbol) [0x00007FF6F39DBA43]
-	(No symbol) [0x00007FF6F39AD438]
-	(No symbol) [0x00007FF6F39AE4D1]
-	GetHandleVerifier [0x00007FF6F3EC6AAD+3709933]
-	GetHandleVerifier [0x00007FF6F3F1FFED+4075821]
-	GetHandleVerifier [0x00007FF6F3F1817F+4043455]
-	GetHandleVerifier [0x00007FF6F3BE9756+706710]
-	(No symbol) [0x00007FF6F3ACB8FF]
-	(No symbol) [0x00007FF6F3AC6AE4]
-	(No symbol) [0x00007FF6F3AC6C3C]
-	(No symbol) [0x00007FF6F3AB68F4]
+	GetHandleVerifier [0x00007FF6470A7032+63090]
+	(No symbol) [0x00007FF647012C82]
+	(No symbol) [0x00007FF646EAEC65]
+	(No symbol) [0x00007FF646E8CA7C]
+	(No symbol) [0x00007FF646F1D687]
+	(No symbol) [0x00007FF646F32AC1]
+	(No symbol) [0x00007FF646F16D83]
+	(No symbol) [0x00007FF646EE83A8]
+	(No symbol) [0x00007FF646EE9441]
+	GetHandleVerifier [0x00007FF6474A25AD+4238317]
+	GetHandleVerifier [0x00007FF6474DF70D+4488525]
+	GetHandleVerifier [0x00007FF6474D79EF+4456495]
+	GetHandleVerifier [0x00007FF647180576+953270]
+	(No symbol) [0x00007FF64701E54F]
+	(No symbol) [0x00007FF647019224]
+	(No symbol) [0x00007FF64701935B]
+	(No symbol) [0x00007FF647009B94]
 	(No symbol) [0x00007FFABF63257D]
 	RtlUserThreadStart [0x00007FFAC094AA48+40]
 
-2024-04-16 16:29:09,728 - ERROR - Something went wrong while looking for the button.
+2024-04-16 17:35:40,911 - ERROR - Something went wrong while looking for the button.
 Error:
 Message: no such window: target window already closed
 from unknown error: web view not found
   (Session info: chrome=123.0.6312.123)
 Stacktrace:
-	GetHandleVerifier [0x00007FF6F3B4AD22+56930]
-	(No symbol) [0x00007FF6F3ABF622]
-	(No symbol) [0x00007FF6F39742E5]
-	(No symbol) [0x00007FF6F3951D4C]
-	(No symbol) [0x00007FF6F39E23F7]
-	(No symbol) [0x00007FF6F39F7891]
-	(No symbol) [0x00007FF6F39DBA43]
-	(No symbol) [0x00007FF6F39AD438]
-	(No symbol) [0x00007FF6F39AE4D1]
-	GetHandleVerifier [0x00007FF6F3EC6AAD+3709933]
-	GetHandleVerifier [0x00007FF6F3F1FFED+4075821]
-	GetHandleVerifier [0x00007FF6F3F1817F+4043455]
-	GetHandleVerifier [0x00007FF6F3BE9756+706710]
-	(No symbol) [0x00007FF6F3ACB8FF]
-	(No symbol) [0x00007FF6F3AC6AE4]
-	(No symbol) [0x00007FF6F3AC6C3C]
-	(No symbol) [0x00007FF6F3AB68F4]
+	GetHandleVerifier [0x00007FF6470A7032+63090]
+	(No symbol) [0x00007FF647012C82]
+	(No symbol) [0x00007FF646EAEC65]
+	(No symbol) [0x00007FF646E8CA7C]
+	(No symbol) [0x00007FF646F1D687]
+	(No symbol) [0x00007FF646F32AC1]
+	(No symbol) [0x00007FF646F16D83]
+	(No symbol) [0x00007FF646EE83A8]
+	(No symbol) [0x00007FF646EE9441]
+	GetHandleVerifier [0x00007FF6474A25AD+4238317]
+	GetHandleVerifier [0x00007FF6474DF70D+4488525]
+	GetHandleVerifier [0x00007FF6474D79EF+4456495]
+	GetHandleVerifier [0x00007FF647180576+953270]
+	(No symbol) [0x00007FF64701E54F]
+	(No symbol) [0x00007FF647019224]
+	(No symbol) [0x00007FF64701935B]
+	(No symbol) [0x00007FF647009B94]
 	(No symbol) [0x00007FFABF63257D]
 	RtlUserThreadStart [0x00007FFAC094AA48+40]
 
-2024-04-16 16:29:14,961 - INFO - 
-Service path: C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//chromedriver-win64//chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000001C2096C4F20>
-2024-04-16 16:29:47,308 - INFO - 
-Service path: C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//chromedriver-win64//chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000001C209D9EFF0>
-2024-04-16 16:30:02,691 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)': /session/99ed37ba3d88f762f644f754a9f47756
+2024-04-16 17:35:46,124 - INFO - 
+Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001DD4F26E600>
+2024-04-16 17:35:50,164 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)': /session/32ce8ecc866848147c45b5a3fd5702ab

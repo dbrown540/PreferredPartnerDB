@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
 
 class Scout:
     def __init__(self):
-        self.driver_path = 'C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//chromedriver-win64//chromedriver.exe'
+        self.driver_path = 'chromedriver-win64/chromedriver.exe'
         self.max_retries = 3
         self.retry_delay_seconds = 5
         self.driver = self.initialize_webdriver()

@@ -11,7 +11,7 @@ import time
 class Proton:
     def __init__(self):
         self.scout = Scout()
-        self.driver_path = 'C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//chromedriver-win64//chromedriver.exe'
+        self.driver_path = 'chromedriver-win64/chromedriver.exe'
         self.conn, self.crsr = connect()
         self.driver = self.scout.initialize_webdriver()
         self.wait = WebDriverWait(self.driver, 5)
