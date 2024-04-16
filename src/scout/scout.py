@@ -6,6 +6,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from src.database.scripts.connect_to_db import connect
 import logging
 import random
 import time
@@ -14,17 +15,15 @@ import csv
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
 
-max_retries = 3
-retry_delay_seconds = 5
-
 class Scout:
     def __init__(self):
-        self.driver_path = 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//chromedriver-win64//chromedriver.exe'
+        self.driver_path = 'C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//chromedriver-win64//chromedriver.exe'
         self.max_retries = 3
         self.retry_delay_seconds = 5
         self.driver = self.initialize_webdriver()
         self.last_known_names_index = 0
         self.last_known_links_index = 0
+        self.conn, self.crsr = connect()
         
 
     def initialize_webdriver(self):
@@ -39,8 +38,8 @@ class Scout:
             logging.critical(f'Failed to initialize webdriver: {e}')
             raise
 
-    def navigate_to_google(self, attempt=1):
-        """Navigates to Google and searches for LinkedIn profiles related to CMS"""
+    def search_linkedin_profiles(self, attempt=1):
+        """Searches for LinkedIn profiles related to CMS on Google."""
         try:
             self.driver.get('https://www.google.com')  # Corrected URL
             wait = WebDriverWait(self.driver, 3)
@@ -49,15 +48,23 @@ class Scout:
             search_box.send_keys(Keys.ENTER)
         except TimeoutException as e:
             if attempt <= self.max_retries:
-                self.driver.quit()
-                logging.error("Timeout has occurred - Retrying (Attempt %d): %s", attempt, e)
-                time.sleep(self.retry_delay_seconds)
-                self.driver = self.initialize_webdriver()  # Reinitialize webdriver
-                self.navigate_to_google(attempt=attempt+1)  # Retry with incremented attempt count
+                self.handle_timeout(e, attempt)
             else:
                 logging.critical("Maximum retries reached. Unable to navigate to Google: %s", e)
         except Exception as e:
-            logging.error('An error has occurred: %s', e)
+            self.handle_other_exception(e)
+
+    def handle_timeout(self, e, attempt):
+        """Handles TimeoutExceptions during navigation."""
+        self.driver.quit()
+        logging.error("Timeout has occurred - Retrying (Attempt %d): %s", attempt, e)
+        time.sleep(self.retry_delay_seconds)
+        self.driver = self.initialize_webdriver()  # Reinitialize webdriver
+        self.search_linkedin_profiles(attempt=attempt+1)  # Retry with incremented attempt count
+
+    def handle_other_exception(self, e):
+        """Handles other exceptions during navigation."""
+        logging.error('An error has occurred: %s', e)
 
     def locate_names(self, attempt=1) -> list:
         """Finds the links and names and returns a list"""
@@ -82,11 +89,9 @@ class Scout:
             # Update the last known index
             self.last_known_names_index += len(new_elements)
 
-
-
         except Exception as e:
-            if attempt <= max_retries:
-                logging.warning('Name elements not found. Retrying in %d seconds. (Attempt %d/%d)', self.retry_delay_seconds, attempt, max_retries)
+            if attempt <= self.max_retries:
+                logging.warning('Name elements not found. Retrying in %d seconds. (Attempt %d/%d)', self.retry_delay_seconds, attempt, self.max_retries)
                 return self.locate_names(attempt + 1)
             else:
                 logging.critical("Maximum retries. Check class name or try again later.\nError log:\n%s", e)
@@ -117,8 +122,8 @@ class Scout:
 
 
         except Exception as e:
-            if attempt <= max_retries:
-                logging.warning('Link elements not found. Retrying in %d seconds. (Attempt %d/%d)', self.retry_delay_seconds, attempt, max_retries)
+            if attempt <= self.max_retries:
+                logging.warning('Link elements not found. Retrying in %d seconds. (Attempt %d/%d)', self.retry_delay_seconds, attempt, self.max_retries)
                 return self.locate_links(attempt + 1)
             else:
                 logging.critical("Maximum retries. Check class name or try again later")
@@ -140,12 +145,12 @@ class Scout:
         except Exception as e:
             print('No "More Results" button found')
 
-    def scroll_and_fetch_data(self):
+    def scroll_and_fetch_data(self, final_user_count: int):
         """Scrolls down to load more search results and fetches links and names"""
         parsed_names_list = []
         parsed_links = []
         try:
-            while len(parsed_names_list) < 20 and len(parsed_links) < 20:
+            while len(parsed_names_list) < final_user_count and len(parsed_links) < final_user_count:
                 # Scroll down
                 self.scroll()
                 time.sleep(2)
@@ -166,9 +171,61 @@ class Scout:
 
         return parsed_names_list, parsed_links
     
-    def export_to_csv(self, parsed_names_list, parsed_links):
-        zipped_list = list(zip(parsed_names_list, parsed_links))
-        with open('output.csv', 'w', newline='') as file:
-            write = csv.writer(file)
-            write.writerow(['users_name', 'profile_url'])
-            write.writerows(zipped_list)
+    def count_users_table_rows(self):
+        # Find out how many rows are in the database
+        self.crsr.execute('SELECT COUNT(*) FROM users;')
+        number_of_rows_in_users_table = self.crsr.fetchone()[0]
+        return number_of_rows_in_users_table
+    
+
+    def zip_lists(self, parsed_names_list, parsed_links_list):
+        zipped_list = list(zip(parsed_names_list, parsed_links_list))
+        return zipped_list
+    
+
+    def update_database(self, zipped_list):
+        try:
+            for name, url in zipped_list:
+                # Check if the user already exists in the database
+                self.crsr.execute(
+                    "SELECT COUNT(*) FROM users WHERE users_name = %s",
+                    (name,)
+                )
+                count = self.crsr.fetchone()[0]
+                
+                # If the user doesn't exist, insert into the database
+                if count == 0:
+                    self.crsr.execute(
+                        "INSERT INTO users (users_name, profile_url) VALUES (%s, %s)",
+                        (name, url)
+                    )
+                    print(f"Data for {name} inserted into database successfully.")
+                
+                # If the user already exists, skip insertion
+                else:
+                    print(f"Data for {name} already exists in the database. Skipping insertion.")
+            
+            self.conn.commit()
+        except Exception as e:
+            print(f"Failed to insert data into database: {e}")
+            self.conn.rollback()
+
+
+
+    def execute(self, final_user_count: int):
+
+        # Navigate to Google and search for linkedin profiles
+
+        self.search_linkedin_profiles()
+        
+        # Count the number of rows in the existing database
+
+        parsed_names_list, parsed_links = self.scroll_and_fetch_data(final_user_count)
+
+        # Zip the lists together
+
+        zipped_list = self.zip_lists(parsed_names_list, parsed_links)
+
+        # Update the database
+
+        self.update_database(zipped_list)

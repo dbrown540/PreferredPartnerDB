@@ -50,7 +50,9 @@ CREATE TABLE bots(
     bot_last_name VARCHAR(100),
     bot_email_header VARCHAR(255),
     bot_email VARCHAR(255),
-    bot_email_password VARCHAR(50)
+    bot_email_password VARCHAR(50),
+    email VARCHAR(50)
 );
 
 -- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//src//database//initialize.sql';
+-- \i 'C:/Users/Daniel.Brown/Desktop/PreferredPartnerDB/src/database/initialize.sql'
