@@ -2,6 +2,7 @@ from src.scout.scout import Scout
 from src.database.scripts.insert import Insert
 from src.bots.config.create_email_header_and_login import BotCredentialsManager
 from src.bots.config.create_proton_mail_account import Proton
+import time
 
 def main():
     # Check Scout data already exists
@@ -23,7 +24,7 @@ def main():
 
     # Check to see if there are existing credentials in the bots table:
     bot_manager = BotCredentialsManager(filepath="src/bots/config/names.txt")
-    bot_data_exists = bot_manager.check_if_credentials_exist_in_db()
+    bot_data_exists, row_count = bot_manager.check_record_count_consistency()
 
     if not bot_data_exists:
         # Generate fake email addresses
@@ -40,10 +41,12 @@ def main():
 
         bot_manager.insert_bot_email_credentials()
 
+    # Use proton another time
+
     # Create proton object
     proton = Proton()
-    proton.access_proton_mail()
 
+    proton.execute()
 
 if __name__ == '__main__':
     main()

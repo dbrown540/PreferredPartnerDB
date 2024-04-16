@@ -50,7 +50,14 @@ CREATE TABLE bots(
     bot_last_name VARCHAR(100),
     bot_email_header VARCHAR(255),
     bot_email VARCHAR(255),
-    bot_email_password VARCHAR(50)
+    bot_email_password VARCHAR(50),
+    phone VARCHAR(50)
 );
+
+INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email,bot_email_password, phone)
+VALUES ('Christian', 'William', 'christian_william55118', 'christian_william55118@proton.me', '_', 2524007335);
+
+INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)
+VALUES ('Natalie', 'Williamson', 'natalie_williamson85321', 'e;>3UG[tJ{N9');
 
 -- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//src//database//initialize.sql';

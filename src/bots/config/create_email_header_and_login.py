@@ -81,18 +81,7 @@ class BotCredentialsManager:
 
         return zipped_list
 
-    def check_if_credentials_exist_in_db(self):
-        """Check if credentials exist in the database.
-        
-            This function connects to the database, executes a query to count the number of credentials in the 'bots' table,
-            prints the count, commits the transaction, and then closes the cursor and connection.
-        
-            Args:
-                self: The object instance.
-        
-            Returns:
-                None
-        """
+    def check_record_count_consistency(self):
 
         self.crsr.execute("SELECT COUNT(*) FROM bots")
         count = self.crsr.fetchone()[0]
@@ -100,25 +89,38 @@ class BotCredentialsManager:
         # Commit the transaction
         self.conn.commit()
         
+        row_count = 0
+        for row in open("src/bots/config/names.txt"):
+            row_count += 1
 
-        if count == 0:
-            return False
+        if count != row_count:
+            return False, row_count
         
-        return True
+        return True, row_count
 
     def insert_bot_email_credentials(self):
-        # Insert data from the CSV file into the table
+
+        
+        # Get existing bot_email_header values from the database
+        self.crsr.execute("SELECT bot_first_name, bot_last_name FROM bots")
+        existing_records = {(row[0], row[1]) for row in self.crsr.fetchall()}
+
+        # Insert data from the CSV file into the table if the combination of bot_first_name and bot_last_name is unique
         with open('csv/email_credentials.csv', 'r', newline='', encoding='utf-8') as file:
-            reader = csv.reader(file)
-            next(reader)  # Skip the header row
+            reader = csv.DictReader(file)
             for row in reader:
-                self.crsr.execute(
-                    f"INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password) VALUES (%s, %s, %s, %s)",
-                    (row[0], row[1], row[2], row[3])
-                )
+                if (row['bot_first_name'], row['bot_last_name']) not in existing_records:
+                    self.crsr.execute(
+                        "INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password) VALUES (%s, %s, %s, %s)",
+                        (row['bot_first_name'], row['bot_last_name'], row['bot_email_header'], row['bot_email_password'])
+                    )
+                    existing_records.add((row['bot_first_name'], row['bot_last_name']))
+                    print(f"Inserted row with bot_first_name: {row['bot_first_name']} and bot_last_name: {row['bot_last_name']}")
 
         # Commit the transaction
         self.conn.commit()
-        print("data inserted")
+        print("Data inserted")
+
         # Close the cursor and connection
         self.crsr.close()
+

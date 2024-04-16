@@ -1,3 +1,4 @@
+from src.database.scripts.connect_to_db import connect
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -25,6 +26,8 @@ class Scout:
         self.driver = self.initialize_webdriver()
         self.last_known_names_index = 0
         self.last_known_links_index = 0
+        self.wait = WebDriverWait(self.driver, 3)
+        self.conn, self.crsr = connect()
         
 
     def initialize_webdriver(self):
