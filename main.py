@@ -31,7 +31,7 @@ def main():
     
     # Create Scout object
     scout = Scout()
-    scout.execute(final_user_count=61)
+    scout.execute(final_user_count=20)
 
     '''# Create BotCredentialsManager object
     bot_manager = BotCredentialsManager(filepath="src/bots/config/names.txt")

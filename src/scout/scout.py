@@ -65,38 +65,6 @@ class Scout:
     def handle_other_exception(self, e):
         """Handles other exceptions during navigation."""
         logging.error('An error has occurred: %s', e)
-
-    def locate_names(self, attempt=1) -> list:
-        """Finds the links and names and returns a list"""
-        parsed_names_list = []
-        logging.info('self.last_known_index = %d', self.last_known_names_index)
-
-        try: 
-            names_wait = WebDriverWait(self.driver, 10)
-            names_wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'LC20lb.MBeuO.DKV0Md')))
-            names = self.driver.find_elements(By.CLASS_NAME, 'LC20lb.MBeuO.DKV0Md')
-            
-            # Start scraping from the last known index
-            new_elements = names[self.last_known_names_index:]
-
-            logging.info("Length of names: %d", len(names))
-            logging.info("Last known index: %d", self.last_known_names_index)
-            logging.info("Length of new elements: %d", len(new_elements))
-
-            # Parse the names and add to list
-            parsed_names_list = [name.text.split(' -')[0] for name in new_elements]
-
-            # Update the last known index
-            self.last_known_names_index += len(new_elements)
-
-        except Exception as e:
-            if attempt <= self.max_retries:
-                logging.warning('Name elements not found. Retrying in %d seconds. (Attempt %d/%d)', self.retry_delay_seconds, attempt, self.max_retries)
-                return self.locate_names(attempt + 1)
-            else:
-                logging.critical("Maximum retries. Check class name or try again later.\nError log:\n%s", e)
-
-        return parsed_names_list
             
     def locate_links(self, attempt=1) -> list:
         """Finds the LinkedIn profile links and returns a list"""
@@ -147,10 +115,9 @@ class Scout:
 
     def scroll_and_fetch_data(self, final_user_count: int):
         """Scrolls down to load more search results and fetches links and names"""
-        parsed_names_list = []
         parsed_links = []
         try:
-            while len(parsed_names_list) < final_user_count and len(parsed_links) < final_user_count:
+            while len(parsed_links) < final_user_count:
                 # Scroll down
                 self.scroll()
                 time.sleep(2)
@@ -159,17 +126,12 @@ class Scout:
                 new_links = self.locate_links()
                 parsed_links.extend(new_links)
 
-                # Fetch names
-                new_names = self.locate_names()
-                parsed_names_list.extend(new_names)
-
                 logging.info("Total links fetched: %d", len(parsed_links))
-                logging.info("Total names fetched: %d", len(parsed_names_list))
 
         except Exception as e:
             logging.error("An error occurred while scrolling and fetching data: %s", e)
 
-        return parsed_names_list, parsed_links
+        return parsed_links
     
     def count_users_table_rows(self):
         # Find out how many rows are in the database
@@ -178,32 +140,27 @@ class Scout:
         return number_of_rows_in_users_table
     
 
-    def zip_lists(self, parsed_names_list, parsed_links_list):
-        zipped_list = list(zip(parsed_names_list, parsed_links_list))
-        return zipped_list
-    
-
-    def update_database(self, zipped_list):
+    def update_database(self, parsed_links):
         try:
-            for name, url in zipped_list:
+            for url in parsed_links:
                 # Check if the user already exists in the database
                 self.crsr.execute(
-                    "SELECT COUNT(*) FROM users WHERE users_name = %s",
-                    (name,)
+                    "SELECT COUNT(*) FROM users WHERE profile_url = %s",
+                    (url,)
                 )
                 count = self.crsr.fetchone()[0]
                 
                 # If the user doesn't exist, insert into the database
                 if count == 0:
                     self.crsr.execute(
-                        "INSERT INTO users (users_name, profile_url) VALUES (%s, %s)",
-                        (name, url)
+                        "INSERT INTO users (profile_url) VALUES (%s)",
+                        (url,)
                     )
-                    print(f"Data for {name} inserted into database successfully.")
+                    print(f"Data for {url} inserted into database successfully.")
                 
                 # If the user already exists, skip insertion
                 else:
-                    print(f"Data for {name} already exists in the database. Skipping insertion.")
+                    print(f"Data for {url} already exists in the database. Skipping insertion.")
             
             self.conn.commit()
         except Exception as e:
@@ -220,12 +177,8 @@ class Scout:
         
         # Count the number of rows in the existing database
 
-        parsed_names_list, parsed_links = self.scroll_and_fetch_data(final_user_count)
-
-        # Zip the lists together
-
-        zipped_list = self.zip_lists(parsed_names_list, parsed_links)
+        parsed_links = self.scroll_and_fetch_data(final_user_count)
 
         # Update the database
 
-        self.update_database(zipped_list)
+        self.update_database(parsed_links)

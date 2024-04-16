@@ -63,3 +63,4 @@ class BotCredentialsManager:
                 else:
                     # Do nothing because the emails already exist
                     print(f"{first} {last} is already in the database.")
+
