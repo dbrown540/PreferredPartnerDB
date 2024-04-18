@@ -38,7 +38,7 @@ class ProxyManager:
             print(file_contents)
 
     def check_proxy(self, proxy):
-        try:
+        pass
 
 
     def execute(self):
