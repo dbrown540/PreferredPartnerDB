@@ -3,3 +3,6 @@ log.log
 
 # Ignore cpython
 *.pyc
+
+# Ignore __init__ package files
+__init__.py

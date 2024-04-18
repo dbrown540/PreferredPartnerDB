@@ -1,4 +1,0 @@
-1. Create fake name
-2. Create unique email address
-3. Create fake password
-4. use smstome.com to generate phone number

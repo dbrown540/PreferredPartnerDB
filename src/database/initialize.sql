@@ -55,5 +55,22 @@ CREATE TABLE bots(
     phone VARCHAR(20)
 );
 
+-- Table: phone_numbers
+
+CREATE TABLE phone_numbers(
+    phone_number_id SERIAL PRIMARY KEY,
+    phone_number VARCHAR(20)
+);
+
+-- Table proxies
+
+CREATE TABLE proxies(
+    proxy_id SERIAL PRIMARY KEY,
+    proxy VARCHAR(100)
+)
+
+INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone)
+        VALUES ('Christian', 'William', 'christian_william55118', 'christian_william55118@proton.me', '_', '2524007335');
+
 -- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//src//database//initialize.sql';
 -- \i 'C:/Users/Daniel.Brown/Desktop/PreferredPartnerDB/src/database/initialize.sql'
