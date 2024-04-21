@@ -153,3 +153,5 @@ class SMSToMe:
                 filtered_number_tuple = (filtered_number,)
                 self.crsr.execute("INSERT INTO phone_numbers (phone_number) VALUES (%s)", filtered_number_tuple)
                 self.conn.commit()
+
+            # Assign the phone numbers to bots that don't havea 

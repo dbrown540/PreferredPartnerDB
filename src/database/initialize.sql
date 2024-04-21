@@ -52,7 +52,8 @@ CREATE TABLE bots(
     bot_email VARCHAR(255),
     bot_email_password VARCHAR(50),
     email VARCHAR(50),
-    phone VARCHAR(20)
+    phone VARCHAR(20),
+    linkedin_username VARCHAR(50)
 );
 
 -- Table: phone_numbers
@@ -70,7 +71,7 @@ CREATE TABLE proxies(
 )
 
 INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone)
-        VALUES ('Christian', 'William', 'christian_william55118', 'christian_william55118@proton.me', '_', '2524007335');
+        VALUES ('Christian', 'William', 'christian_william90854', 'christian_william90854@proton.me', 'Sp@ceghost12', '2524007335');
 
 -- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//src//database//initialize.sql';
 -- \i 'C:/Users/Daniel.Brown/Desktop/PreferredPartnerDB/src/database/initialize.sql'
