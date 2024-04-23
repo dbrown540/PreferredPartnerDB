@@ -47,7 +47,7 @@ class LinkedInBot:
 
     def access_linkedin(self):
         try:
-            self.driver.get("file://C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//prettified_danny.html")
+            self.driver.get("file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//prettified_danny.html")
         except TimeoutError as e:
             print(f"Timeout has occurred while trying to find LinkedIn\n{e}")
         except Exception as e:
@@ -206,14 +206,8 @@ class LinkedInBot:
         return skills_set
 
     def locate_skills_list_elements_in_new_page(self):
-        # Locate the skills section
-        skills_div = self.wait.until(
-            EC.presence_of_element_located((By.ID, "skills"))
-        )
-        # Locate second sibling
-        sibling_div_tag = skills_div.find_element(By.XPATH, './following-sibling::div[2]')
-        list_elements = sibling_div_tag.find_elements(By.TAG_NAME, "li")
-        print(len(list_elements))
+        # Locate list elements
+        list_elements = self.driver.find_elements(By.XPATH, '//li[contains(@class, "pvs-list__paged-list-item")]')
         return list_elements
 
     def scrape_skills_on_new_page(self):
@@ -257,13 +251,15 @@ class LinkedInBot:
         return skills_set
 
     def scrape_skills(self):
-        button_href = self.locate_skills_button()
+        '''button_href = self.locate_skills_button()
         print(f"BUTTON HREF: {button_href}")
         if button_href:
             skills_set = self.scrape_skills_on_new_page()
         else:
             print("Button href not found. Scraping skills off original site.")
-            skills_set = self.scrape_skills_on_original_page()
+            skills_set = self.scrape_skills_on_original_page()'''
+        
+        skills_set = self.scrape_skills_on_new_page()
 
         print(skills_set)
 

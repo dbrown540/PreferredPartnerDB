@@ -68,13 +68,10 @@ CREATE TABLE proxies(
     proxy_id SERIAL PRIMARY KEY,
     proxy VARCHAR(100)
 );
-
-
 INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone, status_)
-        VALUES ('Natalie', 'Williamson', 'natalie_williamson84711', 'natalie_williamson84711@proton.me', 'mmugl11uH9jS', '2272066957', 'SUSPICIOUS');
-
+        VALUES('Daniel', 'Brown', 'dbrown6', 'dbrown6@umbc.edu', 'Sp@ceghost12', '2403445937', 'OPERATIONAL');
 INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone, status_)
-        VALUES ('Francis', 'Wolf', 'francis_wolf91966', 'francis_wolf91966@proton.me', 'iqTza8fLOYBe', '3392731615', 'TBD')
+        VALUES ('Francis', 'Wolf', 'francis_wolf91966', 'francis_wolf91966@proton.me', 'iqTza8fLOYBe', '3392731615', 'TBD');
 
 INSERT INTO users (profile_url)
         VALUES ('https://www.linkedin.com/in/mattcaccavale/');

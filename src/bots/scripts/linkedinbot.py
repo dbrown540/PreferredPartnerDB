@@ -406,16 +406,10 @@ class LinkedInBot:
         return skills_set
 
     def locate_skills_list_elements_in_new_page(self):
-        # Locate the skills section
-        skills_div = self.wait.until(
-            EC.presence_of_element_located((By.ID, "skills"))
-        )
-        # Locate second sibling
-        sibling_div_tag = skills_div.find_element(By.XPATH, './following-sibling::div[2]')
-        list_elements = sibling_div_tag.find_elements(By.TAG_NAME, "li")
-        print(len(list_elements))
+        # Locate list elements
+        list_elements = self.driver.find_elements(By.XPATH, '//li[contains(@class, "pvs-list__paged-list-item")]')
         return list_elements
-
+        
     def scrape_skills_on_new_page(self):
         time.sleep(random.uniform(3, 6))
         self.scroll_down()
@@ -460,12 +454,21 @@ class LinkedInBot:
         button_href = self.locate_skills_button()
         print(f"BUTTON HREF: {button_href}")
         if button_href:
+            self.driver.get(button_href)
             skills_set = self.scrape_skills_on_new_page()
         else:
             print("Button href not found. Scraping skills off original site.")
             skills_set = self.scrape_skills_on_original_page()
+            self.driver.back()
 
-        print(skills_set)
+        return skills_set
+
+    def update_skills_database(self, skills_set, user_id):
+        for skill in skills_set:
+            self.crsr.execute(f"UPDATE skills SET skill_name = '{skill}' WHERE user_id = {user_id};")
+
+        self.conn.commit()
+        print("All skills were added to the database")
 
         
 
@@ -502,8 +505,6 @@ class LinkedInBot:
         profile_urls = self.get_profile_urls(bot_id=1)
 
         print(profile_urls)
-        
-        profile_urls[0] = 'https://www.linkedin.com/in/mattcaccavale/'  # Test case
 
         # Loop through urls in the list
 
@@ -539,14 +540,17 @@ class LinkedInBot:
             if button_href:
                 self.driver.get(button_href)
                 self.scrape_experiences_in_new_page(user_id=user_id)
+                self.driver.back()
             else:
                 print("Could not find button href")
                 # Collect experience in current page
                 self.scrape_experiences_in_original_page(user_id=user_id)
+            
+            skills_set = self.scrape_skills()
+            self.update_skills_database(skills_set, user_id)
 
-            self.scrape_skills()
+            time.sleep(random.randint(4, 8))
 
-            time.sleep(1000)
 
 
 

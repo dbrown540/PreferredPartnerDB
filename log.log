@@ -1,13 +1,16 @@
-2024-04-23 18:06:11,548 - INFO - 
+2024-04-23 19:27:02,647 - INFO - 
 Service path: chromedriver-win64/chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x00000176A5E0AC00>
-2024-04-23 18:06:25,112 - INFO - self.last_known_index (links)= 0
-2024-04-23 18:06:25,912 - INFO - Total links fetched: 20
-2024-04-23 18:06:38,850 - INFO - self.last_known_index (links)= 60
-2024-04-23 18:06:39,031 - INFO - Total links fetched: 26
-2024-04-23 18:06:52,531 - INFO - self.last_known_index (links)= 70
-2024-04-23 18:06:52,711 - INFO - Total links fetched: 32
-2024-04-23 18:07:06,700 - INFO - self.last_known_index (links)= 80
-2024-04-23 18:07:06,884 - INFO - Total links fetched: 38
-2024-04-23 18:07:19,747 - INFO - self.last_known_index (links)= 90
-2024-04-23 18:07:20,135 - INFO - Total links fetched: 52
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001D33B2503B0>
+2024-04-23 19:27:15,909 - INFO - self.last_known_index (links)= 0
+2024-04-23 19:27:16,656 - INFO - Total links fetched: 20
+2024-04-23 19:27:28,951 - INFO - self.last_known_index (links)= 60
+2024-04-23 19:27:29,107 - INFO - Total links fetched: 26
+2024-04-23 19:27:41,661 - INFO - self.last_known_index (links)= 70
+2024-04-23 19:27:41,824 - INFO - Total links fetched: 32
+2024-04-23 19:27:52,955 - INFO - self.last_known_index (links)= 80
+2024-04-23 19:27:53,118 - INFO - Total links fetched: 38
+2024-04-23 19:28:06,047 - INFO - self.last_known_index (links)= 90
+2024-04-23 19:28:06,436 - INFO - Total links fetched: 52
+2024-04-23 19:28:07,921 - INFO - 
+Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001D33DA3ABD0>

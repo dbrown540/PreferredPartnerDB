@@ -16,8 +16,8 @@ def main():
     bot_manager = BotCredentialsManager(filepath="src/bots/config/names.txt")
     bot_manager.execute()
 
-    '''linkedin_bot = LinkedInBot()
-    linkedin_bot.execute()'''
+    linkedin_bot = LinkedInBot()
+    linkedin_bot.execute()
 
 if __name__ == '__main__':
     main()
