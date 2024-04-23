@@ -8,16 +8,16 @@ from src.bots.scripts.linkedinbot import LinkedInBot
 
 def main():
     
-    '''# Create Scout object
+    # Create Scout object
     scout = Scout()
     scout.execute(final_user_count=50)
 
     # Create BotCredentialsManager object
     bot_manager = BotCredentialsManager(filepath="src/bots/config/names.txt")
-    bot_manager.execute()'''
+    bot_manager.execute()
 
-    linkedin_bot = LinkedInBot()
-    linkedin_bot.execute()
+    '''linkedin_bot = LinkedInBot()
+    linkedin_bot.execute()'''
 
 if __name__ == '__main__':
     main()

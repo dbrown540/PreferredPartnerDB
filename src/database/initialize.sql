@@ -71,7 +71,10 @@ CREATE TABLE proxies(
 
 
 INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone, status_)
-        VALUES ('Natalie', 'Williamson', 'natalie_williamson84711', 'natalie_williamson84711@proton.me', 'mmugl11uH9jS', '2272066957', 'OPERATIONAL');
+        VALUES ('Natalie', 'Williamson', 'natalie_williamson84711', 'natalie_williamson84711@proton.me', 'mmugl11uH9jS', '2272066957', 'SUSPICIOUS');
+
+INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone, status_)
+        VALUES ('Francis', 'Wolf', 'francis_wolf91966', 'francis_wolf91966@proton.me', 'iqTza8fLOYBe', '3392731615', 'TBD')
 
 INSERT INTO users (profile_url)
         VALUES ('https://www.linkedin.com/in/mattcaccavale/');
