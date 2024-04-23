@@ -47,7 +47,7 @@ class LinkedInBot:
 
     def access_linkedin(self):
         try:
-            self.driver.get("file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//prettified_danny.html")
+            self.driver.get("file://C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//prettified_danny.html")
         except TimeoutError as e:
             print(f"Timeout has occurred while trying to find LinkedIn\n{e}")
         except Exception as e:
@@ -65,7 +65,7 @@ class LinkedInBot:
         try:
             # Wait for all the list elements to load
             list_elements = self.wait.until(
-                EC.presence_of_all_elements_located((By.CLASS_NAME, "pvs-list__paged-list-item.artdeco-list__item.pvs-list__item--line-separated.pvs-list__item--one-column"))
+                EC.presence_of_all_elements_located((By.CLASS_NAME, "pvs-list__paged-list-item.artdeco-list__item.pvs-list__item--line-separated.pvs-list__item--one-column")) 
             )
 
             return list_elements
@@ -174,9 +174,99 @@ class LinkedInBot:
 
         return work_experience
 
+    def locate_skills_button(self):
+        try:
+            # Wait for the presence of at least one matching element
+            buttons = self.wait.until(
+                EC.presence_of_all_elements_located(
+                    (By.XPATH, "//a[contains(span[@class='pvs-navigation__text'], 'Show all') and contains(span[@class='pvs-navigation__text'], 'skills')]")
+                )
+            )
 
+            # Iterate through each button to find the one with LinkedIn domain
+            for button in buttons:
+                href = button.get_attribute("href")
+                if href and 'linkedin.com' in href:
+                    return href
 
-        
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def create_skills_set(self, list_elements):
+        skills_set = set()
+        for i, list_element in enumerate(list_elements):
+            print("index: ", i)
+            # Attempt to locate the span text within the list element
+            span_element = list_element.find_element(By.XPATH, "div/div/div/div/a/div/div/div/div/span[@aria-hidden='true']")
+            if span_element:
+                span_text = span_element.text
+                if span_text != '':
+                    skills_set.add(span_text)
+
+        return skills_set
+
+    def locate_skills_list_elements_in_new_page(self):
+        # Locate the skills section
+        skills_div = self.wait.until(
+            EC.presence_of_element_located((By.ID, "skills"))
+        )
+        # Locate second sibling
+        sibling_div_tag = skills_div.find_element(By.XPATH, './following-sibling::div[2]')
+        list_elements = sibling_div_tag.find_elements(By.TAG_NAME, "li")
+        print(len(list_elements))
+        return list_elements
+
+    def scrape_skills_on_new_page(self):
+        time.sleep(random.uniform(3, 6))
+        self.scroll_down()
+        list_elements = self.locate_skills_list_elements_in_new_page()
+        print(len(list_elements))
+
+        skills_set = self.create_skills_set(list_elements)
+
+        return skills_set
+
+    def scrape_skills_on_original_page(self):
+        time.sleep(random.uniform(3, 6))
+        self.scroll_down()
+        skills_set = self.locate_skills_list_element_on_original_page()
+        return skills_set
+
+    def locate_skills_list_element_on_original_page(self):
+        skills_set = set()
+        # Locate the skills section
+        skills_div = self.wait.until(
+            EC.presence_of_element_located((By.ID, "skills"))
+        )
+        # Switch to sibling element
+        sibling_div_tag = skills_div.find_element(By.XPATH, './following-sibling::div[2]')
+        if sibling_div_tag:
+            # Locate the list elements
+            list_elements = sibling_div_tag.find_elements(By.XPATH, "ul/li[contains(@class, 'artdeco-list__item')]")
+            for list_element in list_elements:
+                # Look for anchor tags in each list element
+                anchor_element = list_element.find_element(By.TAG_NAME, "a")
+                # Locate the span tag within the anchor element tree
+                span_tag = anchor_element.find_element(By.XPATH, './/span[@aria-hidden="true"]')
+                span_text = span_tag.text
+                print(span_text)
+                skills_set.add(span_text)
+        else:
+            print("could not find the sibling tag")
+
+        return skills_set
+
+    def scrape_skills(self):
+        button_href = self.locate_skills_button()
+        print(f"BUTTON HREF: {button_href}")
+        if button_href:
+            skills_set = self.scrape_skills_on_new_page()
+        else:
+            print("Button href not found. Scraping skills off original site.")
+            skills_set = self.scrape_skills_on_original_page()
+
+        print(skills_set)
+
 
     def execute(self):
 
@@ -184,8 +274,7 @@ class LinkedInBot:
 
         self.access_linkedin()
 
-        work_experience = self.locate_work_experience_on_original_page()
-        print(work_experience)
+        self.scrape_skills()
 
 
         
