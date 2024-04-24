@@ -392,7 +392,7 @@ class LinkedInBot:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def create_skills_set(self, list_elements):
+    def create_skills_set(self, list_elements) -> set:
         skills_set = set()
         for i, list_element in enumerate(list_elements):
             print("index: ", i)
@@ -465,7 +465,8 @@ class LinkedInBot:
 
     def update_skills_database(self, skills_set, user_id):
         for skill in skills_set:
-            self.crsr.execute(f"UPDATE skills SET skill_name = '{skill}' WHERE user_id = {user_id};")
+            print(f"SKILL: {skill}")
+            self.crsr.execute(f"INSERT INTO skills (skill_name, user_id) VALUES (%s, %s)", (skill, user_id))
 
         self.conn.commit()
         print("All skills were added to the database")
