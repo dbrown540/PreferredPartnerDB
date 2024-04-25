@@ -1,16 +1,10 @@
-2024-04-23 19:53:37,727 - INFO - 
+2024-04-24 19:58:59,477 - INFO - 
+Service path: chromedriver-win64//chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000002BB879E03B0>
+2024-04-24 19:59:12,154 - INFO - self.last_known_index (links)= 0
+2024-04-24 19:59:12,931 - INFO - Total links fetched: 20
+2024-04-24 19:59:23,859 - INFO - self.last_known_index (links)= 60
+2024-04-24 19:59:24,020 - INFO - Total links fetched: 26
+2024-04-24 19:59:25,511 - INFO - 
 Service path: chromedriver-win64/chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000001558E0603B0>
-2024-04-23 19:53:52,281 - INFO - self.last_known_index (links)= 0
-2024-04-23 19:53:53,022 - INFO - Total links fetched: 20
-2024-04-23 19:54:03,405 - INFO - self.last_known_index (links)= 60
-2024-04-23 19:54:03,567 - INFO - Total links fetched: 26
-2024-04-23 19:54:17,372 - INFO - self.last_known_index (links)= 70
-2024-04-23 19:54:17,533 - INFO - Total links fetched: 32
-2024-04-23 19:54:28,846 - INFO - self.last_known_index (links)= 80
-2024-04-23 19:54:29,012 - INFO - Total links fetched: 38
-2024-04-23 19:54:40,281 - INFO - self.last_known_index (links)= 90
-2024-04-23 19:54:40,660 - INFO - Total links fetched: 52
-2024-04-23 19:54:42,142 - INFO - 
-Service path: chromedriver-win64/chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x0000015590506480>
+Options: <selenium.webdriver.chrome.options.Options object at 0x000002BB89FE07A0>
