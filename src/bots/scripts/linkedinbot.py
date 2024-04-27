@@ -2,16 +2,19 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from ...database.scripts.connect_to_db import connect
+from ...database.scripts.database_manager import DatabaseManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import logging
 import time
 import random
 import re
+import psycopg2
+from typing import object
 
 class LinkedInBot:
     def __init__(self):
@@ -19,100 +22,247 @@ class LinkedInBot:
         # Initialize the WebDriver with the random user agent
         self.driver = self.initialize_webdriver()
         self.wait = WebDriverWait(self.driver, 10)
-        # Connect to the database
-        self.conn, self.crsr = connect()
+        # Create a database manager object
+        self.database_manager = DatabaseManager()
 
-    def initialize_webdriver(self):
-        """Initializes Chrome WebDriver object"""
+    def initialize_webdriver(self) -> WebDriver:
+        """
+        Initializes a WebDriver instance with specified options and service.
+    
+        Returns:
+            WebDriver: A WebDriver instance with specified options and service.
+    
+        Raises:
+            WebDriverException: If there is an issue initializing the WebDriver.
+            Exception: If an unexpected error occurs while initializing the WebDriver.
+        """
         try:
             options = Options()
             options.add_argument('--start-maximized')
             service = Service(self.driver_path)
             driver = WebDriver(service=service, options=options)
+            # Log the webdriver information
             logging.info(f"\nService path: {self.driver_path}\nOptions: {options}")
             return driver
-        except Exception as e:
-            logging.critical(f'Failed to initialize WebDriver: {e}')
+        except WebDriverException:
+            logging.critical('Failed to initialize WebDriver: ', exc_info=True)
+            raise
+        except Exception:
+            # For other exceptions, log the error and provide a generic error message
+            logging.critical('An unexpected error occurred while initializing WebDriver: ', exc_info=True)
+            raise
+
+    def access_linkedin(self) -> None:
+        """
+        Access the LinkedIn website using the Selenium WebDriver.
+    
+        This function navigates to the LinkedIn website by accessing the provided URL.
+        
+        Raises:
+            WebDriverException: If there is an error related to the WebDriver.
+            Exception: If there is an unexpected error while trying to access LinkedIn.
+        """
+        try:
+            # Access the LinkedIn website
+            self.driver.get("https://www.linkedin.com/")
+
+        except WebDriverException as driver_error:
+            # Log and raise any error related to the WebDriver
+            logging.critical("A WebDriver-related error occurred while trying to connect to LinkedIn.", exc_info=True)
+            raise driver_error
+        
+        except Exception as unexpected_error:
+            # Log and raise any unexpected errors
+            logging.critical("An error occurred while trying to get to LinkedIn.", exc_info=True)
+            raise unexpected_error
+
+    def click_sign_in(self):
+        """Click the sign-in button on the LinkedInBot page.
+        
+        This function locates the sign-in button on the LinkedInBot page and clicks it.
+        
+        Raises:
+            NoSuchElementException: If the sign-in button cannot be located.
+            Exception: If an unexpected error occurs while trying to locate the sign-in button.
+        """
+        try:
+            # Locate the sign-in button
+            sign_in_button = self.wait.until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "nav__button-secondary.btn-md.btn-secondary-emphasis"))
+            )
+
+            # Log a message indicating successful sign-in button detection
+            logging.info("Successfully located the sign-in button.")
+
+            # Click the sign-in button
+            sign_in_button.click()
+
+        except NoSuchElementException:
+            # Log and raise a critical error if the sign-in button cannot be located
+            logging.critical("Failed to locate the sign-in button.", exc_info=True)
+            raise
+            
+        except Exception:
+            # Log and raise a critical error if an unexpected error occurs
+            logging.critical("An unexpected error occurred while locating the sign-in button.", exc_info=True)
+            raise
+
+    def type_email_in_linkedin_login(self, bot_id):
+        """Fetches the email associated with the provided bot_id from the database and types it into the email input field on the LinkedIn login screen.
+        
+        Args:
+            bot_id (int): The unique identifier of the bot.
+        
+        Raises:
+            psycopg2.Error: If there is an error while fetching the email from the database.
+            NoSuchElementException: If the username input field on the LinkedIn login screen is not found.
+            Exception: If an unexpected error occurs during the process.
+        
+        Returns:
+            None
+        """
+        try:
+            # Retrieve email from database for corresponding bot ID then store as a variable
+            email = self.database_manager.execute_query(fetch="ONE" ,query="SELECT bot_email FROM bots WHERE bot_id = %s", params=(bot_id,))
+
+            # Log a message indicating the successful location and typing of the email input on the LinkedIn login screen
+            logging.info(f"Successfully retrieved email {email} from the database.")
+
+            # Locate the username input on the LinkedIn login screen
+            email_input = self.wait.until(
+                EC.presence_of_element_located((By.ID, "username"))
+            )
+
+            # Type the email into the login input field
+            email_input.send_keys(email)
+
+            # Log a message indicating the successful location of the email input
+            logging.info("Successfully typed email into the input field.")
+
+            # Close the cursor and database connection
+            self.crsr.close()
+            self.conn.close()
+            logging.info("Closed the cursor and database connection after ")
+
+        except psycopg2.Error as db_error:
+            # Log a database error if the email cannot be retrieved
+            logging.critical("Failed to fetch email from the database.", exc_info=True)
+            raise db_error
+
+        except NoSuchElementException:
+            # Log and raise critical error if the username input is not found.
+            logging.critical("Failed to locate the username input on the LinkedIn login screen.", exc_info=True)
+            raise
+
+        except Exception as unexpected_error:
+            # Log and raise critical error if an unexpected error if any other exception occurs
+            logging.critical(f"An unexpected error occurred.", exc_info=True)
+            raise unexpected_error
+
+        
+
+    def type_password_in_linkedin_login(self, bot_id):
+        """Type the password into the LinkedIn login form using the provided bot_id.
+        
+        Args:
+            bot_id (int): The unique identifier of the bot whose password needs to be typed.
+        
+        Raises:
+            psycopg2.Error: If there is an error with the database connection or query.
+            NoSuchElementException: If the password input field cannot be located on the LinkedIn login screen.
+            Exception: For any other unexpected errors.
+        
+        Logs:
+            - Successful retrieval of the password from the database.
+            - Successful typing of the password into the password input field.
+            - Failure to fetch LinkedIn password from the database.
+            - Failure to locate the password input field on the LinkedIn login screen.
+            - An unexpected error occurred.
+        """
+        try:
+            # Fetch bot password from the database with a corresponding bot_id
+            password = self.database_manager.execute_query(query="SELECT bot_email_password FROM bots WHERE bot_id = %s", params=(bot_id,), fetch="ONE")
+
+            # Log the successful retrieval of the password from the database
+            logging.info(f"Successfully retrieved the linkedin password {password} from the database.")
+
+            # Locate the password form
+            password_input = self.wait.until(
+                EC.presence_of_element_located((By.ID, "password"))
+            )
+
+            # Type the password
+            password_input.send_keys(password)
+
+            # Log a message indicating the successful typing of the password into the input field
+            logging.info("Successfully typed password in the password input")
+
+        except psycopg2.Error:
+            # Log and raise critical database error if the query failed
+            logging.critical("Failed to fetch LinkedIn password from the database.", exc_info=True)
+            raise
+
+        except NoSuchElementException:
+            # Log and raise a critical WebDriver error if the password input was unable to be located
+            logging.critical("Failed to locate the password input field on the LinkedIn login screen.", exc_info=True)
+            raise
+
+        except Exception:
+            # Log and raise a critical unexpected error.
+            logging.critical("An unexpected error occurred.", exc_info=True)
             raise
 
 
-    def access_linkedin(self):
-        try:
-            self.driver.get("https://www.linkedin.com/")
-        except TimeoutError as e:
-            print(f"Timeout has occurred while trying to find LinkedIn\n{e}")
-        except Exception as e:
-            print(f"An error occurred while trying to get to LinkedIn\n{e}")
+    def click_login_signin_button(self) -> None:
+        """
+        Clicks the sign-in button on the login screen.
 
-    def click_sign_in(self):
-        try:
-            # Locate the sign in button
-            sign_in_button = self.wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "nav__button-secondary.btn-md.btn-secondary-emphasis")))
-            print("Found the sign in button for the click_sign_in method in the LinkedInBot")
-            sign_in_button.click()
+        This function attempts to locate and click the sign-in button on the login screen. 
+        It retries a specified number of times if the button is not immediately found.
 
-        except NoSuchElementException as e:
-            print(f"Could not locate the sign in button\n{e}")
-        
-        except Exception as e:
-            print(f"An error occurred while trying to locate the sign in button.\n{e}")
+        Raises:
+            NoSuchElementException: If the sign-in button element is not found on the page.
+            TimeoutException: If a timeout occurs while waiting for the sign-in button to become clickable.
 
-    def send_username(self, bot_id):
-        # Fetch username from database
+        Returns:
+            None
+        """
 
-        try:
-            self.crsr.execute(f"SELECT bot_email FROM bots WHERE bot_id = {bot_id}")
-            username = self.crsr.fetchone()[0]
+        MAX_RETRIES = 3
+        INITIAL_DELAY = 1
 
+        for retry in range(MAX_RETRIES):
             try:
-                # Locate the username form
-                username_form = self.wait.until(EC.presence_of_element_located((By.ID, "username")))
-                print("username form located")
-                username_form.send_keys(username)
+                # Locate the sign in button after typing in username and password
+                sign_in_button = self.wait.until(
+                    EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]'))
+                )
 
-            except NoSuchElementException as e:
-                print(f"Could not locate the username form\n{e}")
+                # Log a message indicating the successful location of the sign-in button
+                logging.info("Sign in button located on the login screen.")
 
-            except Exception as e:
-                print(f"Error occurred while trying to locate the username form.\n{e}")
+                # Click the sign-in button
+                sign_in_button.click()
 
-        except Exception as e:
-            print(f"An error occurred while trying to get the username from the database {e}")
+                # Exit the loop if the click was successful
+                break
 
-        
+            except NoSuchElementException:
+                # Raise and log a critical error if the sign in button is not found
+                logging.critical("Could not find the sign in button.", exc_info=True)
+                raise
 
-    def send_password(self, bot_id):
-        try:
-            self.crsr.execute(f"SELECT bot_email_password FROM bots WHERE bot_id = {bot_id}")
-            password = self.crsr.fetchone()[0]
-            try:
-                # Locate the password form
-                password_form = self.wait.until(EC.presence_of_element_located((By.ID, "password")))
-                print("Password form located")
-                password_form.send_keys(password)
+            except TimeoutException:
+                # Log the retry attempt
+                logging.error(f"Timeout error occurred. Attempt: {retry + 1}/{MAX_RETRIES}. Retrying in {INITIAL_DELAY} seconds.")
+                time.sleep(INITIAL_DELAY)
 
-            except NoSuchElementException as e:
-                print(f"Could not locate the password form.\n{e}")
+        else:
+            # Log and raise a critical error if the maximum number of retries is reached
+            logging.critical("Maximum retries reached.", exc_info=True)
+            raise
 
-            except Exception as e:
-                print(f"An error occured while looking for the password form.\n{e}")
 
-        except Exception as e:
-            print("An error occurred while trying to locate the bot password")
-
-        
-    def click_login_signin_button(self):
-        try:
-            # Locate the sign in button after typying in username and password
-            sign_in_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]')))
-            print("Sign in button located")
-            sign_in_button.click()
-
-        except NoSuchElementException as e:
-            print(f"Could not locate the sign in button.\n{e}")
-
-        except Exception as e:
-            print(f"An error occured while looking for the sign in button.\n{e}")
 
     def handle_captcha(self):
         is_captcha_solved = input("Type y when you solve the captcha:\n")
@@ -120,17 +270,35 @@ class LinkedInBot:
         if is_captcha_solved == 'y':
             pass
 
-    def get_profile_urls(self, bot_id, number_of_users_per_bot=20):
-        # Access the database 
+    def get_profile_urls(self, bot_id: int, number_of_users_per_bot: int = 20) -> list:
+        """
+        Get profile URLs for a specific bot from the database.
+    
+        Args:
+            bot_id (int): The ID of the bot for which profile URLs are to be retrieved.
+            number_of_users_per_bot (int, optional): The number of users per bot. Defaults to 20.
+    
+        Returns:
+            list: A list of profile URLs for the specified bot.
+        """
+
+        # Create query
+        query = "SELECT profile_url FROM users WHERE user_id BETWEEN %s AND %s ORDER BY user_id;"
+        
+        # Calculate parameter values
         starting_index = 1
-        # Only assign a certain portion of the database to the bot
-        self.crsr.execute(f"SELECT profile_url FROM users WHERE user_id BETWEEN {(number_of_users_per_bot * (bot_id - 1)) + starting_index} AND {number_of_users_per_bot * bot_id} ORDER BY user_id;")
-        #self.crsr.execute("SELECT profile_url FROM users WHERE user_id = 2;")  # Test case
-        profile_urls = self.crsr.fetchall()
-        profile_urls = [url[0] for url in profile_urls]
+        start_user_id = (number_of_users_per_bot * (bot_id - 1)) + starting_index
+        end_user_id = number_of_users_per_bot * bot_id
+
+        # Query the database and store the urls in a list
+        raw_profile_urls = self.database_manager.execute_query(query, params=(start_user_id, end_user_id), fetch="ALL")
+
+        # Extract urls from the tuples
+        profile_urls = [url[0] for url in raw_profile_urls]
+
         return profile_urls
     
-    def visit_user(self, profile_url):
+    def visit_user(self, profile_url: str):
         try:
             self.driver.get(f"{profile_url}")
 
@@ -486,12 +654,12 @@ class LinkedInBot:
         # Send in the username to the username input field
         #  Make sure to get this from the database
 
-        self.send_username(bot_id=1)
+        self.type_password_in_linkedin_login(bot_id=1)
 
         # Send the password to the password input field
         #  Make sure to get this from the databse
 
-        self.send_password(bot_id=1)
+        self.type_password_in_linkedin_login(bot_id=1)
 
         # Click the sign in button
         time.sleep(random.uniform(6, 8))
@@ -551,7 +719,3 @@ class LinkedInBot:
             self.update_skills_database(skills_set, user_id)
 
             time.sleep(random.randint(4, 8))
-
-
-
-

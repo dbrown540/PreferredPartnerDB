@@ -1,4 +1,5 @@
 from src.database.scripts.connect_to_db import connect
+from ...database.scripts.database_manager import DatabaseManager
 import random
 import string
 import secrets
@@ -7,6 +8,7 @@ import csv
 class BotCredentialsManager:
     def __init__(self, filepath):
         self.filepath = filepath
+        self.database_manager = DatabaseManager()
         self.conn, self.crsr = connect()
 
     def create_one_email_header(self, first: str, last: str):
@@ -25,12 +27,10 @@ class BotCredentialsManager:
 
     def update_database(self, first, last, email_header, password):
         try:
-            self.crsr.execute(
-                        f"INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password) VALUES (%s, %s, %s, %s)",
-                        (first, last, email_header, password)
-                    )
-            self.conn.commit()
-            
+
+            self.database_manager.execute_query(query="INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password) VALUES (%s, %s, %s, %s)",
+                                                params=(first, last, email_header, password))
+        
             print(f"Added {first} {last} to database")
 
         except:

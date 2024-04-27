@@ -1,10 +1,4 @@
-2024-04-24 19:58:59,477 - INFO - 
-Service path: chromedriver-win64//chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000002BB879E03B0>
-2024-04-24 19:59:12,154 - INFO - self.last_known_index (links)= 0
-2024-04-24 19:59:12,931 - INFO - Total links fetched: 20
-2024-04-24 19:59:23,859 - INFO - self.last_known_index (links)= 60
-2024-04-24 19:59:24,020 - INFO - Total links fetched: 26
-2024-04-24 19:59:25,511 - INFO - 
+2024-04-26 20:55:10,636 - INFO - 
 Service path: chromedriver-win64/chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000002BB89FE07A0>
+Options: <selenium.webdriver.chrome.options.Options object at 0x000002B12C0A5340>
+2024-04-26 20:55:10,978 - INFO - Using existing database connection.
