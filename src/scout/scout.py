@@ -6,7 +6,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.keys import Keys
-from src.database.scripts.connect_to_db import connect
+from ..database.scripts.database_manager import DatabaseManager
 import logging
 import random
 import time
@@ -23,7 +23,8 @@ class Scout:
         self.driver = self.initialize_webdriver()
         self.last_known_names_index = 0
         self.last_known_links_index = 0
-        self.conn, self.crsr = connect()
+        # Create a database manager object
+        self.database_manager = DatabaseManager()
         
 
     def initialize_webdriver(self):
@@ -44,7 +45,7 @@ class Scout:
             self.driver.get('https://www.google.com')  # Corrected URL
             wait = WebDriverWait(self.driver, 3)
             search_box = wait.until(EC.element_to_be_clickable((By.NAME, "q")))
-            search_box.send_keys('site://linkedin.com/in "CMS" or "Centers for Medicare and Medicaid Services"')
+            search_box.send_keys('"marketplace license software management" OR "MLSM" "Centers for Medicare & Medicaid Services" site:linkedin.com/in')
             search_box.send_keys(Keys.ENTER)
         except TimeoutException as e:
             if attempt <= self.max_retries:
@@ -135,37 +136,29 @@ class Scout:
     
     def count_users_table_rows(self):
         # Find out how many rows are in the database
-        self.crsr.execute('SELECT COUNT(*) FROM users;')
-        number_of_rows_in_users_table = self.crsr.fetchone()[0]
+        number_of_rows_in_users_table = self.database_manager.execute_query(query='SELECT COUNT(*) FROM users;', fetch='ONE')[0]
+        
         return number_of_rows_in_users_table
     
 
     def update_database(self, parsed_links):
-        try:
-            for url in parsed_links:
-                # Check if the user already exists in the database
-                self.crsr.execute(
-                    "SELECT COUNT(*) FROM users WHERE profile_url = %s",
-                    (url,)
-                )
-                count = self.crsr.fetchone()[0]
+        for url in parsed_links:
+            try:
+            
+                count = self.database_manager.execute_query(query='SELECT COUNT(*) FROM users WHERE profile_url = %s', params=(url,), fetch='ONE')[0]
                 
                 # If the user doesn't exist, insert into the database
                 if count == 0:
-                    self.crsr.execute(
-                        "INSERT INTO users (profile_url) VALUES (%s)",
-                        (url,)
-                    )
+                    self.database_manager.execute_query(query='INSERT INTO users (profile_url) VALUES (%s)', params=(url,))
                     print(f"Data for {url} inserted into database successfully.")
                 
                 # If the user already exists, skip insertion
                 else:
                     print(f"Data for {url} already exists in the database. Skipping insertion.")
             
-            self.conn.commit()
-        except Exception as e:
-            print(f"Failed to insert data into database: {e}")
-            self.conn.rollback()
+            except Exception as e:
+                print(f"Failed to insert data into database: {e}")
+
 
 
 

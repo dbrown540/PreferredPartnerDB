@@ -14,7 +14,7 @@ import time
 import random
 import re
 import psycopg2
-from typing import object
+from typing import object, Union
 
 class LinkedInBot:
     def __init__(self):
@@ -122,8 +122,13 @@ class LinkedInBot:
             None
         """
         try:
+            # Define query arguments
+            query = "SELECT bot_email FROM bots WHERE bot_id = %s"
+            params=(bot_id,)
+            fetch = "ONE"
+
             # Retrieve email from database for corresponding bot ID then store as a variable
-            email = self.database_manager.execute_query(fetch="ONE" ,query="SELECT bot_email FROM bots WHERE bot_id = %s", params=(bot_id,))
+            email = self.database_manager.execute_query(query=query, params=params, fetch=fetch)[0]
 
             # Log a message indicating the successful location and typing of the email input on the LinkedIn login screen
             logging.info(f"Successfully retrieved email {email} from the database.")
@@ -180,8 +185,13 @@ class LinkedInBot:
             - An unexpected error occurred.
         """
         try:
+            # Define query arguments
+            query = "SELECT bot_email_password FROM bots WHERE bot_id = %s" 
+            params = (bot_id,) 
+            fetch = "ONE"
+
             # Fetch bot password from the database with a corresponding bot_id
-            password = self.database_manager.execute_query(query="SELECT bot_email_password FROM bots WHERE bot_id = %s", params=(bot_id,), fetch="ONE")
+            password = self.database_manager.execute_query(query=query, params=params, fetch=fetch)
 
             # Log the successful retrieval of the password from the database
             logging.info(f"Successfully retrieved the linkedin password {password} from the database.")
@@ -298,82 +308,149 @@ class LinkedInBot:
 
         return profile_urls
     
-    def visit_user(self, profile_url: str):
+    def visit_user(self, profile_url: str) -> None:
+        """
+        Visits the user's profile by navigating to the provided profile URL.
+    
+        Args:
+            profile_url (str): The URL of the user's profile to visit.
+    
+        Raises:
+            WebDriverException: If a WebDriver related error occurs while trying to access the user's profile.
+            Exception: If an unexpected error occurs while attempting to visit the user's profile.
+        """
         try:
             self.driver.get(f"{profile_url}")
 
-        except Exception as e:
-            print("Could not access users profile")
+        except WebDriverException:
+            # Log and raise a critical WebDriver exception if there was a driver related error
+            logging.critical(f"A WebDriver related error occurred while trying to access the user's profile. Link:\n{profile_url}", exc_info=True)
+            raise
 
-    def find_users_name(self):
+        except Exception:
+            # Log and raise a critical error if an unexpected error occurred
+            logging.critical(f"An unexpected error occurred while attempting to visit the user's profile. Link:\n{profile_url}")
+            raise
+
+    def find_users_name(self) -> Union[str, None]:
+        """
+        Find the user's name on their profile.
+        
+        Returns:
+            str: The user's name if found, None otherwise.
+        """
         try:
+            # Locate the name on the user's profile
             users_name = self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "h1.text-heading-xlarge"))
-            )
-            users_name = users_name.text
-            return users_name
+            ).text
 
-        except NoSuchElementException as e:
-            print(f"Could not locate the name.\n{e}")
+            return users_name
+        
+        except TimeoutException:
+            # Log and handle timeout exception
+            logging.error(f"Could not locate user's name due to timeout.")
+            return None
+
+        except NoSuchElementException:
+            # Log and handle element not found exception
+            logging.error("Could not locate the element containing the user's name on their profile.")
+            return None
         
         except Exception as e:
-            print(f"Error finding the name\n{e}")
+            # Log and handle other unexpected exceptions
+            logging.error(f"An unexpected error occurred while trying to locate the user's name. {str(e)}")
+            return None
             
-    def send_names_to_db(self, users_name, profile_url):
-        # Update the datbase
-        try:
-            self.crsr.execute(f"UPDATE users SET users_name = '{users_name}' WHERE profile_url = '{profile_url}'")
-            # Commit the transaction
-            self.conn.commit()
-        except Exception as e:
-            print(e)
+    def send_names_to_db(self, users_name: str, profile_url: str) -> None:
+        """
+        Update the database with the given user's name and profile URL.
         
-    def extract_current_location(self):
-        # Locate the users location found under their name
+        Args:
+            users_name (str): The name of the user to be updated.
+            profile_url (str): The profile URL of the user.
+    
+        Returns:
+            None
+        """
+        # Define query arguments
+        query = "UPDATE users SET users_name = '%s' WHERE profile_url = '%s'"
+        params = (users_name, profile_url)
+
+        # Update the datbase
+        self.database_manager.execute_query(query=query, params=params)
+
+        
+    def extract_current_location(self) -> Union[str, None]:
+        """
+        Extracts the current location of the user.
+    
+        This function locates the span element that contains the user's location on the webpage.
+    
+        Returns:
+            str: The user's location.
+            None: If unable to locate the user's location due to a timeout, missing element, or unexpected error.
+        """
         try:
+            # Locate the span element that contains the user's location
             users_location = self.wait.until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="profile-content"]/div/div[2]/div/div/main/section[1]/div[2]/div[2]/div[2]/span[1]'))
-            )
-            users_location = users_location.text
+            ).text
+
             return users_location
 
+        except TimeoutException:
+            # Log and handle a timeout error
+            logging.error("Timeout error occurred while attempting to find the HTML element containing the user's location.")
+            return None
+
         except NoSuchElementException as e:
-            print(f"Unable to find the users location.\n{e}")
+            # Log and handle NoSuchElement exception
+            logging.error("Could not locate the HTML element containing the user's name.")
             return None
         
         except Exception as e:
-            print(f"There was an error trying to find the users location.\n{e}")
+            # Log and handle unexpected errors
+            logging.error(f"An unexpected error occurred while trying to find the user's location. {str(e)}")
             return None
         
-    def update_location_in_db(self, users_location, profile_url):
-        # Checks if the location was found in the scraping
-        if users_location is not None:
-            # SQL query that updates the database
-            self.crsr.execute(f"UPDATE users SET location_of_user = '{users_location}' WHERE profile_url = '{profile_url}';")
-            # Commit the transaction
-            self.conn.commit()
+    def update_location_in_db(self, users_location: str, profile_url: str) -> None:
+        """
+        Update the location of a user in the database.
+    
+        Args:
+            users_location (str): The new location of the user.
+            profile_url (str): The profile URL of the user.
+    
+        Returns:
+            None
+        """
 
-        else:
-            logging.INFO("The location was not found")
-            pass
+        # Define query and params arguments
+        query = "UPDATE users SET location_of_user = '%s' WHERE profile_url = '%s';"
+        params=(users_location, profile_url)
+    
+        # Update the database to include the location of the user (locate using the profile url)
+        self.database_manager.execute_query(query=query, params=params)
+
 
     def connect_with_user(self):
         try:
+            # Locate the connect button on the user's main screen
             connect_button = self.wait.until(
                 EC.element_to_be_clickable((By.XPATH, '//button[@id="ember62"]'))
             )
 
+            # Click the connect button
             connect_button.click()
 
-            try:
-                send_without_note_button = self.wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//button[@id="ember191"]'))
-                )
-                send_without_note_button.click()
+            # Locate the button that allows you to connect without sending a note
+            send_without_note_button = self.wait.until(
+                EC.element_to_be_clickable((By.XPATH, '//button[@id="ember191"]'))
+            )
 
-            except NoSuchElementException as e:
-                print(f"Could not find the send without a message button\n{e}")
-            
+            # Click the "Send without note" button to connect with the user
+            send_without_note_button.click()
 
         except NoSuchElementException as e:
             print(f"Connect button was not found.\n{e}")

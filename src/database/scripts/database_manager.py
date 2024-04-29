@@ -1,4 +1,4 @@
-from connect_to_db import connect
+from .connect_to_db import connect
 from typing import Union, Optional, Tuple, List
 import logging
 import time
@@ -7,6 +7,8 @@ import psycopg2
 
 class DatabaseManager:
     def __init__(self):
+        # Initialize connction to None
+        self.conn = None
         # Establish connection with database
         self.conn = self.check_database_connection()
         
@@ -86,7 +88,7 @@ class DatabaseManager:
             # Execute a SELECT query with parameters
             >>> fetch = 'ALL'
             >>> query = "SELECT * FROM table WHERE column = %s"
-            >>> params = ("value",)  # Parameters must be tuples
+            >>> params = ("value",)  # Parameter(s) must be a tuple
             >>> db_manager.execute_query(fetch, query, params)
 
             # Execute a DELETE query without parameters and without fetching results
@@ -111,13 +113,20 @@ class DatabaseManager:
                 else:
                     result = None
 
+                # Commit the transaction
+                self.conn.commit()
+
                 return result
             
         except psycopg2.Error as pg_error:
             # Log any errors specific to psycopg2
             logging.critical(f"Error executing query: {query} with parameters: {params}. psycopg2 Error: {pg_error}")
+            # Roll back the transaction
+            self.conn.rollback()
             raise
         except Exception as error:
             # Log any other general errors
             logging.critical(f"Error executing query: {query} with parameters: {params}. General Error: {error}")
+            # Roll back the transaction
+            self.conn.rollback()
             raise

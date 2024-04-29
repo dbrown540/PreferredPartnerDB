@@ -73,8 +73,6 @@ INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bo
 INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone, status_)
         VALUES ('Francis', 'Wolf', 'francis_wolf91966', 'francis_wolf91966@proton.me', 'iqTza8fLOYBe', '3392731615', 'TBD');
 
-INSERT INTO users (profile_url)
-        VALUES ('https://www.linkedin.com/in/douglas-brown-6850a052/');
 
 -- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//src//database//initialize.sql';
 -- \i 'C:/Users/Daniel.Brown/Desktop/PreferredPartnerDB/src/database/initialize.sql'

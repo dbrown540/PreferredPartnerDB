@@ -1,4 +1,4 @@
-2024-04-26 20:55:10,636 - INFO - 
-Service path: chromedriver-win64/chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000002B12C0A5340>
-2024-04-26 20:55:10,978 - INFO - Using existing database connection.
+2024-04-27 11:17:47,167 - INFO - 
+Service path: chromedriver-win64//chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001EB94A477D0>
+2024-04-27 11:17:47,294 - INFO - Database connection re-established.
