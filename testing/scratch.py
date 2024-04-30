@@ -1,2 +1,4 @@
-newset = {'Government', 'Health Policy', 'Public Health Emergency Preparedness', 'SOX Compliancy', 'Public Health', 'IT Controls', 'Policy', 'Management Consulting', 'MEP', 'Public Policy', 'Pandemic Influenza', 'Emergency Management', 'Policy Analysis', 'Bioterrorism', 'Information Security Management', 'Information Security', 'Data Analysis', 'Enterprise Risk Management', 'SOX 404', 'CISSP'}
-print(len(newset))
+list1 = ["hi", "my", "name", "is", "danny", "brown"]
+list_enumerated = list(enumerate(list1))
+
+print(list_enumerated)
