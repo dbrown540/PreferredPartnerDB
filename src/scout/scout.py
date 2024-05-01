@@ -1,118 +1,164 @@
-from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from ..database.scripts.database_manager import DatabaseManager
 import logging
 import random
 import time
-import csv
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import (
+    TimeoutException, NoSuchElementException, ElementNotInteractableException
+)
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.keys import Keys
+from ..bots.scripts.linkedinbot import BaseManager  #pylint: disable=relative-beyond-top-level
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
 
-class Scout:
-    def __init__(self):
-        self.driver_path = 'chromedriver-win64//chromedriver.exe'
-        self.max_retries = 3
-        self.retry_delay_seconds = 5
-        self.driver = self.initialize_webdriver()
-        self.last_known_names_index = 0
-        self.last_known_links_index = 0
-        # Create a database manager object
-        self.database_manager = DatabaseManager()
-        
+class GoogleSearcher(BaseManager):
+    """
+    GoogleSearcher provides functionality to interact with the Google search engine.
 
-    def initialize_webdriver(self):
-        """Initializes chrome webdriver object"""
-        try:
-            options = Options()
-            service = Service(self.driver_path)
-            driver = WebDriver(service=service, options=options)
-            logging.info(f"\nService path: {self.driver_path}\nOptions: {options}")
-            return driver
-        except Exception as e:
-            logging.critical(f'Failed to initialize webdriver: {e}')
-            raise
+    This class encapsulates methods for navigating to the Google homepage,
+    locating the search box on the webpage, and performing a Google search query
+    for LinkedIn profiles containing specific phrases.
 
-    def search_linkedin_profiles(self, attempt=1):
-        """Searches for LinkedIn profiles related to CMS on Google."""
+    Attributes:
+        Inherits attributes and methods from BaseManager class.
+
+    Methods:
+        navigate_to_google():
+            Navigates to the Google homepage.
+        locate_google_search_box() -> WebElement:
+            Locates the Google search box on the webpage.
+        search_google_query(search_box: WebElement):
+            Searches a Google query using the provided search box element.
+    """
+    def navigate_to_google(self) -> None:
+        """Navigates to the Google homepage."""
+        self.driver.get("https://www.google.com")
+
+    def locate_google_search_box(self) -> WebElement:
+        """
+        Locates the Google search box on the webpage.
+    
+        Returns:
+            WebElement: The located Google search box element.
+    
+        Raises:
+            NoSuchElementException: If the Google search box could not be found.
+            TimeoutException: If a timeout occurred while looking for the Google search box.
+        """
         try:
-            self.driver.get('https://www.google.com')  # Corrected URL
-            wait = WebDriverWait(self.driver, 3)
-            search_box = wait.until(EC.element_to_be_clickable((By.NAME, "q")))
-            search_box.send_keys('"marketplace license software management" OR "MLSM" "Centers for Medicare & Medicaid Services" site:linkedin.com/in')
+            search_box = self.wait.until(
+                EC.element_to_be_clickable((By.NAME, "q"))
+            )
+            return search_box
+
+        except NoSuchElementException:
+            logging.critical(
+                "Google Search box could not be found.", exc_info=True
+            )
+
+        except TimeoutException:
+            logging.critical(
+                "A timeout occurred while looking for the Google search box.", exc_info=True
+            )
+
+        return None
+
+    def search_google_query(self, search_box: WebElement) -> None:
+        """
+        Searches a Google query using the provided search box element.
+    
+        Args:
+            search_box (WebElement): The search box element to type the query into.
+    
+        Returns:
+            None
+        """
+        try:
+            # Search query
+            search_query = (
+                'site:linkedin.com/in "Centers for Medicare and Medicaid Services" "Data Analyst"'
+            )
+
+            # Type search query into the search box
+            search_box.send_keys(search_query)
+
+            # Press enter to search
             search_box.send_keys(Keys.ENTER)
-        except TimeoutException as e:
-            if attempt <= self.max_retries:
-                self.handle_timeout(e, attempt)
-            else:
-                logging.critical("Maximum retries reached. Unable to navigate to Google: %s", e)
-        except Exception as e:
-            self.handle_other_exception(e)
 
-    def handle_timeout(self, e, attempt):
-        """Handles TimeoutExceptions during navigation."""
-        self.driver.quit()
-        logging.error("Timeout has occurred - Retrying (Attempt %d): %s", attempt, e)
-        time.sleep(self.retry_delay_seconds)
-        self.driver = self.initialize_webdriver()  # Reinitialize webdriver
-        self.search_linkedin_profiles(attempt=attempt+1)  # Retry with incremented attempt count
+        except ElementNotInteractableException:
+            logging.critical(
+                "Search box is not interactable.", exc_info=True
+            )
 
-    def handle_other_exception(self, e):
-        """Handles other exceptions during navigation."""
-        logging.error('An error has occurred: %s', e)
-            
+class LinkExtractor(BaseManager):
     def locate_links(self, attempt=1) -> list:
         """Finds the LinkedIn profile links and returns a list"""
         parsed_links = []
         logging.info('self.last_known_index (links)= %d', self.last_known_links_index)
 
-        try:
-            # Wait for the links to load
-            links_wait = WebDriverWait(self.driver, 10)
-            links_wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, 'a')))
-            
-            # Collect all links
-            links = self.driver.find_elements(By.TAG_NAME, 'a')
+        # Wait for the search results to load
+        self.wait_for_links_to_load()
+        
+        # Collect all possible links
+        links = self.collect_links()
 
-            # Start scraping from the last known index
-            new_elements = links[self.last_known_links_index:]
+        # Parse the links making sure they are all profile links
+        parsed_links = self.parse_links(links)
 
-            # Only keep the LinkedIn links
-            parsed_links = [link.get_attribute('href') for link in new_elements if link.get_attribute('href') is not None and 'www.linkedin.com/in' in link.get_attribute('href')]
-
-            # Update the last known index
-            self.last_known_links_index = len(links)
-
-
-        except Exception as e:
-            if attempt <= self.max_retries:
-                logging.warning('Link elements not found. Retrying in %d seconds. (Attempt %d/%d)', self.retry_delay_seconds, attempt, self.max_retries)
-                return self.locate_links(attempt + 1)
-            else:
-                logging.critical("Maximum retries. Check class name or try again later")
+        # Get the last known index
+        self.update_last_known_index(len(links))
 
         return parsed_links
-    
+
+    def wait_for_links_to_load(self):
+        """Waits for the links to load."""
+        self.wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, 'a')))
+
+    def collect_links(self) -> list:
+        """Collects all links."""
+        return self.driver.find_elements(By.TAG_NAME, 'a')
+
+    def parse_links(self, links: list) -> list:
+        """Parses LinkedIn profile links."""
+        return [
+            link.get_attribute('href') 
+            for link in links 
+            if link.get_attribute('href') is not None 
+            and 'www.linkedin.com/in' in link.get_attribute('href')
+        ]
+
+    def update_last_known_index(self, length: int) -> None:
+        """Updates the last known index."""
+        self.last_known_links_index = length
+
+class Scroller(BaseManager):
     def scroll(self):
         """Scrolls down to load more search results"""
         time.sleep(random.uniform(3, 5))
+        self._scroll_to_bottom()
+        self._click_more_results_button()
+
+    def _scroll_to_bottom(self):
+        """Scrolls the webpage to the bottom."""
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+    def _click_more_results_button(self):
+        """Clicks the 'More Results' button if found."""
         try:
-            more_results_button = WebDriverWait(self.driver, random.uniform(5, 7)).until(
+            more_results_button = self.wait.until(
                 EC.presence_of_element_located(
                     (By.XPATH, '//*[@id="botstuff"]/div/div[3]/div[4]/a[1]/h3/div/span[2]')
                 )
             )
             more_results_button.click()
             print('"More Results" button found and clicked')
-        except Exception as e:
-            print('No "More Results" button found')
+        except TimeoutException:
+            logging.warning('Timeout waiting for "More Results" button.')
+        except NoSuchElementException as e:
+            logging.error('Error clicking "More Results" button: %s', e)
+
 
     def scroll_and_fetch_data(self, final_user_count: int):
         """Scrolls down to load more search results and fetches links and names"""

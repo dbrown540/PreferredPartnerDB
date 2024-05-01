@@ -80,7 +80,7 @@ class WebDriverManager:
             Uses JavaScript execute to scroll down the page
     """
 
-    def __init__(self, bot_id: int):
+    def __init__(self, bot_id: int = None):
         self.bot_id = bot_id
         self.driver_path = 'chromedriver-win64/chromedriver.exe'
         self.driver = self.initialize_webdriver()

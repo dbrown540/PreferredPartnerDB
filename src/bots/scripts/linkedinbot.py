@@ -1091,7 +1091,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
 
         return company, job_title
 
-    def _scrape_and_store_experiences_from_original_page(self) -> dict:
+    def _scrape_and_store_experiences_from_original_page(self, user_id) -> dict:
         """
         Locates and extracts work experiences from the original page.
 
@@ -1108,11 +1108,12 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         work_experiences_dict = self._extract_work_experiences(sibling_div)
 
         # Store the work experineces dictionary into the database
-        self._update_work_experience_in_database(work_experiences_dict)
+        self._update_work_experience_in_database(work_experiences_dict, user_id=user_id)
 
     # Shared methods
     def _update_work_experience_in_database(
-            self, work_experience_dictionary: Dict[str, str,]) -> None:
+            self, work_experience_dictionary: Dict[str, str,],
+            user_id) -> None:
         """
         Update the work experience information in the database.
 
@@ -1125,7 +1126,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
             None
         """
         self.database_manager.update_work_experience(
-            work_experience=work_experience_dictionary, user_id=self.get_user_id())
+            work_experience=work_experience_dictionary, user_id=user_id)
 
     def experiences_wrapper(self, user_id):
         """
@@ -1158,7 +1159,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
 
         else:
             # Continue with original page logic
-            self._scrape_and_store_experiences_from_original_page()
+            self._scrape_and_store_experiences_from_original_page(user_id=user_id)
 
 class SkillsManager(BaseManager):
     """
@@ -1533,10 +1534,10 @@ class LinkedInBot(BaseManager):
         for profile_url in profile_urls:
             # Visit the user's profile
             self.profile_interactor.visit_user(profile_url=profile_url)
-            
+
             # Run the main page wrapper
             self.main_page_scraper.main_user_page_scraper_wrapper(profile_url=profile_url)
-            
+
             # Run the experiences wrapper
             self.experience_manager.experiences_wrapper(self.get_user_id(profile_url=profile_url))
 
