@@ -1415,6 +1415,38 @@ class SkillsManager(BaseManager):
 # pylint: disable=too-many-arguments, too-few-public-methods
 
 class LinkedInBot(BaseManager):
+    """
+    A class representing a LinkedIn bot for automating interactions on the LinkedIn platform.
+
+    This class inherits from the BaseManager class and provides functionality to manage 
+    WebDriver and database interactions, handle LinkedIn sign-in, scrape user profiles, 
+    and perform various automation tasks on LinkedIn.
+
+    Attributes:
+        database_manager (DatabaseManager): 
+            An instance of DatabaseManager for database interactions.
+        bot_id (int): 
+            The unique identifier for the LinkedIn bot.
+        sign_in_manager (LinkedInSignInManager): 
+            An instance of LinkedInSignInManager for handling sign-in operations.
+        profile_interactor (UserProfileInteractor): 
+            An instance of UserProfileInteractor for interacting with user profiles.
+        main_page_scraper (MainUserPageScraper): 
+            An instance of MainUserPageScraper for scraping data from main user pages.
+        experience_manager (ExperienceManager): 
+            An instance of ExperienceManager for managing user experiences.
+        skills_manager (SkillsManager): 
+            An instance of SkillsManager for managing user skills.
+
+    Methods:
+        get_total_number_of_bot_ids() -> List[int]: 
+            Get the total number of bot IDs from the database.
+        get_user_id(profile_url: str) -> int: 
+            Retrieve the user ID for a given profile URL.
+        scrape_linkedin_page(): 
+            Master wrapper for the LinkedIn scraping processes.
+            Handles login, retrieves user profiles, and performs scraping tasks.
+    """
     database_manager = DatabaseManager()
 
     def __init__(self, bot_id):
@@ -1507,3 +1539,6 @@ class LinkedInBot(BaseManager):
             
             # Run the experiences wrapper
             self.experience_manager.experiences_wrapper(self.get_user_id(profile_url=profile_url))
+
+            # Run the skills wrapper
+            self.skills_manager.skills_wrapper(self.get_user_id(profile_url=profile_url))
