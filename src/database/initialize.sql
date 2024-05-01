@@ -5,7 +5,7 @@ CREATE TABLE users(
     users_name VARCHAR(255),
     email VARCHAR(100),
     location_of_user VARCHAR(255),
-    profile_url TEXT NOT NULL
+    profile_url TEXT NOT NULL UNIQUE
 );
 
 -- Table: education
@@ -68,11 +68,6 @@ CREATE TABLE proxies(
     proxy_id SERIAL PRIMARY KEY,
     proxy VARCHAR(100)
 );
-INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone, status_)
-        VALUES('Daniel', 'Brown', 'dbrown6', 'dbrown6@umbc.edu', 'Sp@ceghost12', '2403445937', 'OPERATIONAL');
-INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email, bot_email_password, phone, status_)
-        VALUES ('Francis', 'Wolf', 'francis_wolf91966', 'francis_wolf91966@proton.me', 'iqTza8fLOYBe', '3392731615', 'TBD');
-
 
 -- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//src//database//initialize.sql';
 -- \i 'C:/Users/Daniel.Brown/Desktop/PreferredPartnerDB/src/database/initialize.sql'

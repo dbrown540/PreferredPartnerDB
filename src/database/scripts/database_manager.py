@@ -14,7 +14,8 @@ from typing import Union, Optional, Tuple, List, Dict
 import psycopg2
 from .connect_to_db import connect
 
-
+# Configure the logging system
+logging.basicConfig(filename="log.log", level=logging.INFO)
 
 class DatabaseManager:
     """
@@ -274,3 +275,46 @@ class DatabaseManager:
 
         # Update the database to include the location of the user (locate using the profile url)
         self.execute_query(query=query, params=params)
+
+    def update_profile_urls_from_scout(self, profile_urls: List[str]) -> None:
+        """
+        Updates the profile URLs in the database from the provided list of URLs.
+        
+        Args:
+            profile_urls (List[str]): A list of profile URLs to update in the database.
+        
+        Returns:
+            None
+        
+        Raises:
+            IntegrityError: If a profile URL already exists in the database, a warning is logged and the function moves on to the next URL.
+        """
+
+        # Execute a query that updates the database with profile urls
+
+        for profile_url in profile_urls:
+            # Set query arguments
+            query = (
+                "INSERT INTO users (profile_url) "
+                "VALUES (%s)"
+            )
+            params = (profile_url,)
+
+            try:
+                # Insert the profile URL
+                self.execute_query(query=query, params=params)
+                logging.info(
+                    "Successfully added user link to the database.\n"
+                    "Link contents = %s", profile_url
+                )
+            except psycopg2.IntegrityError as e:
+                # Check if it's a unique constraint violation
+                if 'duplicate key value' in str(e):
+                    logging.warning(
+                        "Link (%s) already in database", profile_url
+                    )
+                else:
+                    # Handle other integrity errors
+                    logging.error("Integrity error: %s", e)
+                # Continue to the next iteration of the loop
+                continue

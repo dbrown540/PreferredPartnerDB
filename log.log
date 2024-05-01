@@ -9,3 +9,110 @@ Options: <selenium.webdriver.chrome.options.Options object at 0x00000280744A51F0
 Options: <selenium.webdriver.chrome.options.Options object at 0x00000280744A5760>
 2024-04-30 20:17:12,159 - INFO - Using existing database connection.
 2024-04-30 20:17:12,159 - INFO - Executed query: SELECT profile_url FROM users WHERE user_id BETWEEN %s AND %s ORDER BY user_id; with parameters: (21, 40)
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001CE8A4612B0>
+INFO:root:Database connection re-established.
+INFO:root:self.last_known_index (links)= 0
+WARNING:root:Timeout waiting for "More Results" button.
+INFO:root:self.last_known_index (links)= 8
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/chava-sheffield-bb859810',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/chava-sheffield-bb859810) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/chava-sheffield-bb859810) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/dan-engle-30022644',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/dan-engle-30022644) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/dan-engle-30022644) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/mokube-ewane-73094b12a',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/mokube-ewane-73094b12a) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/mokube-ewane-73094b12a) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/jill-katz-8866b025',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/jill-katz-8866b025) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/jill-katz-8866b025) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/eric-rowe-2040781b7',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/eric-rowe-2040781b7) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/eric-rowe-2040781b7) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/tom-shaffer-5b256382',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/tom-shaffer-5b256382) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/tom-shaffer-5b256382) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/teddy-pitaktigul-8a3ba255',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/teddy-pitaktigul-8a3ba255) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/teddy-pitaktigul-8a3ba255) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/kendra-sykes-6609268b',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/kendra-sykes-6609268b) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/kendra-sykes-6609268b) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/hima-87923a204',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/hima-87923a204) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/hima-87923a204) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/chae-min-choe-a064456a',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/chae-min-choe-a064456a) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/chae-min-choe-a064456a) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/rob-ludwig-94a5344',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/rob-ludwig-94a5344) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/rob-ludwig-94a5344) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/janet-jackson-32a24a152',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/janet-jackson-32a24a152) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/janet-jackson-32a24a152) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/thomas-shaffer-91b6a217',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/thomas-shaffer-91b6a217) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/thomas-shaffer-91b6a217) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/tom-romano-056b8426',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/tom-romano-056b8426) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/tom-romano-056b8426) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/tracylclements',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/tracylclements) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/tracylclements) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/jennifer-king-b93470162',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/jennifer-king-b93470162) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/jennifer-king-b93470162) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/kathy-straus-41a03920',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/kathy-straus-41a03920) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/kathy-straus-41a03920) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/nancy-sonnenfeld-466370b0',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/nancy-sonnenfeld-466370b0) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/nancy-sonnenfeld-466370b0) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/alisha-williams-2b915816',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/alisha-williams-2b915816) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/alisha-williams-2b915816) already in database
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/markanewsom',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
+DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/markanewsom) already exists.
+
+WARNING:root:Link (https://www.linkedin.com/in/markanewsom) already in database

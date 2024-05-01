@@ -1,13 +1,16 @@
-from src.scout.scout import Scout
+from src.bots.scripts.scout import Scout
 from src.bots.scripts.bot_credentials_manager import BotCredentialsManager
 from src.bots.scripts.linkedinbot import *
 from src.database.scripts.database_manager import DatabaseManager
 import time
 
 def main():
+    # Scout
+    scout = Scout()
+    scout.execute(user_count=20)
 
-    
-    
+
+    # LinkedIn Bot
     usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
     
     for bot_id in usable_bot_id_list:
