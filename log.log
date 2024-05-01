@@ -116,3 +116,14 @@ CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s)
 DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/markanewsom) already exists.
 
 WARNING:root:Link (https://www.linkedin.com/in/markanewsom) already in database
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.
+INFO:root:Database connection re-established.

@@ -20,8 +20,9 @@ Date:
     May 1
 
 """
-from src.bots.scripts.scout import Scout
-from src.bots.scripts.linkedinbot import LinkedInBot
+# from src.bots.scripts.scout import Scout
+from src.bots.bot_credentials_manager import BotCredentialsManager
+# from src.bots.scripts.linkedinbot import LinkedInBot
 
 def main():
     """
@@ -31,17 +32,21 @@ def main():
     It also retrieves a list of usable bot IDs from LinkedInBot and iterates 
     through each ID to create a LinkedInBot instance and scrape a LinkedIn page.
     """
-    # Scout
+    '''# Scout
     scout = Scout()
-    scout.execute(user_count=20)
+    scout.execute(user_count=20)'''
+
+    # Bot Credential Manager
+    bot_credentials_manager = BotCredentialsManager(filepath="_")
+    bot_credentials_manager.create_email_headers()
 
 
-    # LinkedIn Bot
+    '''# LinkedIn Bot
     usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
 
     for bot_id in usable_bot_id_list:
         bot_instance = LinkedInBot(bot_id=bot_id)
-        bot_instance.scrape_linkedin_page()
+        bot_instance.scrape_linkedin_page()'''
 
 if __name__ == '__main__':
     main()

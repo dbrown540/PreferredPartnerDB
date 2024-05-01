@@ -2,7 +2,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from ...database.scripts.connect_to_db import connect
-from .bot_credentials_manager import BotCredentialsManager
+from ....utils.config.bot_credentials_manager import BotCredentialsManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
