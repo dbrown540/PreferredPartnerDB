@@ -332,4 +332,3 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
         parsed_links = parsed_links[:user_count]
 
         self.database_manager.update_profile_urls_from_scout(parsed_links)
-
