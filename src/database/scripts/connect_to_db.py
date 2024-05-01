@@ -35,7 +35,10 @@ Version:
 
 # pylint: disable=E0401
 import psycopg2
+import logging
 from src.database.scripts.config.config import config
+
+logging.basicConfig(filename="log.log", level=logging.INFO)
 
 def connect():
     """
@@ -47,10 +50,12 @@ def connect():
     conn = None
     try:
         params = config()
-        print('Connecting to PostgreSQL database ...')
+        logging.info('Connecting to PostgreSQL database ...')
         conn = psycopg2.connect(**params)
-    except (psycopg2.Error, psycopg2.DatabaseError) as error:
-        print(error)
+    except (psycopg2.Error, psycopg2.DatabaseError):
+        logging.critical(
+            "A critical errored occurred.", exc_info=True
+        )
         conn = None
 
     return conn

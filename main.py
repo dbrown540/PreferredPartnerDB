@@ -1,7 +1,7 @@
 """
 Script for executing web scraping tasks using Scout and LinkedInBot.
 
-This script initiates instances of Scout and LinkedInBot classes to perform web scraping tasks.
+This script initiates instances of Scout, BotCredentialsManager, and LinkedInBot classes to perform web scraping tasks.
 It first utilizes the Scout class to search Google, extract links, 
 and update profile URLs in the database.
 Then, it utilizes the LinkedInBot class to scrape LinkedIn pages for data.
@@ -20,7 +20,7 @@ Date:
     May 1, 2024
 
 """
-# from src.bots.scripts.scout import Scout
+from src.bots.scripts.scout import Scout
 from src.bots.bot_credentials_manager import BotCredentialsManager
 # from src.bots.scripts.linkedinbot import LinkedInBot
 
@@ -32,9 +32,9 @@ def main():
     It also retrieves a list of usable bot IDs from LinkedInBot and iterates 
     through each ID to create a LinkedInBot instance and scrape a LinkedIn page.
     """
-    '''# Scout
+    # Scout
     scout = Scout()
-    scout.execute(user_count=20)'''
+    scout.execute(run=False, user_count=20)
 
     # Bot Credential Manager
     bot_credentials_manager = BotCredentialsManager()

@@ -75,8 +75,5 @@ def config(filename="database.ini", section="postgresql"):
             f"Section '{section}' not found in '{filename}' file."
         )
 
-    # Print the resulting dictionary (for debugging purposes)
-    print(f"This is the 'db' dictionary: {db}")
-
     # Return the dictionary containing database configuration
     return db

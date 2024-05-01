@@ -297,38 +297,43 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
             database_manager=self.database_manager
         )
 
-    def execute(self, user_count=20):
+    def execute(self, run: bool, user_count=20):
         """
         Optional wrapper. If the code doesn't become complex, 
         then I will move this to main
         """
 
-        # Navigate to Google
-        self.google_searcher.navigate_to_google()
+        if run:
 
-        # Locate the search box
-        google_search_box_element = self.google_searcher.locate_google_search_box()
+            # Navigate to Google
+            self.google_searcher.navigate_to_google()
 
-        # Type search into the search box element
-        self.google_searcher.search_google_query(google_search_box_element)
+            # Locate the search box
+            google_search_box_element = self.google_searcher.locate_google_search_box()
 
-        # Extract links
-        parsed_links = self.link_extractor.link_extractor_wrapper()
+            # Type search into the search box element
+            self.google_searcher.search_google_query(google_search_box_element)
 
-        while len(parsed_links) < user_count:
+            # Extract links
+            parsed_links = self.link_extractor.link_extractor_wrapper()
 
-            # Scroll to the bottom and look for a more results button
-            self.scroller.scroll()
+            while len(parsed_links) < user_count:
 
-            # Run the link extractor
-            new_links = self.link_extractor.link_extractor_wrapper()
+                # Scroll to the bottom and look for a more results button
+                self.scroller.scroll()
 
-            parsed_links.extend(new_links)
+                # Run the link extractor
+                new_links = self.link_extractor.link_extractor_wrapper()
 
-            if not new_links:
-                break
+                parsed_links.extend(new_links)
 
-        # Trim the list to match the desired user count (if it exceeds it)
-        parsed_links = parsed_links[:user_count]
+                if not new_links:
+                    break
 
-        self.database_manager.update_profile_urls_from_scout(parsed_links)
+            # Trim the list to match the desired user count (if it exceeds it)
+            parsed_links = parsed_links[:user_count]
+
+            self.database_manager.update_profile_urls_from_scout(parsed_links)
+
+        else:
+            print("Skipping Scout. If you want to run Scout, change the value of run to True")
