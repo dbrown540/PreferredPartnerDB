@@ -17,7 +17,7 @@ Author:
     Danny Brown
 
 Date:
-    May 1
+    May 1, 2024
 
 """
 # from src.bots.scripts.scout import Scout
@@ -37,8 +37,9 @@ def main():
     scout.execute(user_count=20)'''
 
     # Bot Credential Manager
-    bot_credentials_manager = BotCredentialsManager(filepath="_")
-    bot_credentials_manager.create_email_headers()
+    bot_credentials_manager = BotCredentialsManager()
+    bot_credentials_manager.bot_credentials_wrapper()
+    
 
 
     '''# LinkedIn Bot

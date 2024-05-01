@@ -1,129 +1,113 @@
-2024-04-30 20:17:07,228 - INFO - Database connection re-established.
-2024-04-30 20:17:07,228 - INFO - Using existing database connection.
-2024-04-30 20:17:07,232 - INFO - Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
-2024-04-30 20:17:08,675 - INFO - Service path: chromedriver-win64/chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x00000280744A51F0>
-2024-04-30 20:17:08,676 - INFO - Using existing database connection.
-2024-04-30 20:17:08,684 - INFO - Executed query: SELECT profile_url FROM users WHERE user_id BETWEEN %s AND %s ORDER BY user_id; with parameters: (1, 20)
-2024-04-30 20:17:10,004 - INFO - Service path: chromedriver-win64/chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x00000280744A5760>
-2024-04-30 20:17:12,159 - INFO - Using existing database connection.
-2024-04-30 20:17:12,159 - INFO - Executed query: SELECT profile_url FROM users WHERE user_id BETWEEN %s AND %s ORDER BY user_id; with parameters: (21, 40)
-INFO:root:Database connection re-established.
-INFO:root:Service path: chromedriver-win64/chromedriver.exe
-Options: <selenium.webdriver.chrome.options.Options object at 0x000001CE8A4612B0>
-INFO:root:Database connection re-established.
-INFO:root:self.last_known_index (links)= 0
-WARNING:root:Timeout waiting for "More Results" button.
-INFO:root:self.last_known_index (links)= 8
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/chava-sheffield-bb859810',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/chava-sheffield-bb859810) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/chava-sheffield-bb859810) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/dan-engle-30022644',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/dan-engle-30022644) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/dan-engle-30022644) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/mokube-ewane-73094b12a',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/mokube-ewane-73094b12a) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/mokube-ewane-73094b12a) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/jill-katz-8866b025',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/jill-katz-8866b025) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/jill-katz-8866b025) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/eric-rowe-2040781b7',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/eric-rowe-2040781b7) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/eric-rowe-2040781b7) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/tom-shaffer-5b256382',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/tom-shaffer-5b256382) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/tom-shaffer-5b256382) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/teddy-pitaktigul-8a3ba255',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/teddy-pitaktigul-8a3ba255) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/teddy-pitaktigul-8a3ba255) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/kendra-sykes-6609268b',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/kendra-sykes-6609268b) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/kendra-sykes-6609268b) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/hima-87923a204',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/hima-87923a204) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/hima-87923a204) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/chae-min-choe-a064456a',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/chae-min-choe-a064456a) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/chae-min-choe-a064456a) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/rob-ludwig-94a5344',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/rob-ludwig-94a5344) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/rob-ludwig-94a5344) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/janet-jackson-32a24a152',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/janet-jackson-32a24a152) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/janet-jackson-32a24a152) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/thomas-shaffer-91b6a217',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/thomas-shaffer-91b6a217) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/thomas-shaffer-91b6a217) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/tom-romano-056b8426',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/tom-romano-056b8426) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/tom-romano-056b8426) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/tracylclements',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/tracylclements) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/tracylclements) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/jennifer-king-b93470162',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/jennifer-king-b93470162) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/jennifer-king-b93470162) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/kathy-straus-41a03920',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/kathy-straus-41a03920) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/kathy-straus-41a03920) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/nancy-sonnenfeld-466370b0',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/nancy-sonnenfeld-466370b0) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/nancy-sonnenfeld-466370b0) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/alisha-williams-2b915816',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/alisha-williams-2b915816) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/alisha-williams-2b915816) already in database
-INFO:root:Using existing database connection.
-CRITICAL:root:Error executing query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/markanewsom',). psycopg2 Error: duplicate key value violates unique constraint "users_profile_url_key"
-DETAIL:  Key (profile_url)=(https://www.linkedin.com/in/markanewsom) already exists.
-
-WARNING:root:Link (https://www.linkedin.com/in/markanewsom) already in database
 INFO:root:Database connection re-established.
 INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT EXISTS (SELECT 1 FROM bots) with parameters: None
+INFO:root:Bot data already exists in database.
 INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT EXISTS (SELECT 1 FROM bots) with parameters: None
+INFO:root:Bot data already exists in database. Will not create new credentials.
 INFO:root:Database connection re-established.
-INFO:root:Database connection re-established.
-INFO:root:Database connection re-established.
-INFO:root:Database connection re-established.
-INFO:root:Database connection re-established.
-INFO:root:Database connection re-established.
-INFO:root:Database connection re-established.
-INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT EXISTS (SELECT 1 FROM bots) with parameters: None
+INFO:root:Successfully generated first_names, last_names, and email_headers for the bots
+INFO:root:Successfully generate passwords for the bots
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Natalie', 'Williamson', 'natalie_williamson', '5t6NYC4iG7Tl')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Francis', 'Wolf', 'francis_wolf', 'Q6YnijjHRIW9')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Angelina', 'Hahn', 'angelina_hahn', 'gwtlSyTR4MZg')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Ida', 'Hall', 'ida_hall', 'UgQR1JXgyukL')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Juanita', 'Minor', 'juanita_minor', 'W99jGGVvj1l4')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Anita', 'Lucas', 'anita_lucas', 'hY2TuajGU2mL')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Roger', 'Morgan', 'roger_morgan', 'emQVPpyDoRNS')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Albert', 'Chapman', 'albert_chapman', 'W6jCgCquBdv6')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Maurice', 'Thompson', 'maurice_thompson', 'xr8ZltOPDeoU')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Raul', 'Ho', 'raul_ho', 'muTZihGqu4t1')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Clark', 'Berger', 'clark_berger', 'OxadL7tD7VKE')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Jill', 'Hanna', 'jill_hanna', 'neGsp1BFsu2t')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Marcy', 'Hubbard', 'marcy_hubbard', 'zfjxRtRyD5FK')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Mark', 'Hines', 'mark_hines', 'dBsQ425PlizF')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Pat', 'Lewis', 'pat_lewis', 'waJbzjhfrkqR')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Tami', 'Cohen', 'tami_cohen', 'PArDk3aAbz7c')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Bonnie', 'Brown', 'bonnie_brown', 'KfGXDX52TBEQ')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Wade', 'Parks', 'wade_parks', 'dWDhJWQa37HA')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Rodolfo', 'Davenport', 'rodolfo_davenport', 'toItYqZV7ub1')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Kenneth', 'Valdez', 'kenneth_valdez', '7nVt98Cf2Wyt')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Bernadette', 'Hamilton', 'bernadette_hamilton', 'UTcdqLhs0pLg')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Terry', 'Conway', 'terry_conway', 'jqc9H1yRrfEW')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Ted', 'FitzGerald', 'ted_fitzgerald', 'puR3PrbTBYw7')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Kathy', 'Roth', 'kathy_roth', 'snDrgxJFAeoc')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Marissa', 'Crane', 'marissa_crane', 'EvXuakmPkVs8')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Marian', 'Daniel', 'marian_daniel', 'dTmLIKniO7wR')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Jeremiah', 'Reese', 'jeremiah_reese', 'OfGZveQYc1X9')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Tricia', 'Cox', 'tricia_cox', 'A7Gj2iCUY465')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Katie', 'Sellers', 'katie_sellers', 'TFV8aMhFlfYw')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Geraldine', 'Gifford', 'geraldine_gifford', 'S2F96DEMoVUD')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Lonnie', 'Richards', 'lonnie_richards', 'HYF6T2aFEJe3')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Viola', 'Berger', 'viola_berger', 'dmhjrWCRylLa')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Alejandro', 'Grace', 'alejandro_grace', 'QzySPkn91X9r')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Shawna', 'Koch', 'shawna_koch', '2pLu7zNArIRv')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Chris', 'Frey', 'chris_frey', 'B6SFUAPZCJN6')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Lyle', 'Hogan', 'lyle_hogan', 'zmYdIl5MNG8b')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Michele', 'Bowman', 'michele_bowman', 'WigLRtZb3wk4')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Debora', 'Perez', 'debora_perez', 'xWPcT0L0bFbX')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Victoria', 'Adams', 'victoria_adams', 'Exp9qIXw7m63')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Delia', 'Potts', 'delia_potts', 'nMxYsw0efakW')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Jimmie', 'Callahan', 'jimmie_callahan', 'pbQCHQnf4eE5')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Susan', 'Mack', 'susan_mack', '64wAbNoL5ijI')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Brian', 'English', 'brian_english', 'ZNhOoYqsJBcw')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Tyler', 'Proctor', 'tyler_proctor', 'Wf2iXj4l8jV0')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Bret', 'Thomas', 'bret_thomas', 'xkvhWKO6QO4z')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Emma', 'Key', 'emma_key', 'VwO5MMHzTtFS')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Angel', 'Conner', 'angel_conner', 'J0XKoRjUq69F')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Mathew', 'Dorsey', 'mathew_dorsey', 'GIekpw98c61Q')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)VALUES (%s, %s, %s, %s) with parameters: ('Corinne', 'Blackwell', 'corinne_blackwell', 'FmXF37aaidHL')
+INFO:root:Bot credentials updated successfully.

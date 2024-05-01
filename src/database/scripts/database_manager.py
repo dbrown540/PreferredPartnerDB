@@ -148,6 +148,8 @@ class DatabaseManager:
                 # Ensure the database connection is valid
                 self.check_database_connection()
                 # Execute the query with optional parameters
+                if params is None:
+                    cursor.execute(query)
                 cursor.execute(query, params)
                 # Log the executed query and parameters
                 logging_message = (
@@ -318,3 +320,42 @@ class DatabaseManager:
                     logging.error("Integrity error: %s", e)
                 # Continue to the next iteration of the loop
                 continue
+
+    def update_bot_credentials(self, bot_contact_list: List[Tuple[str, str, str, str]]) -> None:
+        for contact in bot_contact_list:
+            if len(contact) != 4:
+                raise ValueError("Each tuple in bot_contact_list must contain 4 values")
+
+            query = (
+                "INSERT INTO "
+                "bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)"
+                "VALUES (%s, %s, %s, %s)"
+            )
+            params = (contact[0], contact[1], contact[2], contact[3])
+            self.execute_query(
+                query=query,
+                params=params
+            )
+
+        logging.info("Bot credentials updated successfully.")
+
+    def bots_exist_in_database(self) -> bool:
+        """
+        Checks if bot data exists in the database
+
+        Returns:
+            bool: True if bots exist, False otherwise.
+        """
+        query = (
+            "SELECT EXISTS (SELECT 1 FROM bots)"
+        )
+        fetch="ONE"
+        bots_exist = self.execute_query(
+            query=query,
+            fetch=fetch
+        )[0]
+        
+        if bots_exist:
+            return True
+        
+        return False
