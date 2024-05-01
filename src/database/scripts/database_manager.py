@@ -234,3 +234,43 @@ class DatabaseManager:
             f"database for user {user_id}"
         )
         logging.info(info_message)
+
+    def send_names_to_db(self, users_name: str, profile_url: str) -> None:
+        """
+        Update the database with the given user's name and profile URL.
+
+        Args:
+            users_name (str): The name of the user to be updated.
+            profile_url (str): The profile URL of the user.
+
+        Returns:
+            None
+        """
+        # Define query arguments
+        query = "UPDATE users SET users_name = '%s' WHERE profile_url = '%s'"
+        params = (users_name, profile_url)
+
+        # Update the datbase
+        self.execute_query(query=query, params=params)
+
+    def update_location_in_db(self, users_location: str, profile_url: str) -> None:
+        """
+        Update the location of a user in the database.
+
+        Args:
+            users_location (str): The new location of the user.
+            profile_url (str): The profile URL of the user.
+
+        Returns:
+            None
+        """
+
+        # Define query and params arguments
+        query = (
+        "UPDATE users SET location_of_user = '%s' "
+                "WHERE profile_url = '%s';"
+        )
+        params = (users_location, profile_url)
+
+        # Update the database to include the location of the user (locate using the profile url)
+        self.execute_query(query=query, params=params)

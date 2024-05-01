@@ -1,3 +1,11 @@
-2024-04-30 19:51:13,759 - INFO - Database connection re-established.
-2024-04-30 19:51:13,759 - INFO - Using existing database connection.
-2024-04-30 19:51:13,763 - INFO - Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+2024-04-30 20:17:07,228 - INFO - Database connection re-established.
+2024-04-30 20:17:07,228 - INFO - Using existing database connection.
+2024-04-30 20:17:07,232 - INFO - Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+2024-04-30 20:17:08,675 - INFO - Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x00000280744A51F0>
+2024-04-30 20:17:08,676 - INFO - Using existing database connection.
+2024-04-30 20:17:08,684 - INFO - Executed query: SELECT profile_url FROM users WHERE user_id BETWEEN %s AND %s ORDER BY user_id; with parameters: (1, 20)
+2024-04-30 20:17:10,004 - INFO - Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x00000280744A5760>
+2024-04-30 20:17:12,159 - INFO - Using existing database connection.
+2024-04-30 20:17:12,159 - INFO - Executed query: SELECT profile_url FROM users WHERE user_id BETWEEN %s AND %s ORDER BY user_id; with parameters: (21, 40)

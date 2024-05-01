@@ -721,24 +721,6 @@ class MainUserPageScraper(BaseManager):
             )
             return None
 
-    def send_names_to_db(self, users_name: str, profile_url: str) -> None:
-        """
-        Update the database with the given user's name and profile URL.
-
-        Args:
-            users_name (str): The name of the user to be updated.
-            profile_url (str): The profile URL of the user.
-
-        Returns:
-            None
-        """
-        # Define query arguments
-        query = "UPDATE users SET users_name = '%s' WHERE profile_url = '%s'"
-        params = (users_name, profile_url)
-
-        # Update the datbase
-        self.database_manager.execute_query(query=query, params=params)
-
     def extract_current_location(self) -> Union[str, None]:
         """
         Extracts the current location of the user.
@@ -794,27 +776,35 @@ class MainUserPageScraper(BaseManager):
 
             return None
 
-    def update_location_in_db(self, users_location: str, profile_url: str) -> None:
+    def main_user_page_scraper_wrapper(self, profile_url):
         """
-        Update the location of a user in the database.
+        Wrapper method for scraping data from a user's main page.
+
+        This method orchestrates the process of extracting the user's name and location
+        from their main page and updating the database with the retrieved information.
 
         Args:
-            users_location (str): The new location of the user.
-            profile_url (str): The profile URL of the user.
+            profile_url (str):
+                The URL of the user's main page.
 
         Returns:
             None
         """
+        # Extract the name from the user's main page
+        users_name = self.find_users_name()
 
-        # Define query and params arguments
-        query = (
-        "UPDATE users SET location_of_user = '%s' "
-                "WHERE profile_url = '%s';"
+        # Send the user's name to the database
+        self.database_manager.send_names_to_db(
+            users_name=users_name, profile_url=profile_url
         )
-        params = (users_location, profile_url)
 
-        # Update the database to include the location of the user (locate using the profile url)
-        self.database_manager.execute_query(query=query, params=params)
+        # Extract the location from the user's main page
+        location = self.extract_current_location()
+
+        # Update the database with the user's location
+        self.database_manager.update_location_in_db(
+            users_location=location, profile_url=profile_url
+        )
 
 class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
     """
@@ -880,33 +870,6 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         experiences_wrapper(self, user_id: int) -> None:
             Wrapper method for scraping and storing user experiences from LinkedIn.
     """
-
-    def get_user_id(self):
-        """Maybe a temporary solution for user_id problem"""
-        # Get current profile url
-        current_profile_url = self.driver.current_url
-        # Search database for user_id associated with profile_url
-        # Define arguments
-        query = (
-            "SELECT user_id FROM users WHERE profile_url = %s"
-        )
-        params = (current_profile_url,)
-        fetch = "ONE"
-        # Execute the query
-        user_id = self.database_manager.execute_query(
-            query=query,
-            params=params,
-            fetch=fetch
-        )
-
-        if user_id:
-            return user_id[0]
-        
-        logging.critical(
-            "Could not find a user id", exc_info=True
-        )
-        return None
-
 
     def _locate_show_all_experiences_button(self) -> Optional[str]:
         """
@@ -1451,12 +1414,13 @@ class SkillsManager(BaseManager):
 
 # pylint: disable=too-many-arguments, too-few-public-methods
 
-class LinkedInBot:
+class LinkedInBot(BaseManager):
     database_manager = DatabaseManager()
 
     def __init__(self, bot_id):
+        super().__init__(WebDriverManager(bot_id=bot_id), LinkedInBot.database_manager)
+
         self.bot_id = bot_id
-        self.webdriver_manager = WebDriverManager(bot_id=bot_id)
         self.sign_in_manager = LinkedInSignInManager(
             webdriver_manager=self.webdriver_manager,
             database_manager=self.database_manager,
@@ -1503,5 +1467,43 @@ class LinkedInBot:
 
         return usable_bot_id_list
 
+    @classmethod
+    def get_user_id(cls, profile_url: str) -> int:
+        """Retrieves the user_id for a given profile_url"""
+        # Set query arguments
+        query = (
+            "SELECT user_id FROM users WHERE profile_url = %s"
+        )
+        params = (profile_url,)
+        fetch = "ONE"
+
+        # Execute query
+        user_id = cls.database_manager.execute_query(
+            query=query,
+            params=params,
+            fetch=fetch
+        )
+
+        if user_id:
+            return user_id[0]
+
+        raise RuntimeError("NoneType user_id is invalid")
+
     def scrape_linkedin_page(self):
-        
+        """Master wrapper for the linkedin scraping processes."""
+        # Handle login
+        self.sign_in_manager.sign_in_wrapper(bot_id=self.bot_id)
+
+        # Get the user profiles from the database
+        profile_urls: List[str] = self.profile_interactor.get_profile_urls()
+
+        # Loop through profile urls
+        for profile_url in profile_urls:
+            # Visit the user's profile
+            self.profile_interactor.visit_user(profile_url=profile_url)
+            
+            # Run the main page wrapper
+            self.main_page_scraper.main_user_page_scraper_wrapper(profile_url=profile_url)
+            
+            # Run the experiences wrapper
+            self.experience_manager.experiences_wrapper(self.get_user_id(profile_url=profile_url))

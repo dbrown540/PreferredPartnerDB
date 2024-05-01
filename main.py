@@ -7,7 +7,11 @@ import time
 def main():
     
     usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
-    print(usable_bot_id_list)
+    
+    for bot_id in usable_bot_id_list:
+        bot_instance = LinkedInBot(bot_id=bot_id)
+        bot_instance.scrape_linkedin_page()
+
     
 
 if __name__ == '__main__':
