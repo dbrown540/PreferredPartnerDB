@@ -10,6 +10,7 @@ and logging events related to database interactions.
 """
 import logging
 import time
+from abc import ABC, abstractmethod
 from typing import Union, Optional, Tuple, List, Dict
 import psycopg2
 from .connect_to_db import connect

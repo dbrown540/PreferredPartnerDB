@@ -23,6 +23,13 @@ Methods:
     update_bot_credentials_in_database(self): 
         Updates bot credentials in the database.
 
+Usage:
+
+    >>> from src.bots.bot_credentials_manager import BotCredentialsManager
+
+    >>> bot_credentials_manager = BotCredentialsManager()
+    >>> bot_credentials_manager.bot_credentials_wrapper()
+
 Author:
     Danny Brown
 

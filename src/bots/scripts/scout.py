@@ -24,6 +24,15 @@ Attributes:
 
 Each class provides detailed docstrings describing its purpose, attributes, and methods.
 
+Example Usage:
+    The usage is rather simple as I have decided to wrap the logic into a single method 
+    within the Scout class
+
+    >>> from src.bots.scripts.scout import Scout
+
+    >>> scout = Scout()
+    >>> scout.execute(run=True, user_count=20)
+
 Author:
     Danny Brown
 

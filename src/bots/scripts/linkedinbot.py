@@ -23,6 +23,19 @@ Classes:
 
 Each class provides detailed docstrings describing its purpose, attributes, and methods.
 
+Usage:
+    Despite the length of this module, the execution is rather simple as I have decided to 
+    use wrappers to contain the code logic. 
+
+    >>> from src.bots.scipts.linkedinbot import LinkedInBot
+
+    >>> usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
+
+    >>> for bot_id in usable_bot_id_list:
+    >>>     bot_instance = LinkedInBot(bot_id=bot_id)
+    >>>     bot_instance.scrape_linkedin_page()
+
+
 Author:
     Danny Brown
 
