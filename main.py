@@ -1,7 +1,8 @@
 """
 Script for executing web scraping tasks using Scout and LinkedInBot.
 
-This script initiates instances of Scout, BotCredentialsManager, and LinkedInBot classes to perform web scraping tasks.
+This script initiates instances of Scout, BotCredentialsManager,
+and LinkedInBot classes to perform web scraping tasks.
 It first utilizes the Scout class to search Google, extract links, 
 and update profile URLs in the database.
 Then, it utilizes the LinkedInBot class to scrape LinkedIn pages for data.
@@ -20,9 +21,12 @@ Date:
     May 1, 2024
 
 """
+import time
 from src.bots.scripts.scout import Scout
 from src.bots.bot_credentials_manager import BotCredentialsManager
-# from src.bots.scripts.linkedinbot import LinkedInBot
+from src.bots.scripts.linkedinbot import LinkedInBot
+from src.bots.webdriver_manager import WebDriverManager
+from src.database.scripts.database_manager import DatabaseManager
 
 def main():
     """
@@ -32,22 +36,21 @@ def main():
     It also retrieves a list of usable bot IDs from LinkedInBot and iterates 
     through each ID to create a LinkedInBot instance and scrape a LinkedIn page.
     """
-    # Scout
+    """# Scout
     scout = Scout()
-    scout.execute(run=False, user_count=20)
+    scout.execute(run=False, user_count=20)"""
 
-    # Bot Credential Manager
+    """# Bot Credential Manager
     bot_credentials_manager = BotCredentialsManager()
-    bot_credentials_manager.bot_credentials_wrapper()
-    
+    bot_credentials_manager.bot_credentials_wrapper()"""
 
-
-    '''# LinkedIn Bot
+    # LinkedIn Bot
     usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
 
     for bot_id in usable_bot_id_list:
         bot_instance = LinkedInBot(bot_id=bot_id)
-        bot_instance.scrape_linkedin_page()'''
+        bot_instance.test()
+        time.sleep(10)
 
 if __name__ == '__main__':
     main()

@@ -1,0 +1,186 @@
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001D5C016C4A0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000002DBF3D6C650>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000002B6B3E6C500>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000028EA28685F0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000025FFD668710>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000002C707A68470>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000024F16B68950>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000027F477688F0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x00000218B2E607D0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000026B35F80830>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000018BC79689E0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001516F3688F0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000028476D90A40>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000002628F468AA0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001B967368860>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x00000288B7368A10>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x00000224B8768890>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000022660C68680>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001BF1FAC61B0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000002D3D1768620>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001700BF688F0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x00000189EE8686E0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001E5BE068800>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000021626B68920>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000022C2EB68830>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001AF6D4687A0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001E766B685F0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001DA26A68860>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001A94A3E2330>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000027A515687A0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_email IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001E33B968560>

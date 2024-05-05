@@ -819,70 +819,9 @@ class MainUserPageScraper(BaseManager):
         )
 
 class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
-    """
-    A class for managing and scraping user experiences from LinkedIn profiles.
-
-    This class provides functionality to scrape and store user experiences from
-    LinkedIn profiles. It utilizes a WebDriverManager for web scraping and a
-    DatabaseManager for storing the extracted data.
-
-    Args:
-        webdriver_manager (WebDriverManager): 
-            The WebDriverManager instance responsible 
-            for managing the WebDriver configuration.
-        database_manager (DatabaseManager):
-            The DatabaseManager instance responsible
-            for managing database interactions.
-        user_id (int): 
-            The unique identifier for the user.
-
-    Attributes:
-        user_id (int): 
-            The unique identifier for the user.
-
-    Methods:
-        _locate_show_all_experiences_button(self) -> Optional[str]:
-            Locate and return the href attribute of the 'Show all experiences' 
-            button on the page.
-
-        _locate_list_elements_in_new_page(self) -> Optional[list]:
-            Locates and returns a list of elements on a new page.
-
-        _locate_work_experience_elements_for_multiple_positions(
-                self, list_elements: list) -> list:
-            Locate work experience elements within a list of elements.
-
-        _extract_work_experience_data_for_multiple_positions(
-                self, work_experience_elements: list) -> Dict[str, str]:
-            Extract work experience data from a list of work experience elements.
-
-        _locate_and_extract_work_experience(
-                self, list_elements: list) -> Dict[str, str]:
-            Locate and extract work experience data from a list of elements.
-
-        _scrape_and_store_experiences_from_new_page(self, user_id: int) -> None:
-            Scrape and update work experiences for a user on a new page.
-
-        _locate_experience_container(self) -> Optional[WebElement]:
-            Locates the main container div element ('#experience') on the original page.
-
-        _extract_work_experiences(self, sibling_div: WebElement) -> Dict[str, str]:
-            Extracts information about work experiences from the provided sibling div.
-
-        _extract_company_and_job_title(self, list_item: Optional[WebElement]) -> Tuple[str, str]:
-            Parses and extracts company name and job title from the provided list item.
-
-        _scrape_and_store_experiences_from_original_page(self) -> dict:
-            Locates and extracts work experiences from the original page.
-
-        _update_work_experience_in_database(
-                self, work_experience_dictionary: Dict[str, str]) -> None:
-            Update the work experience information in the database.
-
-        experiences_wrapper(self, user_id: int) -> None:
-            Wrapper method for scraping and storing user experiences from LinkedIn.
-    """
-
+    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
+        super().__init__(webdriver_manager, database_manager)
+    # Shared methods
     def _locate_show_all_experiences_button(self) -> Optional[str]:
         """
         Locate and return the href attribute of the 'Show all experiences' button on the page.
@@ -913,265 +852,169 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
             logging.error(error_message)
 
         return None
-    # New page methods
-    def _locate_list_elements_in_new_page(self) -> Optional[list]:
-        """
-        Locates and returns a list of elements on a new page.
     
+    def _locate_list_element_wrappers(self, page) -> List[WebElement]:
+        """
+        Locates and returns WebElements that serve as wrappers for each job experience.
+
+        Args:
+            page (str): 
+                Indicates the type of page where the elements are located.
+                Possible values: 
+                    "New" for a new page, or any other value for an existing page.
+
         Returns:
-            list: A list of elements located on the new page.
-            None: If <li> tags aren't located on the new page.
+            List[WebElement]:
+                A list of WebElements located on the page that serve as 
+                wrappers for each job experience.
 
         Raises:
-            NoSuchElementException:
-                If unable to locate the list elements on the new page.
-            TimeoutException:
+            NoSuchElementException: 
+                If unable to locate the list elements on the page.
+            TimeoutException: 
                 If timed out while waiting for list elements to appear.
-            StaleElementReferenceException:
+            StaleElementReferenceException: 
                 If encountered a stale element reference while locating elements.
-            WebDriverException:
+            WebDriverException: 
                 If WebDriver encounters an exception during element location.
         """
         try:
-            # Wait for all the list elements to load
-            list_element_class = (
-                "pvs-list__paged-list-item.artdeco-list__item."
-                "pvs-list__item--line-separated.pvs-list__item--one-column"
+            if page == "New":
+                # The list element encapsulates one single work experience
+                return self.driver.find_elements(
+                    By.CLASS_NAME, 
+                    "pvs-list__paged-list-item.artdeco-list__item"
+                    ".pvs-list__item--line-separated.pvs-list__item--one-column"
+                )
+
+            # locate the experience div wrapper
+            # The div wrapper encapsulates all the work experience information
+            div_wrapper = self.driver.find_element(
+                By.ID, "experience"
             )
-            list_elements = self.wait.until(
-                EC.presence_of_all_elements_located((By.CLASS_NAME, list_element_class))
+            # Access the 2nd sibling div from the div_wrapper
+            sibling_div_tag = div_wrapper.find_element(
+                By.XPATH, "./following-sibling::div[2]"
             )
 
-            return list_elements
+            # Locate the list elements from the sibling div tag
+            # The list tag will encapsulate only one job experience
 
-        except NoSuchElementException as element_exception:
-            logging.error("Could not locate the list elements. %s", element_exception)
-            return None
+            return sibling_div_tag.find_elements(
+                By.XPATH, "ul/li"
+            )
+        except NoSuchElementException:
+            logging.warning(
+                "Could not locate the list elements."
+            )
 
-        except TimeoutException as timeout_exception:
-            logging.error("Timed out while waiting for list elements. %s", timeout_exception)
-            return None
+        except TimeoutException:
+            logging.warning(
+                "Timeout occurred while looking for list elements"
+            )
 
-        except StaleElementReferenceException as stale_element_exception:
-            logging.error("Stale element reference encountered. %s", stale_element_exception)
-            return None
+        except StaleElementReferenceException:
+            logging.warning(
+                "Stale element error while looking for list elements"
+            )
 
-        except WebDriverException as webdriver_exception:
-            logging.error("WebDriver encountered an exception. %s", webdriver_exception)
-            return None
+    def _has_multiple_experiences_at_one_company(self, list_element, page):
+        # Check if there are multiple experiences at a company for a particular
+        # list element
+        # Look for an anchor tag indicating that list element contains multiple
+        # work experiences at one company
+        if page=="Original":
+            anchor_tag = list_element.find_element(
+                By.XPATH, "div/div/div/a"
+            )
+            if anchor_tag:
+                print(anchor_tag.get_attribute("href"))
+                return True, anchor_tag
+            
+        elif page == "New":
+            anchor_tag = list_element.find_element(
+                By.XPATH, "./div/div/div/div/div/a"
+            )
+            if anchor_tag:
+                print(anchor_tag.get_attribute("href"))
+                return True, anchor_tag
 
-    def _locate_work_experience_elements_for_multiple_positions(
-            self, list_elements: list) -> list:
-        """
-        Locate work experience elements within a list of elements.
+        return False, None
+            
+    def _create_company_name_list(self, list_elements, page):
+        company_names = []
+        if page == "Original":
+            for list_element in list_elements:
+                has_multiple_experiences, anchor_tag = self._has_multiple_experiences_at_one_company(
+                    list_element=list_element, page=page
+                )
 
-        Args:
-            list_elements (list): List of elements containing work experience information.
+                if has_multiple_experiences:
+                    # Handle case for multiple experiences at one company
+                    span_tag_with_company_name = anchor_tag.find_element(
+                        By.XPATH, "div/div/div/div/span[@aria-hidden='true']"
+                    )
+                    company_name = span_tag_with_company_name.text
+                    company_names.append(company_name)
 
-        Returns:
-            list: List of elements representing work experience entries.
-        """
-        work_experience_elements = []
-        for list_element in list_elements:
-            anchor_tags_within_li_elements = list_element.find_elements(
-                By.XPATH, ".//a[contains(@class, 'flex-column')]")
-            if anchor_tags_within_li_elements:
-                work_experience_elements.append(list_element)
-        return work_experience_elements
-
-    def _extract_work_experience_data_for_multiple_positions(
-            self, work_experience_elements: list) -> Dict[str, str]:
-        """
-        Extract work experience data from a list of work experience elements.
-
-        Args:
-            work_experience_elements (list): 
-                List of elements representing work experience entries.
-
-        Returns:
-            dict: A dictionary containing the extracted work experience data.
-        """
-        work_experience_dict = {}
-        for list_element in work_experience_elements:
-            company_name = list_element.find_element(
-                By.XPATH, ".//span").text
-            job_titles = list_element.find_elements(
-                By.XPATH, ".//span[@aria-hidden='true']")
-            company_jobs = [job.text for job in job_titles]
-            work_experience_dict[company_name] = company_jobs
-        return work_experience_dict
-
-    def _locate_and_extract_work_experience(
-            self, list_elements: list) -> Dict[str, str]:
-        """
-        Locate and extract work experience data from a list of elements.
-
-        Args:
-            list_elements (list): List of elements containing work experience information.
-
-        Returns:
-            dict: A dictionary containing the extracted work experience data.
-        """
-        work_experience_elements = self._locate_work_experience_elements_for_multiple_positions(
-            list_elements
-        )
-        return self._extract_work_experience_data_for_multiple_positions(work_experience_elements)
-
-    def _scrape_and_store_experiences_from_new_page(self, user_id):
-        """
-        Scrape and update work experiences for a user on a new page.
-
-        This method simulates the scraping process by waiting for a random
-        duration (between 3 to 6 seconds), locating list elements on the page,
-        extracting work experience information, and updating the database with
-        the extracted data.
-
-        Args:
-            user_id (str): The unique identifier of the user.
-
-        Returns:
-            None
-        """
-        time.sleep(random.uniform(3, 6))
-        self.webdriver_manager.scroll_down()
-
-        list_elements = self._locate_list_elements_in_new_page()
-        work_experience_dict = self._locate_and_extract_work_experience(list_elements=list_elements)
-        self.database_manager.update_work_experience(
-            work_experience=work_experience_dict, user_id=user_id
-        )
-
-        logging.info("Added %s to the database.", work_experience_dict)
-
-    # Original Page methods
-    def _locate_experience_container(self) -> Optional[WebElement]:
-        """
-        Locates the main container div element ('#experience') on the original page.
-
-        Returns:
-            WebElement: The main container div element if found, None otherwise.
-        """
-        return self.wait.until(
-            EC.presence_of_element_located((By.ID, "experience"))
-        )
-
-    def _extract_work_experiences(self, sibling_div: WebElement) -> Dict[str, str]:
-        """
-        Extracts information about work experiences from the provided sibling div.
-
-        Args:
-            sibling_div (WebElement): The sibling div containing experience information.
-
-        Returns:
-            dict: A dictionary containing extracted work experiences.
-        """
-        work_experience = {}
-        list_items = sibling_div.find_elements(By.XPATH, 'ul/li')
-
-        for item in list_items:
-            company_name, job_title = self._extract_company_and_job_title(item)
-            work_experience[company_name] = job_title
-
-        return work_experience
-
-    def _extract_company_and_job_title(self, list_item: Optional[WebElement]) -> Tuple[str, str]:
-        """
-        Parses and extracts company name and job title from the provided list item.
-
-        Args:
-            list_item (WebElement): The list item containing company and job title information.
-
-        Returns:
-            tuple: A tuple containing company name and job title.
-        """
-        anchor_tags = list_item.find_elements(
-            By.XPATH, ".//a[contains(@class, 'flex-column')]")
-        if len(anchor_tags) > 2:
-            names_list = [anchor.find_element(
-                By.XPATH, ".//span").text for anchor in anchor_tags]
-            company_name = names_list[0]
-            jobs = names_list[1:]
-            return company_name, jobs
-
-        company = list_item.find_element(
-            By.XPATH, "div/div/div/div/span/span[@aria-hidden='true']"
-        ).text.split(' ·')[0]
-
-        job_title = list_item.find_element(
-            By.XPATH, "div/div/div/div/div/div/div/div/span[@aria-hidden='true']"
-        ).text
-
-        return company, job_title
-
-    def _scrape_and_store_experiences_from_original_page(self, user_id) -> dict:
-        """
-        Locates and extracts work experiences from the original page.
-
-        Returns:
-            dict: A dictionary containing extracted work experiences.
-        """
-        # Locate the main div container element (#experience) on the original page
-        experience_container = self._locate_experience_container()
-
-        # Hop to the 2nd sibling div element
-        sibling_div = experience_container.find_element(By.XPATH, './following-sibling::div[2]')
-
-        # Create the work experiences dictionary
-        work_experiences_dict = self._extract_work_experiences(sibling_div)
-
-        # Store the work experineces dictionary into the database
-        self._update_work_experience_in_database(work_experiences_dict, user_id=user_id)
-
-    # Shared methods
-    def _update_work_experience_in_database(
-            self, work_experience_dictionary: Dict[str, str,],
-            user_id) -> None:
-        """
-        Update the work experience information in the database.
-
-        Args:
-            work_experience_dictionary (dict): 
-                A dictionary containing the updated work experience information,
-                where keys are company names and values are job titles.
-
-        Returns:
-            None
-        """
-        self.database_manager.update_work_experience(
-            work_experience=work_experience_dictionary, user_id=user_id)
-
-    def experiences_wrapper(self, user_id):
-        """
-        Wrapper method for scraping and storing user experiences from LinkedIn.
-
-        This method acts as the entry point for users to interact with the class.
-        It handles the logic for determining whether to scrape experiences from
-        the original profile page or from the 'Show all experiences' page, based
-        on the availability of the respective button. It then delegates the scraping
-        and storing tasks to appropriate internal methods.
-
-        Args:
-            user_id (int): The unique identifier of the user.
-
-        Returns:
-            None
-        """
-
-        # Locate the show all experiences button
-        # If there is an href, continue with new page logic
-        # If None, continue with original page logic
-
-        button_href = self._locate_show_all_experiences_button()
-
-        if button_href:
-            # Visit new page
-            self.driver.get(button_href)
-            # Handle new page logic
-            self._scrape_and_store_experiences_from_new_page(user_id=user_id)
+                else:                
+                    print("Looking for span tags")
+                    span_tag_with_company_name = list_element.find_element(
+                        By.XPATH, ".//span[contains(@class, 't-14 t-normal')]/span[@aria-hidden='true']"
+                    )
+                    company_name = span_tag_with_company_name.text
+                    company_names.append(company_name)
 
         else:
-            # Continue with original page logic
-            self._scrape_and_store_experiences_from_original_page(user_id=user_id)
+            for list_element in list_elements:
+                """has_multiple_experiences, anchor_tag = self._has_multiple_experiences_at_one_company(
+                    list_element=list_element, page=page
+                )"""
+                has_multiple_experiences = False
+                if has_multiple_experiences:
+                    # Handle multiple work experience
+                    pass
+
+                else:
+                    # Handle single work experiences
+                    span_element = list_element.find_element(
+                        By.TAG_NAME, 'span'
+                    )
+                    span_element_with_company_name = span_element.find_element(
+                        By.XPATH, "./following-sibling::span[2]"
+                    )
+                    company_name = span_element_with_company_name.text
+                    if span_element:
+                        print("I found something", company_name)
+                    else:
+                        print("Couldn't find company name")
+                
+
+        return company_names
+
+    def experience_wrapper(self):
+
+        print("Looking for button_href")
+
+        # button_href = self._locate_show_all_experiences_button()  # Testing
+        button_href = True  # Testing
+        if button_href:
+            page = "New"
+            # Use new page logic
+            # "Click" on the "Show all experiences" button
+            self.driver.get("file://C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//testing//new.html")
+            # Locate the <li> elements that serve as wrappers
+            # for each individual work experience
+            list_elements = self._locate_list_element_wrappers(page=page)
+            self._create_company_name_list(list_elements=list_elements, page=page)
+
+        else:
+            print("ORIGINAL PAGE")
+            page = "Original"
+            self.driver.get("file://C://Users//Daniel.Brown//Desktop//PreferredPartnerDB//testing//matt.html")
+            list_elements = self._locate_list_element_wrappers(page=page)
+            company_name_list = self._create_company_name_list(list_elements=list_elements, page=page)
+            print(company_name_list)
 
 class SkillsManager(BaseManager):
     """
@@ -1425,9 +1268,7 @@ class SkillsManager(BaseManager):
         skills_set = self.scrape_skills()
         self.update_skills_database(skills_set, user_id)
 
-# pylint: disable=too-many-arguments, too-few-public-methods
-
-class LinkedInBot(BaseManager):
+class LinkedInBot(BaseManager): # pylint: disable=too-many-arguments, too-few-public-methods
     """
     A class representing a LinkedIn bot for automating interactions on the LinkedIn platform.
 
@@ -1555,3 +1396,8 @@ class LinkedInBot(BaseManager):
 
             # Run the skills wrapper
             self.skills_manager.skills_wrapper(self.get_user_id(profile_url=profile_url))
+        
+    def test(self):
+        # Test the Experiences methods
+        print("This is before the experience wrapper in the test method")
+        self.experience_manager.experience_wrapper()
