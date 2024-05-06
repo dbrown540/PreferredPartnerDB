@@ -1319,7 +1319,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
     def experience_wrapper(self):
 
         # button_href = self._locate_show_all_experiences_button()  # Testing
-        button_href = False  # Testing
+        button_href = True  # Testing
         if not button_href:
             page = "Original"
             self.driver.get(

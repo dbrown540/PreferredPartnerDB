@@ -27,6 +27,7 @@ from src.bots.bot_credentials_manager import BotCredentialsManager
 from src.bots.scripts.linkedinbot import LinkedInBot
 from src.bots.webdriver_manager import WebDriverManager
 from src.database.scripts.database_manager import DatabaseManager
+from src.bots.scripts.phone_number_bot import PhoneNumberScraper
 
 def main():
     """
@@ -44,14 +45,17 @@ def main():
     bot_credentials_manager = BotCredentialsManager()
     bot_credentials_manager.bot_credentials_wrapper()"""
 
-    # LinkedIn Bot
+    """# LinkedIn Bot
     usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
     print(usable_bot_id_list)
 
     for bot_id in usable_bot_id_list:
         bot_instance = LinkedInBot(bot_id=bot_id)
         bot_instance.test()
-        time.sleep(10)
+        time.sleep(10)"""
+    
+    phone_number_scraper_object = PhoneNumberScraper()
+    phone_number_scraper_object.wrapper()
 
 if __name__ == '__main__':
     main()

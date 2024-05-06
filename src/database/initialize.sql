@@ -59,7 +59,8 @@ CREATE TABLE bots(
 
 CREATE TABLE phone_numbers(
     phone_number_id SERIAL PRIMARY KEY,
-    phone_number VARCHAR(20)
+    phone_number VARCHAR(20) UNIQUE,
+    assigned_to INTEGER REFERENCES Bots(bot_id)
 );
 
 -- Table proxies
