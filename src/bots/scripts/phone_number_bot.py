@@ -23,7 +23,7 @@ class PhoneNumberScraper(BaseManager):
         super().__init__(WebDriverManager(), DatabaseManager())
 
     def get_to_sms_to_me_website(self):
-        self.driver.get("https://www.google.com")
+        self.driver.get("file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//testing//smstome.html")
         time.sleep(10)
 
     def wrapper(self):
