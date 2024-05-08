@@ -9,13 +9,16 @@ These imports are used for setting up database connections, performing database 
 and logging events related to database interactions.
 """
 import logging
+import csv
 import time
 from typing import Union, Optional, Tuple, List, Dict
 import psycopg2
+import pandas as pd
 from .connect_to_db import connect
 
 # Configure the logging system
-logging.basicConfig(filename="log.log", level=logging.INFO)
+logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
+                    format="%(asctime)s - %(levelname)s - %(message)s")
 
 class DatabaseManager:
     """
@@ -250,7 +253,7 @@ class DatabaseManager:
             None
         """
         # Define query arguments
-        query = "UPDATE users SET users_name = '%s' WHERE profile_url = '%s'"
+        query = "UPDATE users SET users_name = %s WHERE profile_url = %s"
         params = (users_name, profile_url)
 
         # Update the datbase
@@ -270,8 +273,8 @@ class DatabaseManager:
 
         # Define query and params arguments
         query = (
-        "UPDATE users SET location_of_user = '%s' "
-                "WHERE profile_url = '%s';"
+        "UPDATE users SET location_of_user = %s "
+                "WHERE profile_url = %s;"
         )
         params = (users_location, profile_url)
 
@@ -289,37 +292,39 @@ class DatabaseManager:
             None
         
         Raises:
-            IntegrityError: If a profile URL already exists in the database, a warning is logged and the function moves on to the next URL.
+            IntegrityError:
+                If a profile URL already exists in the database, 
+                a warning is logged and the function moves on to the next URL.
         """
 
         # Execute a query that updates the database with profile urls
 
         for profile_url in profile_urls:
-            # Set query arguments
+            # Check to see if the url already exists in the database
             query = (
-                "INSERT INTO users (profile_url) "
-                "VALUES (%s)"
+                "SELECT COUNT(*) FROM users WHERE profile_url = %s"
             )
             params = (profile_url,)
+            fetch = "ONE"
+            result = self.execute_query(
+                query=query,
+                params=params,
+                fetch=fetch
+            )[0]
 
-            try:
-                # Insert the profile URL
-                self.execute_query(query=query, params=params)
-                logging.info(
-                    "Successfully added user link to the database.\n"
-                    "Link contents = %s", profile_url
+            if result == 0:
+                logging.info("Adding %s to the database", profile_url)
+                query = (
+                    "INSERT INTO users (profile_url) VALUES (%s)"
                 )
-            except psycopg2.IntegrityError as e:
-                # Check if it's a unique constraint violation
-                if 'duplicate key value' in str(e):
-                    logging.warning(
-                        "Link (%s) already in database", profile_url
-                    )
-                else:
-                    # Handle other integrity errors
-                    logging.error("Integrity error: %s", e)
-                # Continue to the next iteration of the loop
-                continue
+                params = (profile_url,)
+                self.execute_query(
+                    query=query,
+                    params=params
+                )
+            
+            else:
+                logging.warning("%s already in database. Moving to next profile", profile_url)
 
     def update_bot_credentials(self, bot_contact_list: List[Tuple[str, str, str, str]]) -> None:
         for contact in bot_contact_list:
@@ -339,23 +344,168 @@ class DatabaseManager:
 
         logging.info("Bot credentials updated successfully.")
 
-    def bots_exist_in_database(self) -> bool:
-        """
-        Checks if bot data exists in the database
-
+    def first_and_last_exists_in_db(self, first: str, last: str) -> bool:
+        """Check if the combination of first and last name exists in the database.
+        
+        Args:
+            first (str): The first name to check.
+            last (str): The last name to check.
+        
         Returns:
-            bool: True if bots exist, False otherwise.
+            bool: True if the combination of first and last name exists in the database, False otherwise.
         """
+        
         query = (
-            "SELECT EXISTS (SELECT 1 FROM bots)"
+            "SELECT COUNT(*) FROM bots WHERE bot_first_name = %s AND bot_last_name = %s"
         )
-        fetch="ONE"
-        bots_exist = self.execute_query(
+        params = (first, last)
+        fetch = "ONE"
+        result = self.execute_query(
             query=query,
+            params=params,
             fetch=fetch
         )[0]
+        if result == 0:
+            return False
         
-        if bots_exist:
-            return True
-        
-        return False
+        return True
+
+    def update_experiences_in_database(
+            self, user_id: str,
+            zipped_list: Tuple[
+                str,  # company
+                Union[str, List[str], None],  # job_title (either a string or a list of strings)
+                Union[str, List[str], None],  # work_description (either a string or a list of strings)
+                List[str]  # start_date and end_date
+            ]):
+        # Iterate through the zipped_list
+        for company, job_titles, work_descriptions, date_ranges in zipped_list:
+            # Multiple experiences at one company
+            if isinstance(job_titles, list):
+                for i, job_title in enumerate(job_titles):
+                    work_description = work_descriptions[i]
+                    work_description = '' if work_description is None else work_description
+                    start_date, end_date = date_ranges[i]
+                    # Check if the same experience already exists in the database for the given user_id
+                    # Non-empty work_description
+                    if work_description != '':
+                        query = (
+                            "SELECT COUNT(*) FROM work_experience WHERE user_id = %s AND company = %s "
+                            "AND job_title = %s AND work_description = %s AND start_date = %s AND end_date = %s"
+                        )
+                        params = (user_id, company, job_title, work_description, start_date, end_date)
+                        fetch = "ONE"
+                        count = self.execute_query(
+                            query=query,
+                            params=params,
+                            fetch=fetch
+                        )[0]
+
+                        if count == 0:
+                            query = (
+                                "INSERT INTO work_experience (user_id, company, job_title, work_description, start_date, end_date) "
+                                "VALUES (%s, %s, %s, %s, %s, %s)"
+                            )
+                            params = (user_id, company, job_title, work_description, start_date, end_date)
+                            logging.info("Attempting to execute the query: %s with params: %s ", query, params)
+                            self.execute_query(
+                                query=query,
+                                params=params
+                            )
+                        else:
+                            logging.info("Experience already exists for user_id: %s, company: %s, job_title: %s. Moving on to the next query.", user_id, company, job_title)
+
+                    # Empty work_description  
+                    else:
+                        # If work_description is an empty string, use IS NULL
+                        query = (
+                            "SELECT COUNT(*) FROM work_experience WHERE user_id = %s AND company = %s AND job_title = %s AND start_date = %s AND end_date = %s"
+                        )
+                        params = (user_id, company, job_title, start_date, end_date)
+                        fetch = "ONE"
+                        count = self.execute_query(query=query, params=params, fetch=fetch)[0]
+                        if count == 0:
+                            query = (
+                                "INSERT INTO work_experience (user_id, company, job_title, start_date, end_date) "
+                                "VALUES (%s, %s, %s, %s, %s)"
+                            )
+                            params = (user_id, company, job_title, start_date, end_date)
+                            logging.info("Attempting to execute the query: %s with params: %s ", query, params)
+                            self.execute_query(
+                                query=query,
+                                params=params
+                            )
+                        else:
+                            logging.info("Experience already exists for user_id: %s, company: %s, job_title: %s. Moving on to the next query.", user_id, company, job_title)
+
+            else:
+                # Only one job position
+                job_title = job_titles
+                work_description = work_descriptions if isinstance(work_descriptions, str) else None
+                work_description = '' if work_description is None else work_description
+                start_date, end_date = date_ranges
+                # Check if the same experience already exists in the database for the given user_id
+                if work_description != '':
+                    query = (
+                        "SELECT COUNT(*) FROM work_experience WHERE user_id = %s AND company = %s AND job_title = %s AND work_description = %s AND start_date = %s AND end_date = %s"
+                    )
+                    params = (user_id, company, job_title, work_description, start_date, end_date)
+                    fetch = "ONE"
+                    count = self.execute_query(query=query, params=params, fetch=fetch)[0]
+                    if count == 0:
+                        query = (
+                            "INSERT INTO work_experience (user_id, company, job_title, work_description, start_date, end_date) "
+                            "VALUES (%s, %s, %s, %s, %s, %s)"
+                        )
+                        params = (user_id, company, job_title, work_description, start_date, end_date)
+                        logging.info("Attempting to execute the query: %s with params: %s ", query, params)
+                        self.execute_query(
+                            query=query,
+                            params=params
+                        )
+                    else:
+                        logging.info("Experience already exists for user_id: %s, company: %s, job_title: %s. Moving on to the next query.", user_id, company, job_title)
+
+                else:
+                    # If work_description is an empty string, use IS NULL
+                    query = (
+                        "SELECT COUNT(*) FROM work_experience WHERE user_id = %s AND company = %s AND job_title = %s AND start_date = %s AND end_date = %s"
+                    )
+                    params = (user_id, company, job_title, start_date, end_date)
+                    fetch = "ONE"
+                    count = self.execute_query(query=query, params=params, fetch=fetch)[0]
+                    if count == 0:
+                        query = (
+                            "INSERT INTO work_experience (user_id, company, job_title, start_date, end_date) "
+                            "VALUES (%s, %s, %s, %s, %s)"
+                        )
+                        params = (user_id, company, job_title, start_date, end_date)
+                        logging.info("Attempting to execute the query: %s with params: %s ", query, params)
+                        self.execute_query(
+                            query=query,
+                            params=params
+                        )
+                    else:
+                        logging.info("Experience already exists for user_id: %s, company: %s, job_title: %s. Moving on to the next query.", user_id, company, job_title)
+
+
+    def xlsx(self):
+
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname='public';")
+        tables = cursor.fetchall()
+
+
+        excel_writer = pd.ExcelWriter('schema.xlsx')
+
+        for table in tables:
+            table_name = table[0]
+            query = f"SELECT * FROM {table_name};"
+            table_data = pd.read_sql_query(query, self.conn)
+            table_data.to_excel(excel_writer, sheet_name=table_name, index=False)
+
+        excel_writer._save()
+
+        # Close cursor and connection
+        cursor.close()
+        self.conn.close()

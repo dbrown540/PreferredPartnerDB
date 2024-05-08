@@ -126,7 +126,8 @@ class GoogleSearcher(BaseManager):
         try:
             # Search query
             search_query = (
-                'site:linkedin.com/in "Centers for Medicare and Medicaid Services" "Data Analyst"'
+                '("Centers for Medicare & Medicaid Services") '
+                'site:linkedin.com/in'
             )
 
             # Type search query into the search box
@@ -175,22 +176,7 @@ class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
             database_manager: DatabaseManager) -> None:
         super().__init__(webdriver_manager, database_manager)
         self.last_known_links_index = 0
-
-    def link_extractor_wrapper(self) -> list:  # Wrapper
-        """Finds the LinkedIn profile links and returns a list"""
-        parsed_links = []
-        logging.info('self.last_known_index (links)= %d', self.last_known_links_index)
-
-        # Collect links from search
-        links = self._collect_links()
-
-        # Parse the links making sure they are all profile links
-        parsed_links = self._parse_links(links)
-
-        # Get the last known index
-        self._update_last_known_index(len(links))
-
-        return parsed_links
+        self.scroll_object = Scroller(webdriver_manager, database_manager)
 
     def _collect_links(self) -> List[WebElement]:
         """Waits for the links to load."""
@@ -218,10 +204,22 @@ class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
             if link.get_attribute('href') is not None
             and 'www.linkedin.com/in' in link.get_attribute('href')
         ]
+    
+    def link_extractor_wrapper(self, user_count):
+        parsed_links = set()
+        while len(parsed_links) < user_count:
+            unfiltered_links = self._collect_links()
+            newly_parsed_links = self._parse_links(unfiltered_links)
+            self.scroll_object.scroll()
+            for new_link in newly_parsed_links:
+                parsed_links.add(new_link)
+                print(len(parsed_links))
+                if len(parsed_links) >= user_count:
+                    break
 
-    def _update_last_known_index(self, length: int) -> None:
-        """Updates the last known index."""
-        self.last_known_links_index = length
+        # Finally, conver the set to a list
+        parsed_links = list(parsed_links)
+        return parsed_links
 
 class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
     """
@@ -257,7 +255,7 @@ class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
         try:
             more_results_button = self.wait.until(
                 EC.presence_of_element_located(
-                    (By.XPATH, '//*[@id="botstuff"]/div/div[3]/div[4]/a[1]/h3/div/span[2]')
+                    (By.XPATH, 'a[@aria-label="More results"]')
                 )
             )
             more_results_button.click()
@@ -306,7 +304,7 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
             database_manager=self.database_manager
         )
 
-    def execute(self, run: bool, user_count=20):
+    def execute(self, run: bool, user_count):
         """
         Optional wrapper. If the code doesn't become complex, 
         then I will move this to main
@@ -323,24 +321,7 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
             # Type search into the search box element
             self.google_searcher.search_google_query(google_search_box_element)
 
-            # Extract links
-            parsed_links = self.link_extractor.link_extractor_wrapper()
-
-            while len(parsed_links) < user_count:
-
-                # Scroll to the bottom and look for a more results button
-                self.scroller.scroll()
-
-                # Run the link extractor
-                new_links = self.link_extractor.link_extractor_wrapper()
-
-                parsed_links.extend(new_links)
-
-                if not new_links:
-                    break
-
-            # Trim the list to match the desired user count (if it exceeds it)
-            parsed_links = parsed_links[:user_count]
+            parsed_links = self.link_extractor.link_extractor_wrapper(user_count=user_count)
 
             self.database_manager.update_profile_urls_from_scout(parsed_links)
 

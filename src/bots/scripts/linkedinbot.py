@@ -40,7 +40,7 @@ Author:
     Danny Brown
 
 Date:
-    April 30, 2024
+    May 6, 2024
 
 Version:
     0.1-dev
@@ -50,7 +50,7 @@ Version:
 import logging
 import random
 import time
-from typing import Union, Tuple, Optional, Dict, Set, List
+from typing import Union, Tuple, Optional, Set, List
 import re
 from datetime import datetime
 
@@ -64,6 +64,10 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from src.database.scripts.database_manager import DatabaseManager
 from ..webdriver_manager import WebDriverManager
+
+logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
+                    format="%(asctime)s - %(levelname)s - %(message)s")
+
 class BaseManager:  # pylint: disable=too-few-public-methods
     """
     Base class for managing WebDriver and DatabaseManager instances.
@@ -821,7 +825,58 @@ class MainUserPageScraper(BaseManager):
         )
 
 class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
-    # Shared methods
+    """
+    Manages the extraction and processing of work experience information from LinkedIn profiles.
+
+    This class provides methods to locate and extract job experience details, 
+    including company names, job positions, position descriptions, and dates worked. 
+    It also offers functionality to handle different types of LinkedIn pages and 
+    print the extracted information.
+
+    Attributes:
+        webdriver_manager (WebDriverManager): 
+            The WebDriverManager instance responsible for managing the WebDriver configuration.
+        driver (WebDriver): 
+            The WebDriver instance for interacting with the web browser.
+        wait (WebDriverWait): 
+            The WebDriverWait instance for waiting for page elements.
+        database_manager (DatabaseManager): 
+            The DatabaseManager instance for database interactions.
+        bot_id (int): 
+            The unique identifier for the bot.
+
+    Methods:
+        _locate_show_all_experiences_button():
+            Locates and returns the href attribute of the 'Show all experiences' button on the page.
+        _locate_list_element_wrappers(page: str):
+            Locates and returns WebElements that serve as wrappers for each job experience.
+        _has_multiple_experiences_at_one_company(list_element: List[WebElement], page: str):
+            Checks if there are multiple work experiences at one company for a given list element.
+        _create_company_name_list(list_elements: List[WebElement], page: str):
+            Creates a list of company names extracted from the provided list of elements.
+        _create_positions_list(list_elements: List[WebElement], page: str):
+            Creates a list of job positions extracted from the provided list of elements.
+        _create_positions_descriptions_list(list_elements: List[WebElement], page: str):
+            Creates a list of position descriptions extracted from the given list of web elements.
+        _create_dates_worked_list(list_elements: List[WebElement], page: str):
+            Creates a list of dates worked for each position.
+        remove_emojis_and_blank_lines(text: str):
+            Removes emojis, bullet points, and blank lines from the given text.
+        parse_date_range(date_range_text: str):
+            Parses the date range text into a list containing start and end dates.
+        _zip_all_experience_information(company_names_list: List[str], job_positions_list: List[str],
+                                        position_descriptions, dates_worked_list):
+            Zips together all the lists that were created while scraping the experiences.
+        experience_wrapper():
+            Wrapper for all experiences logic.
+        _handle_original_page():
+            Handles the original page for the current instance.
+        _handle_new_page():
+            Handles the new page for the current instance.
+        _print_results(company_names_list, job_positions_list,
+                        position_descriptions, dates_worked_list):
+            Prints the zipped list.
+    """
     def _locate_show_all_experiences_button(self) -> Optional[str]:
         """
         Locate and return the href attribute of the 'Show all experiences' button on the page.
@@ -831,28 +886,22 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         """
         try:
             # Wait for the presence of at least one matching element
-            button_xpath = (
-                "//a[contains(span[@class='pvs-navigation__text'], 'Show all')"
-                " and contains(span[@class='pvs-navigation__text'], 'experiences')]"
+            experience_button = self.wait.until(
+                EC.presence_of_element_located((By.ID, "navigation-index-see-all-experiences"))
             )
 
-            buttons = self.wait.until(
-                EC.presence_of_all_elements_located((By.XPATH, button_xpath))
-            )
-
-            # Iterate through each button
-            for button in buttons:
-                # Check if the button's href attribute contains the LinkedIn domain
-                href = button.get_attribute("href")
-                if href and 'linkedin.com' in href:
-                    return href
+            return experience_button.get_attribute("href")
 
         except NoSuchElementException:
-            error_message = "The button could not be found"
-            logging.error(error_message)
+            info_message = "The button could not be found"
+            logging.info(info_message)
 
-        return None
-    
+        except TimeoutException:
+            info_message = "The button could not be found due to timeout"
+            logging.info(info_message)
+
+        return False
+
     def _locate_list_element_wrappers(self, page) -> List[WebElement]:
         """
         Locates and returns WebElements that serve as wrappers for each job experience.
@@ -883,8 +932,9 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
 
                 # locate the experience div wrapper
                 # The div wrapper encapsulates all the work experience information
-                div_wrapper = self.driver.find_element(
-                    By.ID, "experience"
+
+                div_wrapper = self.wait.until(
+                    EC.presence_of_element_located((By.ID, "experience"))
                 )
                 # Access the 2nd sibling div from the div_wrapper
                 sibling_div_tag = div_wrapper.find_element(
@@ -899,10 +949,12 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                 )
 
             # The list element encapsulates one single work experience
-            return self.driver.find_elements(
-                By.CLASS_NAME,
-                "pvs-list__paged-list-item.artdeco-list__item"
-                ".pvs-list__item--line-separated.pvs-list__item--one-column"
+            return self.wait.until(
+                EC.presence_of_all_elements_located((
+                    By.CLASS_NAME, "pvs-list__paged-list-item.artdeco-list__item" 
+                                   ".pvs-list__item--line-separated.pvs-list__item--one-column"
+                ))
+
             )
 
         except NoSuchElementException:
@@ -995,6 +1047,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                         By.XPATH, "div/div/div/div/span[@aria-hidden='true']"
                     )
                     company_name = span_tag_with_company_name.text
+                    company_name = self._clean_up_company_name(company_name)
                     company_names.append(company_name)
 
                 else:                
@@ -1002,6 +1055,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                         By.XPATH, ".//span[contains(@class, 't-14 t-normal')]/span[@aria-hidden='true']"
                     )
                     company_name = span_tag_with_company_name.text
+                    company_name = self._clean_up_company_name(company_name)
                     company_names.append(company_name)
 
         else:
@@ -1015,6 +1069,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                         By.CSS_SELECTOR, "span[aria-hidden='true']"
                     )
                     company_name = span_element_with_company_name.text
+                    company_name = self._clean_up_company_name(company_name)
                     company_names.append(company_name)
                 else:
                     # Handle single work experiences
@@ -1031,11 +1086,13 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
 
                     company_name = company_name_unparsed.split(" · ")[0]  # Ex. Reli Group, Inc.
 
+                    company_name = self._clean_up_company_name(company_name)
+
                     company_names.append(company_name)
 
         return company_names
 
-    def _create_positions_list(self, list_elements: List[WebElement], page: str):
+    def _create_positions_list(self, list_elements: List[WebElement], page: str, user_id: int) -> List[str]:
         """
         Creates a list of job positions extracted from the provided list of elements.
 
@@ -1052,44 +1109,53 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         positions_list = []
         if page == "Original":
             for list_element in list_elements:
-                has_multiple_experiences, anchor_tag = self._has_multiple_experiences_at_one_company(
-                    list_element=list_element,
-                    page=page
-                )
-
-                if has_multiple_experiences:
-                    positions_list_at_one_company = []
-                    # Write conditions for multiple work experiences at one company
-                    parent_div = anchor_tag.find_element(
-                        By.XPATH, "./.."
+                overflow_at_one_company = self._handle_overflow_at_one_company(list_element=list_element)
+                if not overflow_at_one_company:
+                    has_multiple_experiences, anchor_tag = self._has_multiple_experiences_at_one_company(
+                        list_element=list_element,
+                        page=page
                     )
 
-                    sibling_div = parent_div.find_element(
-                        By.XPATH, "following-sibling::*"
-                    )
-
-                    list_elements_containing_individual_job_titles = sibling_div.find_elements(
-                        By.XPATH, "ul/li"
-                    )
-
-                    for element in list_elements_containing_individual_job_titles:
-                        span_tag = element.find_element(
-                            By.CSS_SELECTOR, "span[aria-hidden='true']"
+                    if has_multiple_experiences:
+                        positions_list_at_one_company = []
+                        # Write conditions for multiple work experiences at one company
+                        parent_div = anchor_tag.find_element(
+                            By.XPATH, "./.."
                         )
-                        position_title = span_tag.text
-                        positions_list_at_one_company.append(position_title)
 
-                    positions_list.append(positions_list_at_one_company)
+                        sibling_div = parent_div.find_element(
+                            By.XPATH, "following-sibling::*"
+                        )
+
+                        list_elements_containing_individual_job_titles = sibling_div.find_elements(
+                            By.XPATH, "ul/li"
+                        )
+
+                        for element in list_elements_containing_individual_job_titles:
+                            span_tag = element.find_element(
+                                By.CSS_SELECTOR, "span[aria-hidden='true']"
+                            )
+                            position_title = span_tag.text
+                            positions_list_at_one_company.append(position_title)
+
+                        positions_list.append(positions_list_at_one_company)
+
+                    else:
+                        # Write conditions for single work experiences at one company
+                        span_tag = list_element.find_element(
+                            By.TAG_NAME, "span"
+                        )
+                        job_position_text = span_tag.text
+                        positions_list.append(job_position_text)
 
                 else:
-                    # Write conditions for single work experiences at one company
-                    span_tag = list_element.find_element(
-                        By.TAG_NAME, "span"
-                    )
-                    job_position_text = span_tag.text
-                    positions_list.append(job_position_text)
+                    # Handle overflow
+                    self.driver.get(overflow_at_one_company)
+                    self._handle_new_page(user_id=user_id)
+                    return None
 
         else:
+            print(page)
             for list_element in list_elements:
                 has_multiple_experiences, anchor_tag = self._has_multiple_experiences_at_one_company(
                         list_element=list_element,
@@ -1135,7 +1201,8 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
 
         return positions_list
 
-    def _create_positions_descriptions_list(self, list_elements: List[WebElement], page: str) -> List[str]:
+    def _create_positions_descriptions_list(
+            self, list_elements: List[WebElement], page: str) -> List[str]:
         """
         Create a list of position descriptions extracted from the given list of web elements.
 
@@ -1166,7 +1233,9 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                             span_tag_containing_description = li_container.find_element(
                                 By.XPATH, ".//div[contains(@class, 'inline-show-more-text--is-collapsed')]/span[@aria-hidden='true']"
                             )
-                            position_descriptions_for_one_company.append(span_tag_containing_description.text)
+                            text = span_tag_containing_description.text
+                            parsed_description = self.remove_emojis_and_blank_lines(text)
+                            position_descriptions_for_one_company.append(parsed_description)
                         except NoSuchElementException:
                             position_descriptions_for_one_company.append(None)
 
@@ -1183,7 +1252,9 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                             By.CSS_SELECTOR, "span[aria-hidden='true']"
                         )
                         for span_tag in span_tags_containing_description:
-                            position_descriptions_list.append(span_tag.text)
+                            text = span_tag.text
+                            parsed_description = self.remove_emojis_and_blank_lines(text)
+                            position_descriptions_list.append(parsed_description)
                     except NoSuchElementException:
                         position_descriptions_list.append(None)
         else:  # New page
@@ -1198,9 +1269,9 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                         By.XPATH, ".//li[contains(@id, 'profilePagedListComponent')]"
                     )
 
-                    for list_element in list_element_containing_description:
+                    for new_list_element in list_element_containing_description:
                         try:
-                            span_tag_containing_description = list_element.find_element(
+                            span_tag_containing_description = new_list_element.find_element(
                                 By.XPATH, ".//li/div/div/div/span[@aria-hidden='true']"
                             )
                             text = span_tag_containing_description.text
@@ -1208,6 +1279,8 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                             position_descriptions_for_one_company.append(parsed_description)
                         except NoSuchElementException:
                             position_descriptions_for_one_company.append(None)
+
+                    position_descriptions_list.append(position_descriptions_for_one_company)
 
                 else:
                     try:
@@ -1224,40 +1297,102 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                         position_descriptions_list.append(None)
         return position_descriptions_list
 
-    def _create_dates_worked_list(self, list_elements: List[WebElement], page: str):
+    def _create_dates_worked_list(
+            self, list_elements: List[WebElement],
+            page: str) -> List[List[Union[str, List[str]]]]:
+        """
+        Create a list of dates worked for each position.
+
+        Args:
+            list_elements (List[WebElement]):
+                The list of web elements containing position information.
+            page (str):
+                The type of page being processed, either "Original" or "New".
+
+        Returns:
+            List[List[Union[str, List[str]]]]: 
+                A list of dates worked for each position.
+                Each sublist contains either a single date range string or a list of date ranges.
+        """
         dates_worked_list = []
-        for list_element in list_elements:
-            has_multiple_experiences, _ = self._has_multiple_experiences_at_one_company(
-                list_element=list_element,
-                page=page
-            )
-            if has_multiple_experiences:
-                dates_worked_at_multiple_experiences = []
-                # Get to the li tag wrapper that contains the single position
-                list_elements_containing_single_experience = list_element.find_elements(
-                    By.XPATH, ".//li[contains(@class, 'pvs-list__paged-list-item') "
-                    "and contains(@class, 'pvs-list__item--one-column')]"
+        if page == "Original":
+            for list_element in list_elements:
+                has_multiple_experiences, _ = self._has_multiple_experiences_at_one_company(
+                    list_element=list_element,
+                    page=page
                 )
-                
-                for wrapper_list_element in list_elements_containing_single_experience:
-                    span_containing_dates_worked = wrapper_list_element.find_element(
+
+                if has_multiple_experiences:
+                    dates_worked_at_multiple_experiences = []
+                    span_containing_dates_worked = list_element.find_elements(
+                        By.XPATH, ".//a/span/span[@class='pvs-entity__caption-wrapper']"
+                    )
+                    for date_range in span_containing_dates_worked:
+                        date_range_text = date_range.text
+                        parsed_dates = self.parse_date_range(date_range_text)
+                        if parsed_dates:
+                            dates_worked_at_multiple_experiences.append(parsed_dates)
+
+                    dates_worked_list.append(dates_worked_at_multiple_experiences)
+
+                else:
+                    span_containing_dates_worked = list_element.find_element(
                         By.CLASS_NAME, "pvs-entity__caption-wrapper"
                     )
                     date_range_text = span_containing_dates_worked.text
                     parsed_dates = self.parse_date_range(date_range_text)
-                    dates_worked_at_multiple_experiences.append(parsed_dates)
+                    dates_worked_list.append(parsed_dates)
 
-                dates_worked_list.append(dates_worked_at_multiple_experiences)
 
-            else:
-                span_containing_dates_worked = list_element.find_element(
-                    By.CLASS_NAME, "pvs-entity__caption-wrapper"
+
+        else:
+            for list_element in list_elements:
+                has_multiple_experiences, _ = self._has_multiple_experiences_at_one_company(
+                    list_element=list_element,
+                    page=page
                 )
-                date_range_text = span_containing_dates_worked.text
-                parsed_dates = self.parse_date_range(date_range_text)
-                dates_worked_list.append(parsed_dates)
+                if has_multiple_experiences:
+                    dates_worked_at_multiple_experiences = []
+                    # Get to the li tag wrapper that contains the single position
+                    list_elements_containing_single_experience = list_element.find_elements(
+                        By.XPATH, ".//li[contains(@class, 'pvs-list__paged-list-item') "
+                        "and contains(@class, 'pvs-list__item--one-column')]"
+                    )
+                    
+                    for wrapper_list_element in list_elements_containing_single_experience:
+                        span_containing_dates_worked = wrapper_list_element.find_element(
+                            By.CLASS_NAME, "pvs-entity__caption-wrapper"
+                        )
+                        date_range_text = span_containing_dates_worked.text
+                        parsed_dates = self.parse_date_range(date_range_text)
+                        dates_worked_at_multiple_experiences.append(parsed_dates)
+
+                    dates_worked_list.append(dates_worked_at_multiple_experiences)
+
+                else:
+                    span_containing_dates_worked = list_element.find_element(
+                        By.CLASS_NAME, "pvs-entity__caption-wrapper"
+                    )
+                    date_range_text = span_containing_dates_worked.text
+                    parsed_dates = self.parse_date_range(date_range_text)
+                    dates_worked_list.append(parsed_dates)
 
         return dates_worked_list
+
+    def _handle_overflow_at_one_company(self, list_element: WebElement):
+        
+        try: 
+            overflow_a_tag = list_element.find_element(
+                By.ID, 'navigation-index-see-all-positions-aggregated'
+            )
+            
+            return overflow_a_tag.get_attribute("href")
+
+        except NoSuchElementException:
+            return False
+        
+        except StaleElementReferenceException:
+            print("Stale element. I don't know why this is happening")
 
     @staticmethod
     def remove_emojis_and_blank_lines(text):
@@ -1282,20 +1417,29 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                             u"\U0001FA00-\U0001FA6F"  # Chess Symbols
                             u"\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
                             u"\U00002702-\U000027B0"  # Dingbats
-                            u"\U000024C2-\U0001F251" 
+                            u"\U000024C2-\U0001F251"
+                            u"" 
                             "]+", flags=re.UNICODE)
         text_without_emojis = emoji_pattern.sub(r'', text)
         
         # Remove bullet points
         text_without_bullets = text_without_emojis.replace("•", "").strip()
+
+        # Remove special characters
+        text_without_special_characters = text_without_bullets.replace("�", "").strip()
         
         # Remove blank lines
-        lines = text_without_bullets.split('\n')
+        lines = text_without_special_characters.split('\n')
         clean_lines = (line.strip() for line in lines if line.strip())
         return ' '.join(clean_lines)
+    
+    @staticmethod 
+    def _clean_up_company_name(text: str):
+        return text.split(" · ")[0]
+
 
     @staticmethod
-    def parse_date_range(date_range_text: str) -> list:
+    def parse_date_range(date_range_text: str) -> List[str]:
         """
         Parse the date range text into a list containing start and end dates.
 
@@ -1303,57 +1447,89 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
             date_range_text (str): The text containing the date range.
 
         Returns:
-            list: A list containing the start and end dates.
+            list: A list containing the start and end dates in the format YYYY-MM-DD.
         """
         # Extract the start and end dates using regex
         pattern = r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\b|Present'
         dates = re.findall(pattern, date_range_text)
 
-        # Replace the last occurrence of "Present" with the current date
-        if "Present" in dates:
-            current_date = datetime.now().strftime("%b %Y")
-            dates[dates.index("Present")] = current_date
+        # Convert dates to YYYY-MM-DD format
+        formatted_dates = []
+        for date_str in dates:
+            if date_str == "Present":
+                current_date = datetime.now().strftime("%Y-%m-%d")
+                formatted_dates.append(current_date)
+            else:
+                # Check if the date string contains a month and a year
+                date_parts = date_str.split()
+                if len(date_parts) >= 2:
+                    month_str, year_str = date_parts
+                    month_num = {
+                        'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4,
+                        'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8,
+                        'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+                    }[month_str]
+                    formatted_date = f"{year_str}-{month_num:02d}-01"
+                    formatted_dates.append(formatted_date)
 
-        return dates
+        # If there are two dates, assume the first is the start date and the second is the end date
+        if len(formatted_dates) == 2:
+            start_date = formatted_dates[0]
+            end_date = formatted_dates[1]
+            formatted_dates = [start_date, end_date]
 
-    def experience_wrapper(self):
+        return formatted_dates
+    
+    @staticmethod
+    def _zip_all_experience_information(company_names_list: List[str], job_positions_list: List[str], position_descriptions, dates_worked_list):
+        """Zips together all the lists that were created while scraping the experiences."""
+        return zip(company_names_list, job_positions_list, position_descriptions, dates_worked_list)
 
-        # button_href = self._locate_show_all_experiences_button()  # Testing
-        button_href = True  # Testing
+    def experience_wrapper(self, user_id):
+        """Wrapper for all experiences logic"""
+        button_href = self._locate_show_all_experiences_button()
         if not button_href:
-            page = "Original"
-            self.driver.get(
-                "file://C://Users//Doug Brown//Desktop//Dannys Stuff"
-                "//Job//PreferredPartnerDB//testing//matt.html"
-            )
-            list_elements = self._locate_list_element_wrappers(page=page)
-            company_name_list = self._create_company_name_list(
-                list_elements=list_elements, page=page
-            )
-            job_positions_list = self._create_positions_list(list_elements=list_elements, page=page)
-            position_descriptions = self._create_positions_descriptions_list(list_elements=list_elements, page=page)
-            dates_worked_list = self._create_dates_worked_list(list_elements=list_elements, page=page)
-            print(company_name_list)
-            print(job_positions_list)
-            print(position_descriptions)
-            print(dates_worked_list)
-
+            print(False)
+            self._handle_original_page(user_id=user_id)
         else:
-            page = "New"
-            # Use new page logic
-            # "Click" on the "Show all experiences" button
-            self.driver.get("file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//testing//new.html")
-            # Locate the <li> elements that serve as wrappers
-            # for each individual work experience
-            list_elements = self._locate_list_element_wrappers(page=page)
-            company_name_list = self._create_company_name_list(list_elements=list_elements, page=page)
-            job_positions_list = self._create_positions_list(list_elements=list_elements, page=page)
+            print(True)
+            self.driver.get(button_href)
+            self._handle_new_page(user_id=user_id)
+
+    def _handle_original_page(self, user_id):
+        """Handles the original page for the current instance"""
+        page = "Original"
+        list_elements = self._locate_list_element_wrappers(page=page)
+        company_name_list = self._create_company_name_list(list_elements=list_elements, page=page)
+        job_positions_list = self._create_positions_list(list_elements=list_elements, page=page, user_id=user_id)
+        if job_positions_list is None:
+            print("Handling new page")
+        else:
             position_descriptions = self._create_positions_descriptions_list(list_elements=list_elements, page=page)
             dates_worked_list = self._create_dates_worked_list(list_elements=list_elements, page=page)
-            print(company_name_list)
-            print(job_positions_list)
-            print(position_descriptions)
-            print(dates_worked_list)
+            zipped_experiences_list = list(self._zip_all_experience_information(
+                company_names_list=company_name_list,
+                job_positions_list=job_positions_list,
+                position_descriptions=position_descriptions,
+                dates_worked_list=dates_worked_list,
+            ))
+            self.database_manager.update_experiences_in_database(user_id=user_id, zipped_list=zipped_experiences_list)
+
+    def _handle_new_page(self, user_id):
+        """Handles the new page for the current instance"""
+        page = "New"
+        list_elements = self._locate_list_element_wrappers(page=page)
+        company_name_list = self._create_company_name_list(list_elements=list_elements, page=page)
+        job_positions_list = self._create_positions_list(list_elements=list_elements, page=page, user_id=user_id)
+        position_descriptions = self._create_positions_descriptions_list(list_elements=list_elements, page=page)
+        dates_worked_list = self._create_dates_worked_list(list_elements=list_elements, page=page)
+        zipped_list = self._zip_all_experience_information(
+            company_names_list=company_name_list,
+            job_positions_list=job_positions_list,
+            position_descriptions=position_descriptions,
+            dates_worked_list=dates_worked_list,
+        )
+        self.database_manager.update_experiences_in_database(zipped_list=zipped_list, user_id=user_id)
 
 class SkillsManager(BaseManager):
     """
@@ -1536,78 +1712,85 @@ class SkillsManager(BaseManager):
         """
         skills_set = set()
         # Locate the skills section
-        skills_div = self.wait.until(
-            EC.presence_of_element_located((By.ID, "skills"))
-        )
-        # Switch to sibling element
-        sibling_div_tag = skills_div.find_element(
-            By.XPATH, './following-sibling::div[2]')
-        if sibling_div_tag:
-            # Locate the list elements
-            list_elements = sibling_div_tag.find_elements(
-                By.XPATH, "ul/li[contains(@class, 'artdeco-list__item')]")
-            for list_element in list_elements:
-                # Look for anchor tags in each list element
-                anchor_element = list_element.find_element(By.TAG_NAME, "a")
-                # Locate the span tag within the anchor element tree
-                span_tag = anchor_element.find_element(
-                    By.XPATH, './/span[@aria-hidden="true"]')
-                span_text = span_tag.text
-                print(span_text)
-                skills_set.add(span_text)
-        else:
-            print("could not find the sibling tag")
+        try:
+            skills_div = self.wait.until(
+                EC.presence_of_element_located((By.ID, "skills"))
+            )
+            # Switch to sibling element
+            sibling_div_tag = skills_div.find_element(
+                By.XPATH, './following-sibling::div[2]')
+            if sibling_div_tag:
+                # Locate the list elements
+                list_elements = sibling_div_tag.find_elements(
+                    By.XPATH, "ul/li[contains(@class, 'artdeco-list__item')]")
+                for list_element in list_elements:
+                    # Look for anchor tags in each list element
+                    anchor_element = list_element.find_element(By.TAG_NAME, "a")
+                    # Locate the span tag within the anchor element tree
+                    span_tag = anchor_element.find_element(
+                        By.XPATH, './/span[@aria-hidden="true"]')
+                    span_text = span_tag.text
+                    print(span_text)
+                    skills_set.add(span_text)
+            else:
+                print("could not find the sibling tag")
+
+        except TimeoutException:
+            print("Could not find any skills for this user")
 
         return skills_set
 
-    def scrape_skills(self):
+    def scrape_skills(self, profile_url):
         """Scrapes skills from user profile.
         
         Returns:
             set: A set of skills scraped from the webpage.
         """
         button_href = self.locate_skills_button()
-        print(f"BUTTON HREF: {button_href}")
         if button_href:
             self.driver.get(button_href)
             skills_set = self.scrape_skills_on_new_page()
+            # Get back to the original page
+            self.driver.get(profile_url)
         else:
-            print("Button href not found. Scraping skills off original site.")
             skills_set = self.scrape_skills_on_original_page()
-            self.driver.back()
 
         return skills_set
 
     def update_skills_database(self, skills_set: Set[str], user_id: int) -> None:
         """Update the skills database with the provided skills set for a specific user.
         
-            Args:
-                skills_set (list): A list of skills to be added to the database.
-                user_id (int): The ID of the user for whom the skills are being added.
+        Args:
+            skills_set (list): A list of skills to be added to the database.
+            user_id (int): The ID of the user for whom the skills are being added.
         
-            Returns:
-                None
+        Returns:
+            None
         
-            Example:
-                update_skills_database(['Python', 'SQL', 'JavaScript'], 123)
+        Example:
+            update_skills_database(['Python', 'SQL', 'JavaScript'], 123)
         """
+        if not skills_set:
+            self.database_manager.execute_query(
+                "INSERT INTO skills (skill_name, user_id) VALUES (NULL, %s)", (user_id,)
+            )
+            logging.info("No skills added for User ID: %s into database", user_id)
+            return
+
         for skill in skills_set:
-            print(f"SKILL: {skill}")
             self.database_manager.execute_query(
                 "INSERT INTO skills (skill_name, user_id) VALUES (%s, %s)", (skill, user_id)
             )
             logging.info("Added Skill: %s for User ID: %s into database", skill, user_id)
 
-        print("All skills were added to the database")
-
-    def skills_wrapper(self, user_id):
+    def skills_wrapper(self, user_id, profile_url):
         """
         Generates skill set from user profile then updates the database
         """
-        skills_set = self.scrape_skills()
+        skills_set = self.scrape_skills(profile_url)
         self.update_skills_database(skills_set, user_id)
 
-class LinkedInBot(BaseManager): # pylint: disable=too-many-arguments, too-few-public-methods
+class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-public-methods
     """
     A class representing a LinkedIn bot for automating interactions on the LinkedIn platform.
 
@@ -1724,6 +1907,12 @@ class LinkedInBot(BaseManager): # pylint: disable=too-many-arguments, too-few-pu
 
         # Loop through profile urls
         for profile_url in profile_urls:
+            
+            # Get the user id
+            user_id = self.get_user_id(profile_url=profile_url)
+
+            print("USER ID: ", user_id)
+
             # Visit the user's profile
             self.profile_interactor.visit_user(profile_url=profile_url)
 
@@ -1731,8 +1920,17 @@ class LinkedInBot(BaseManager): # pylint: disable=too-many-arguments, too-few-pu
             self.main_page_scraper.main_user_page_scraper_wrapper(profile_url=profile_url)
 
             # Run the skills wrapper
-            self.skills_manager.skills_wrapper(self.get_user_id(profile_url=profile_url))
+            self.skills_manager.skills_wrapper(self.get_user_id(profile_url=profile_url), profile_url=profile_url)
+
+            # Run the experience wrapper
+            self.experience_manager.experience_wrapper(user_id=user_id)
+
+            # Wait a little to go to the next profile
+            time.sleep(10)
         
-    def test(self):
+    def test(self, user_id, profile_url):
         # Test the Experiences methods
-        self.experience_manager.experience_wrapper()
+        self.driver.get(profile_url)
+        user_id = 1
+        self.experience_manager.experience_wrapper(user_id=user_id)
+        # self.database_manager.export_to_xslx()

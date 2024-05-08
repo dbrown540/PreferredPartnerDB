@@ -24,14 +24,12 @@ CREATE TABLE education(
 CREATE TABLE work_experience(
     experience_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES Users(user_id),
-    title VARCHAR(255),
+    job_title VARCHAR(255),
     company VARCHAR(255),
     location_of_job VARCHAR(255),
-    start_month INT,
-    start_year INT,
-    end_month INT,
-    end_year INT,
-    description_of_experience TEXT
+    start_date DATE,
+    end_date DATE,
+    work_description TEXT
 );
 
 -- Table: skills
@@ -69,6 +67,7 @@ CREATE TABLE proxies(
     proxy_id SERIAL PRIMARY KEY,
     proxy VARCHAR(100)
 );
+
 
 -- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//src//database//initialize.sql';
 -- \i 'C:/Users/Daniel.Brown/Desktop/PreferredPartnerDB/src/database/initialize.sql'

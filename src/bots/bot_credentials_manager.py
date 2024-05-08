@@ -82,8 +82,8 @@ class BotCredentialsManager:
         return first_names, last_names, email_headers
 
     @staticmethod
-    def generate_passwords(
-        num_of_passwords: int, length=12, 
+    def generate_password(
+        length=12, 
         include_special_chars=True) -> List[str]:
         """
         Generates strong passwords for the bots when they go to create emails and 
@@ -102,13 +102,10 @@ class BotCredentialsManager:
         if include_special_chars:
             alphabet += string.punctuation
         
-        passwords_list = []        
-        for _ in range(num_of_passwords):    
-            password = ''.join(secrets.choice(alphabet) for _ in range(length))
-            passwords_list.append(password)
+        password = ''.join(secrets.choice(alphabet) for _ in range(length))
 
         logging.info("Successfully generated passwords for the bots")
-        return passwords_list
+        return password
     
     @staticmethod
     def create_bot_contact_list_tuples(
@@ -139,22 +136,28 @@ class BotCredentialsManager:
         This function updates the bot credentials in the database by creating email headers, generating passwords,
         creating a bot contact list, and then updating the credentials in the database using the database manager.
         """
-        if not self.database_manager.bots_exist_in_database():
 
-            # Create email headers
-            first_names, last_names, email_headers = self.create_email_headers()
+        new_bots = set()
 
-            # Generate passwords
-            num_of_passwords = len(first_names)  # Assuming equal number of names and passwords
-            passwords_list = self.generate_passwords(num_of_passwords)
+        # Create email headers
+        first_names, last_names, email_headers = self.create_email_headers()
 
-            # Create bot contact list
-            contact_list = self.create_bot_contact_list_tuples(
-                first_names, last_names, email_headers, passwords_list
-            )
+        for item in zip(first_names, last_names, email_headers):
+            first_name = item[0]
+            last_name = item[1]
+            email_header = item[2]
+            # Check if the first and last name combination already exists in the database
+            bot_already_exists = self.database_manager.first_and_last_exists_in_db(first=first_name, last=last_name)
+            if bot_already_exists:
+                logging.info("%s %s (bot) already exists. Skipping to next bot.", first_name, last_name)
+                pass
+            else:
+                # Continue creating the bot account
+                password = self.generate_password()
+                new_bots.add((first_name, last_name, email_header, password))
 
-            # Update bot credentials in the database
-            self.database_manager.update_bot_credentials(contact_list)
         
-        else:
-            logging.info("Bot data already exists in database. Will not create new credentials.")
+
+        # Update bot credentials in the database
+        self.database_manager.update_bot_credentials(new_bots)
+        

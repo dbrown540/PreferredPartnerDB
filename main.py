@@ -22,12 +22,11 @@ Date:
 
 """
 import time
+import random
 from src.bots.scripts.scout import Scout
 from src.bots.bot_credentials_manager import BotCredentialsManager
 from src.bots.scripts.linkedinbot import LinkedInBot
-from src.bots.webdriver_manager import WebDriverManager
 from src.database.scripts.database_manager import DatabaseManager
-from src.bots.scripts.phone_number_bot import PhoneNumberScraper
 
 def main():
     """
@@ -39,23 +38,26 @@ def main():
     """
     """# Scout
     scout = Scout()
-    scout.execute(run=False, user_count=20)"""
+    scout.execute(run=True, user_count=10)
 
-    """# Bot Credential Manager
+    # Bot Credential Manager
     bot_credentials_manager = BotCredentialsManager()
-    bot_credentials_manager.bot_credentials_wrapper()"""
+    bot_credentials_manager.bot_credentials_wrapper()
 
-    """# LinkedIn Bot
+    # LinkedIn Bot
     usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
-    print(usable_bot_id_list)
 
     for bot_id in usable_bot_id_list:
         bot_instance = LinkedInBot(bot_id=bot_id)
-        bot_instance.test()
-        time.sleep(10)"""
-    
-    phone_number_scraper_object = PhoneNumberScraper()
-    phone_number_scraper_object.wrapper()
+        bot_instance.scrape_linkedin_page()
+        time.sleep(random.uniform(7, 12))
+    """
+
+    db_obj = DatabaseManager()
+    db_obj.xlsx()
+
+    """phone_number_scraper_object = PhoneNumberScraper()
+    phone_number_scraper_object.wrapper()"""
 
 if __name__ == '__main__':
     main()
