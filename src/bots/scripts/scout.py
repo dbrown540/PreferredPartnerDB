@@ -131,7 +131,7 @@ class GoogleSearcher(BaseManager):
         try:
             # Search query
             search_query = (
-                '("Centers for Medicare & Medicaid Services") AND ("Office of the Administrator") '
+                '("Centers for Medicare & Medicaid Services") AND ("Office of Burden Reduction & Health Informatics") '
                 'site:linkedin.com/in'
             )
 
@@ -284,6 +284,10 @@ class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
             logging.error('Error clicking "More Results" button: %s', e)
         except ElementClickInterceptedException:
             logging.warning("More Results button click was intercepted")
+            time.sleep(15)
+        except ElementNotInteractableException:
+            logging.warning("More results button is non interactable. wait a little")
+            time.sleep(15)
 
 class Scout(BaseManager):  #pylint: disable=too-few-public-methods
     """
