@@ -28,3 +28,7 @@ class PhoneNumberScraper(BaseManager):
 
     def wrapper(self):
         self.get_to_sms_to_me_website()
+
+class TenMinuteMailScraper(BaseManager):
+    def get_to_ten_minute_mail(self):
+        self.driver.get()

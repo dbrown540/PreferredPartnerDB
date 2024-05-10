@@ -50,7 +50,8 @@ from typing import List
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
-    TimeoutException, NoSuchElementException, ElementNotInteractableException
+    TimeoutException, NoSuchElementException, ElementNotInteractableException,
+    ElementClickInterceptedException
 )
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
@@ -80,6 +81,10 @@ class GoogleSearcher(BaseManager):
         search_google_query(search_box: WebElement):
             Searches a Google query using the provided search box element.
     """
+    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
+        super().__init__(webdriver_manager, database_manager)
+        self.webdriver_manager = webdriver_manager
+
     def navigate_to_google(self) -> None:
         """Navigates to the Google homepage."""
         self.driver.get("https://www.google.com")
@@ -126,12 +131,11 @@ class GoogleSearcher(BaseManager):
         try:
             # Search query
             search_query = (
-                '("Centers for Medicare & Medicaid Services") '
+                '("Centers for Medicare & Medicaid Services") AND ("Office of the Administrator") '
                 'site:linkedin.com/in'
             )
 
-            # Type search query into the search box
-            search_box.send_keys(search_query)
+            self.webdriver_manager.humanized_send_keys(search_box, search_query)
 
             # Press enter to search
             search_box.send_keys(Keys.ENTER)
@@ -207,19 +211,31 @@ class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
     
     def link_extractor_wrapper(self, user_count):
         parsed_links = set()
+        unchanged_count = 0  # Counter to track consecutive loops with no change in set length
+        max_unchanged_loops = 5  # Maximum consecutive loops with no change allowed
+
         while len(parsed_links) < user_count:
             unfiltered_links = self._collect_links()
             newly_parsed_links = self._parse_links(unfiltered_links)
             self.scroll_object.scroll()
+
+            prev_length = len(parsed_links)
             for new_link in newly_parsed_links:
                 parsed_links.add(new_link)
-                print(len(parsed_links))
-                if len(parsed_links) >= user_count:
-                    break
+            print(len(parsed_links))
 
-        # Finally, conver the set to a list
+            if len(parsed_links) == prev_length:
+                unchanged_count += 1
+                print("UNCHANGED COUNT: ", unchanged_count)
+                if unchanged_count >= max_unchanged_loops:
+                    break
+            else:
+                unchanged_count = 0
+
+        # Finally, convert the set to a list
         parsed_links = list(parsed_links)
         return parsed_links
+
 
 class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
     """
@@ -242,20 +258,22 @@ class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
     """
     def scroll(self):
         """Scrolls down to load more search results"""
-        time.sleep(random.uniform(3, 5))
+        time.sleep(random.uniform(1, 3))
         self._scroll_to_bottom()
         self._click_more_results_button()
 
     def _scroll_to_bottom(self):
         """Scrolls the webpage to the bottom."""
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        print("SCROLLED TO BOTTOM")
 
     def _click_more_results_button(self):
         """Clicks the 'More Results' button if found."""
         try:
+            time.sleep(1)
             more_results_button = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.XPATH, 'a[@aria-label="More results"]')
+                EC.element_to_be_clickable(
+                    (By.XPATH, '//a[@aria-label="More results"]')
                 )
             )
             more_results_button.click()
@@ -264,6 +282,8 @@ class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
             logging.warning('Timeout waiting for "More Results" button.')
         except NoSuchElementException as e:
             logging.error('Error clicking "More Results" button: %s', e)
+        except ElementClickInterceptedException:
+            logging.warning("More Results button click was intercepted")
 
 class Scout(BaseManager):  #pylint: disable=too-few-public-methods
     """

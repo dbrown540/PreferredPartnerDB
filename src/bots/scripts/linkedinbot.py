@@ -178,6 +178,7 @@ class LinkedInSignInManager(BaseManager):
         """
         super().__init__(webdriver_manager, database_manager)
         self.bot_id = bot_id
+        self.webdriver_manager = webdriver_manager
 
     def access_linkedin(self) -> None:
         """
@@ -326,7 +327,7 @@ class LinkedInSignInManager(BaseManager):
             )
 
             # Type the email into the login input field
-            email_input.send_keys(email)
+            self.webdriver_manager.humanized_send_keys(email_input, email)
 
             # Log a message indicating the successful location of the email input
             logging.info("Successfully typed email into the input field.")
@@ -414,7 +415,7 @@ class LinkedInSignInManager(BaseManager):
             )
 
             # Type the password
-            password_input.send_keys(password)
+            self.webdriver_manager.humanized_send_keys(password_input, password)
 
             # Log a message indicating the successful typing of the password into the input field
             logging.info("Successfully typed password in the password input")

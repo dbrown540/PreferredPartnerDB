@@ -39,12 +39,23 @@ Version:
 
 import logging
 import random
+import time
+import math
+from typing import Tuple, List
 
+import pyautogui  # pylint: disable=import-error
+import numpy as np
+import mouse
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, ElementNotVisibleException
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 
 class WebDriverManager:
     """
@@ -98,10 +109,14 @@ class WebDriverManager:
             Exception: If an unexpected error occurs while initializing the WebDriver.
         """
         try:
-            options = Options()
-            options.add_argument('--start-maximized')
+            options = webdriver.ChromeOptions()
+            options.add_argument('--disable-extensions')
+            options.add_argument("--start-maximized")
+            # Add capability to disable infobars
+            options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            options.add_experimental_option('useAutomationExtension', False)
             service = Service(self.driver_path)
-            driver = WebDriver(service=service, options=options)
+            driver = webdriver.Chrome(service=service, options=options)
             # Manage proxy options
             if self.bot_id:
                 pass
@@ -165,3 +180,137 @@ class WebDriverManager:
         # Execute JavaScript to scroll down
         js_script = f"window.scrollBy(0, {scroll_distance});"
         self.driver.execute_script(js_script)
+
+    def humanized_send_keys(self, element: WebElement, text: str, characters_per_minute: int = 7500) -> None:
+        """
+        Simulates human typing speed while sending keys to a web element.
+        
+        Args:
+            element (WebElement): The web element to send keys to.
+            text (str): The text to be sent to the web element.
+            characters_per_minute (int): The typing speed in characters per minute.
+        
+        Returns:
+            None
+        """
+        characters_per_second = characters_per_minute / 60
+        start_time = time.time()
+
+        for character in text:
+            element.send_keys(character)
+            error = random.uniform((1 / (3.5 * characters_per_second)), (3.5 / characters_per_second))  # Factors are arbitrary
+            sleep = 1 / (characters_per_second) + error
+            time.sleep(sleep)
+
+        end_time = time.time()
+
+        print("Total time: ", end_time - start_time)
+
+    def humanized_scroll(self, element):
+        """
+        Scrolls the page to make the specified element visible in the viewport and returns the coordinates of the element relative to the viewport.
+        
+        Args:
+            element: The element to be scrolled into view.
+        
+        Returns:
+            tuple: A tuple containing the X and Y coordinates of the element relative to the viewport.
+        """
+        # Get the window height
+        window_height = self.driver.execute_script("return window.innerHeight;")
+        print("Window height: ", window_height)
+
+        # Get the location and height of the element
+        element_y = element.location["y"] - window_height
+        print("ELEMENT Y: ", element_y)
+
+        # Calculate the bottom position of the element
+        bottom_of_viewport = window_height
+        print("BVP: ", bottom_of_viewport)
+        scroll_position = 0
+
+        while element_y > bottom_of_viewport:
+            # Determine the scroll position
+            scroll_position = self.driver.execute_script("return window.pageYOffset;")
+            print("SCROLL POS: ", scroll_position)
+            
+            # Calculate the bottom of the viewport
+            bottom_of_viewport = scroll_position + window_height
+            print("BVP: ", bottom_of_viewport)
+            
+            body_tag = self.driver.find_element(By.TAG_NAME, "body")
+            body_tag.send_keys(Keys.PAGE_DOWN)
+            
+            time.sleep(1)
+
+        # Calculate the coordinates of the element relative to the viewport
+        element_x = element.location["x"]  # X-coordinate of the element
+        scroll_position_x = self.driver.execute_script("return window.pageXOffset;")  # Horizontal scroll position
+        result_x = element_x - scroll_position_x  # Horizontal position relative to the viewport
+
+        result_y = bottom_of_viewport + element_y  # Vertical position relative to the viewport
+
+        print("ELEMENT X: ", element_x)
+        print("SCROLL POS X: ", scroll_position_x)
+        print(result_x, result_y)
+
+        target = (result_x, result_y)
+
+        print("Found the element")
+        # Additional sleep for debugging purposes
+        return target
+    
+    def humanized_mouse_movement(self, mouse_path: Tuple[List[int], List[int]]):
+        """Move the mouse cursor along a humanized path."""
+        # Adjust path for navbar thickness
+        adjusted_path = [(x, y) for x, y in zip(mouse_path[0], mouse_path[1])]
+
+        print("Moving mouse to the center")
+        for x, y in adjusted_path:
+            mouse.move(x, y, duration=0.0001)
+
+        print("At the target")
+        print(adjusted_path[-1][0], adjusted_path[-1][1])
+
+        time.sleep(3)
+
+    def calculate_mouse_path(self, start: Tuple[int, int], target: Tuple[int, int], navbar_thickness=95):
+        """Calculate the mouse path between start and target."""
+        num_steps = round(abs(target[0] - start[0]))
+
+        # Generate linearly spaced x and y coordinates
+        x_path = np.linspace(start=start[0], stop=target[0], num=num_steps)
+        y_path = np.linspace(start=start[1], stop=target[1], num=num_steps)
+
+        # Adjust y_path based off the thickness of the navbar
+        adjusted_y_path = [y + navbar_thickness for y in y_path]
+
+        # Generate oscillation values
+        osc = np.log(np.linspace(1, 10, num=num_steps))
+        osc[-1] = 0
+        print(osc)
+
+        # Calculate rounded x and y coordinates
+        rounded_xpath = [round(value) for value in x_path]
+        rounded_ypath = [round(value + 15 * osc_val) for value, osc_val in zip(adjusted_y_path, osc)]
+
+        mouse_path = (rounded_xpath, rounded_ypath)
+
+        return mouse_path
+    
+    def humanize_click(self, element):
+        # Get current mouse position
+        startingx, startingy = pyautogui.position()
+
+        # Get starting and target coords as tuples
+        starting_coords = (startingx, startingy)
+        target_coords = self.humanized_scroll(element)
+
+        # Calculate the mouse path
+        mouse_path = self.calculate_mouse_path(start=starting_coords, target=target_coords)
+
+        # Move the cursor to the element
+        self.humanized_mouse_movement(mouse_path)
+
+
+
