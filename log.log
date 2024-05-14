@@ -965,3 +965,61 @@ INFO:root:Service path: chromedriver-win64/chromedriver.exe
 Options: <selenium.webdriver.chrome.options.Options object at 0x000001469D7A9970>
 INFO:root:Connecting to PostgreSQL database ...
 INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000014ADBD08230>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001CD815B7B60>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+CRITICAL:root:Error executing query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: 2622727616. General Error: not all arguments converted during string formatting
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x00000216D5B07A40>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2622727616',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('3048328910',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('3073014852',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2513472343',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('4793514122',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('6232201240',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2096304104',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('3039704262',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('4752919096',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2024744215',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2397992407',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2293530485',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('8085568033',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2082791218',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2192358661',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('3162298580',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2703106287',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('2252332214',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO phone_numbers (phone_number) VALUES (%s) with parameters: ('3392731615',)

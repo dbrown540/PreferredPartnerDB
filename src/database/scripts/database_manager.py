@@ -509,3 +509,12 @@ class DatabaseManager:
         # Close cursor and connection
         cursor.close()
         self.conn.close()
+
+    def update_phone_numbers(self, phone_numbers_list):
+        for phone_number in phone_numbers_list:
+            query = "INSERT INTO phone_numbers (phone_number) VALUES (%s)"
+            params = (phone_number,)
+            self.execute_query(
+                query=query,
+                params=params
+            )

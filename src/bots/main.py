@@ -26,6 +26,7 @@ import random
 from .scripts.scout import Scout
 from .scripts.bot_credentials_manager import BotCredentialsManager
 from .scripts.linkedinbot import LinkedInBot
+from .scripts.bot_creator import PhoneNumberScraper
 
 def main():
     """
@@ -35,7 +36,7 @@ def main():
     It also retrieves a list of usable bot IDs from LinkedInBot and iterates 
     through each ID to create a LinkedInBot instance and scrape a LinkedIn page.
     """
-    # Scout
+    """# Scout
     scout = Scout()
     scout.execute(run=True, user_count=1000)
 
@@ -49,7 +50,10 @@ def main():
     for bot_id in usable_bot_id_list:
         bot_instance = LinkedInBot(bot_id=bot_id)
         bot_instance.scrape_linkedin_page()
-        time.sleep(random.uniform(7, 12))
+        time.sleep(random.uniform(7, 12))"""
+    
+    phone_number_scraper = PhoneNumberScraper()
+    phone_number_scraper.wrapper()
 
 if __name__ == '__main__':
     main()
