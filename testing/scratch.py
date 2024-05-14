@@ -14,7 +14,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
 
 from src.database.scripts.database_manager import DatabaseManager
-from src.bots.webdriver_manager import WebDriverManager
+from bots.webdriver.webdriver_manager import WebDriverManager
 from src.bots.scripts.linkedinbot import BaseManager
 
 class PhoneNumberScraper(BaseManager):

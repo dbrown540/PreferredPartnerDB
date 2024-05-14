@@ -56,7 +56,7 @@ from selenium.common.exceptions import (
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
 from .linkedinbot import BaseManager  #pylint: disable=relative-beyond-top-level
-from ..webdriver_manager import WebDriverManager
+from ..webdriver.webdriver_manager import WebDriverManager
 from ...database.scripts.database_manager import DatabaseManager  #pylint: disable=relative-beyond-top-level
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",

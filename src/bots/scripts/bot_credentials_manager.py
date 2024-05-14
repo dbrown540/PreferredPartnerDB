@@ -46,7 +46,7 @@ import logging
 from typing import List, Tuple
 
 #pylint: disable=relative-beyond-top-level
-from ..database.scripts.database_manager import DatabaseManager
+from ...database.scripts.database_manager import DatabaseManager
 
 logging.basicConfig(filename="log.log", level=logging.INFO)
 

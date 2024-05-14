@@ -1,0 +1,7 @@
+beautifulsoup4==4.12.3
+mouse==0.7.1
+numpy==1.26.4
+pandas==2.2.2
+psycopg2==2.9.9
+PyAutoGUI==0.9.54
+selenium==4.20.0

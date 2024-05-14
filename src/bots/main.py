@@ -23,12 +23,9 @@ Date:
 """
 import time
 import random
-from src.bots.scripts.scout import Scout
-from src.bots.bot_credentials_manager import BotCredentialsManager
-from src.bots.scripts.linkedinbot import LinkedInBot
-from src.database.scripts.database_manager import DatabaseManager
-from testing.scratch import Wrapper
-from src.bots.webdriver_manager import WebDriverManager
+from .scripts.scout import Scout
+from .scripts.bot_credentials_manager import BotCredentialsManager
+from .scripts.linkedinbot import LinkedInBot
 
 def main():
     """
@@ -38,7 +35,7 @@ def main():
     It also retrieves a list of usable bot IDs from LinkedInBot and iterates 
     through each ID to create a LinkedInBot instance and scrape a LinkedIn page.
     """
-    """# Scout
+    # Scout
     scout = Scout()
     scout.execute(run=True, user_count=1000)
 
@@ -52,10 +49,7 @@ def main():
     for bot_id in usable_bot_id_list:
         bot_instance = LinkedInBot(bot_id=bot_id)
         bot_instance.scrape_linkedin_page()
-        time.sleep(random.uniform(7, 12))"""
-
-    phone_number_scraper_object = Wrapper()
-    phone_number_scraper_object.execute()
+        time.sleep(random.uniform(7, 12))
 
 if __name__ == '__main__':
     main()

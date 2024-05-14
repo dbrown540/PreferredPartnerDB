@@ -959,3 +959,9 @@ WARNING:root:Timeout waiting for "More Results" button.
 WARNING:root:Timeout waiting for "More Results" button.
 WARNING:root:Timeout waiting for "More Results" button.
 WARNING:root:Timeout waiting for "More Results" button.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001469D7A9970>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
