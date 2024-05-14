@@ -27,8 +27,8 @@ from src.bots.scripts.scout import Scout
 from src.bots.bot_credentials_manager import BotCredentialsManager
 from src.bots.scripts.linkedinbot import LinkedInBot
 from src.database.scripts.database_manager import DatabaseManager
-from testing.scratch import Wrapper
 from src.bots.webdriver_manager import WebDriverManager
+from src.bots.scripts.bot_creator import PhoneNumberScraper
 
 def main():
     """
@@ -54,8 +54,8 @@ def main():
         bot_instance.scrape_linkedin_page()
         time.sleep(random.uniform(7, 12))"""
 
-    phone_number_scraper_object = Wrapper()
-    phone_number_scraper_object.execute()
+    phone_number_scraper_object = PhoneNumberScraper()
+    phone_number_scraper_object.wrapper()
 
 if __name__ == '__main__':
     main()
