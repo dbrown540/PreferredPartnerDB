@@ -26,9 +26,27 @@ class PhoneNumberScraper(BaseManager):
         self.driver.get("file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//testing//smstome.html")
         time.sleep(10)
 
+
     def wrapper(self):
         self.get_to_sms_to_me_website()
+        self.scrape_phone_numbers()
 
-class TenMinuteMailScraper(BaseManager):
-    def get_to_ten_minute_mail(self):
-        self.driver.get()
+    def get_to_sms_to_me_website(self):
+        self.webdriver_manager("https://smstome.com")
+    
+    def scrape_phone_numbers(self):
+    
+        elements = WebDriverManager.find_elements_by_tag_name('a')
+
+        phone_numbers = []
+
+        for elements in elements:
+            href = elements.get_attribute('href')
+            phone = re.finall(r'tel:\+?\d+', href)
+            if phone:
+                phone_numbers.extend(phone)
+
+    
+    print(scrape_phone_numbers)
+
+      
