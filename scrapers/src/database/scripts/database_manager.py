@@ -518,3 +518,18 @@ class DatabaseManager:
                 query=query,
                 params=params
             )
+
+    def get_work_periods(self):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT 
+                user_id,
+                MIN(start_date) AS earliest_start_date,
+                MAX(end_date) AS latest_end_date
+            FROM 
+                work_experience
+            GROUP BY 
+                user_id
+        """)
+        work_periods = cursor.fetchall()
+        return work_periods

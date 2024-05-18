@@ -199,3 +199,11 @@ WARNING:root:https://www.linkedin.com/in/stephanie-peterson-8a134023 already in 
 INFO:root:Using existing database connection.
 INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/meredith-manley-609844112',)
 WARNING:root:https://www.linkedin.com/in/meredith-manley-609844112 already in database. Moving to next profile
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000018AA5D23B30>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.

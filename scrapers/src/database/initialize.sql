@@ -5,7 +5,9 @@ CREATE TABLE users(
     users_name VARCHAR(255),
     email VARCHAR(100),
     location_of_user VARCHAR(255),
-    profile_url TEXT NOT NULL UNIQUE
+    profile_url TEXT NOT NULL UNIQUE,
+    estimated_net_worth DECIMAL(12, 2),
+    estimated_age INT
 );
 
 -- Table: education
@@ -29,7 +31,8 @@ CREATE TABLE work_experience(
     location_of_job VARCHAR(255),
     start_date DATE,
     end_date DATE,
-    work_description TEXT
+    work_description TEXT,
+    estimated_net_earnings DECIMAL(10, 2)
 );
 
 -- Table: skills
