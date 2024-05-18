@@ -131,7 +131,8 @@ class GoogleSearcher(BaseManager):
         try:
             # Search query
             search_query = (
-                '("Centers for Medicare & Medicaid Services") AND ("Office of Burden Reduction & Health Informatics") '
+                '("Fort Collins" OR "San Francisco") AND '
+                '("Luxury Equestrian" OR "Equine Real Estate" OR "Equine Wealth") '
                 'site:linkedin.com/in'
             )
 

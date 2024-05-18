@@ -36,7 +36,7 @@ Version:
 # pylint: disable=E0401
 import psycopg2
 import logging
-from src.database.scripts.config.config import config
+from .config.config import config
 
 logging.basicConfig(filename="log.log", level=logging.INFO)
 

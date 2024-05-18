@@ -50,7 +50,7 @@ def config(filename="database.ini", section="postgresql"):
         dict: A dictionary containing the database configuration parameters.
     """
     # Construct the full path to the configuration file
-    file_path = join("src", "database", "scripts", "config", filename)
+    file_path = join("scrapers", "src", "database", "scripts", "config", filename)
 
     # Create a parser object
     parser = ConfigParser()
