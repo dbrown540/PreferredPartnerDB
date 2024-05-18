@@ -38,7 +38,7 @@ def main():
     """
     # Scout
     scout = Scout()
-    scout.execute(run=True, user_count=50)
+    scout.execute(run=True, user_count=5)
 
     """# Bot Credential Manager
     bot_credentials_manager = BotCredentialsManager()

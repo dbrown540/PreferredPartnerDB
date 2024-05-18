@@ -56,8 +56,8 @@ from selenium.common.exceptions import (
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
 from .linkedinbot import BaseManager  #pylint: disable=relative-beyond-top-level
-from ..webdriver.webdriver_manager import WebDriverManager
-from ...database.scripts.database_manager import DatabaseManager  #pylint: disable=relative-beyond-top-level
+from ...webdriver.webdriver_manager import WebDriverManager
+from ....database.scripts.database_manager import DatabaseManager  #pylint: disable=relative-beyond-top-level
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -132,7 +132,7 @@ class GoogleSearcher(BaseManager):
             # Search query
             search_query = (
                 '("Fort Collins" OR "San Francisco") AND '
-                '("Luxury Equestrian" OR "Equine Real Estate" OR "Equine Wealth") '
+                '"Data Analyst" '
                 'site:linkedin.com/in'
             )
 
@@ -233,8 +233,12 @@ class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
             else:
                 unchanged_count = 0
 
+            if len(parsed_links) > user_count:
+                parsed_links = list(parsed_links)[:user_count]
+
         # Finally, convert the set to a list
         parsed_links = list(parsed_links)
+        print("Parsed length: ", len(parsed_links))
         return parsed_links
 
 

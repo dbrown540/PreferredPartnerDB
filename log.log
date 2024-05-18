@@ -6,3 +6,196 @@ INFO:root:Service path: chromedriver-win64/chromedriver.exe
 Options: <selenium.webdriver.chrome.options.Options object at 0x000001EB6F640E00>
 INFO:root:Connecting to PostgreSQL database ...
 INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001F4C6A40F50>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x0000028E5E636510>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+WARNING:root:More Results button click was intercepted
+WARNING:root:More Results button click was intercepted
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/dylan-johnson',)
+INFO:root:Adding https://www.linkedin.com/in/dylan-johnson to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/dylan-johnson',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/sashaskinner',)
+INFO:root:Adding https://www.linkedin.com/in/sashaskinner to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/sashaskinner',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/julie-bushey-3b481389',)
+INFO:root:Adding https://www.linkedin.com/in/julie-bushey-3b481389 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/julie-bushey-3b481389',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/nelson-borges-sf',)
+INFO:root:Adding https://www.linkedin.com/in/nelson-borges-sf to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/nelson-borges-sf',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/troyschuh',)
+INFO:root:Adding https://www.linkedin.com/in/troyschuh to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/troyschuh',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/farahaljoher',)
+INFO:root:Adding https://www.linkedin.com/in/farahaljoher to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/farahaljoher',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/jillian-hebert-192499198',)
+INFO:root:Adding https://www.linkedin.com/in/jillian-hebert-192499198 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/jillian-hebert-192499198',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/michael-nordquist',)
+INFO:root:Adding https://www.linkedin.com/in/michael-nordquist to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/michael-nordquist',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/tspencerdata?trk=public_profile_browsemap',)
+INFO:root:Adding https://www.linkedin.com/in/tspencerdata?trk=public_profile_browsemap to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/tspencerdata?trk=public_profile_browsemap',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/james-lee-251990138',)
+INFO:root:Adding https://www.linkedin.com/in/james-lee-251990138 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/james-lee-251990138',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/shreyasrdoshi',)
+INFO:root:Adding https://www.linkedin.com/in/shreyasrdoshi to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/shreyasrdoshi',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/findxinzhuo',)
+INFO:root:Adding https://www.linkedin.com/in/findxinzhuo to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/findxinzhuo',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/meredith-manley-609844112',)
+INFO:root:Adding https://www.linkedin.com/in/meredith-manley-609844112 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/meredith-manley-609844112',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/stephanie-peterson-8a134023',)
+INFO:root:Adding https://www.linkedin.com/in/stephanie-peterson-8a134023 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/stephanie-peterson-8a134023',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/eric-freeman-a612504',)
+INFO:root:Adding https://www.linkedin.com/in/eric-freeman-a612504 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/eric-freeman-a612504',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/ian-thorpe00',)
+INFO:root:Adding https://www.linkedin.com/in/ian-thorpe00 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/ian-thorpe00',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/megan-riley-sf',)
+INFO:root:Adding https://www.linkedin.com/in/megan-riley-sf to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/megan-riley-sf',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/andrewqjuarez',)
+INFO:root:Adding https://www.linkedin.com/in/andrewqjuarez to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/andrewqjuarez',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/treytipton4',)
+INFO:root:Adding https://www.linkedin.com/in/treytipton4 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/treytipton4',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/ying-cheng-95a68169',)
+INFO:root:Adding https://www.linkedin.com/in/ying-cheng-95a68169 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/ying-cheng-95a68169',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/jenksethi-75013b57',)
+INFO:root:Adding https://www.linkedin.com/in/jenksethi-75013b57 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/jenksethi-75013b57',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/amy-gage-9355897a',)
+INFO:root:Adding https://www.linkedin.com/in/amy-gage-9355897a to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/amy-gage-9355897a',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/jay-fung-582716149',)
+INFO:root:Adding https://www.linkedin.com/in/jay-fung-582716149 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/jay-fung-582716149',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/malia-jones-2023',)
+INFO:root:Adding https://www.linkedin.com/in/malia-jones-2023 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/malia-jones-2023',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/tyler-jensen-923130181',)
+INFO:root:Adding https://www.linkedin.com/in/tyler-jensen-923130181 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/tyler-jensen-923130181',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/paul-jenkins-32410353',)
+INFO:root:Adding https://www.linkedin.com/in/paul-jenkins-32410353 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/paul-jenkins-32410353',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/rdk-co',)
+INFO:root:Adding https://www.linkedin.com/in/rdk-co to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/rdk-co',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/martha-thomas-43672868',)
+INFO:root:Adding https://www.linkedin.com/in/martha-thomas-43672868 to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/martha-thomas-43672868',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/janetchiang-mh',)
+INFO:root:Adding https://www.linkedin.com/in/janetchiang-mh to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/janetchiang-mh',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/michaelroycollins',)
+INFO:root:Adding https://www.linkedin.com/in/michaelroycollins to the database
+INFO:root:Using existing database connection.
+INFO:root:Executed query: INSERT INTO users (profile_url) VALUES (%s) with parameters: ('https://www.linkedin.com/in/michaelroycollins',)
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001ECF49B7BC0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+WARNING:root:More Results button click was intercepted
+WARNING:root:More Results button click was intercepted
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/jillian-hebert-192499198',)
+WARNING:root:https://www.linkedin.com/in/jillian-hebert-192499198 already in database. Moving to next profile
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/shreyasrdoshi',)
+WARNING:root:https://www.linkedin.com/in/shreyasrdoshi already in database. Moving to next profile
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/sashaskinner',)
+WARNING:root:https://www.linkedin.com/in/sashaskinner already in database. Moving to next profile
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/stephanie-peterson-8a134023',)
+WARNING:root:https://www.linkedin.com/in/stephanie-peterson-8a134023 already in database. Moving to next profile
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/meredith-manley-609844112',)
+WARNING:root:https://www.linkedin.com/in/meredith-manley-609844112 already in database. Moving to next profile

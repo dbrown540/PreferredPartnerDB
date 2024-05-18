@@ -11,8 +11,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 
-from ...database.scripts.database_manager import DatabaseManager
-from ..webdriver.webdriver_manager import WebDriverManager
+from ....database.scripts.database_manager import DatabaseManager
+from ...webdriver.webdriver_manager import WebDriverManager
 from .linkedinbot import BaseManager
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
