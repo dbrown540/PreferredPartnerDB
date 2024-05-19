@@ -57,6 +57,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 
+from ...database.scripts.database_manager import DatabaseManager
+
 class WebDriverManager:
     """
     WebDriverManager provides functionality for managing a 
@@ -96,6 +98,7 @@ class WebDriverManager:
         self.driver_path = 'chromedriver-win64/chromedriver.exe'
         self.driver = self.initialize_webdriver()
         self.wait = WebDriverWait(self.driver, 10)
+        self.database_manager = DatabaseManager()
 
     def initialize_webdriver(self) -> WebDriver:
         """
@@ -312,5 +315,18 @@ class WebDriverManager:
         # Move the cursor to the element
         self.humanized_mouse_movement(mouse_path)
 
+    def save_cookies(self, bot_id, website):
+        # Check if cookies exist
+        query = (
+            "SELECT COUNT(*) FROM cookies "
+            "WHERE bot_id = %s AND website = %s;"
+        )
+        params=(bot_id, website)
+        fetch = "ONE"
 
+        self.database_manager.execute_query(
+            query=query,
+            params=params,
+            fetch=fetch
+        )
 

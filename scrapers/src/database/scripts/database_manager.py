@@ -193,6 +193,10 @@ class DatabaseManager:
             self.conn.rollback()
             raise
 
+class LinkedInDatabaseManager(DatabaseManager):
+    def __init__(self):
+        super().__init__()
+
     def update_work_experience(self, work_experience: Dict[str, str], user_id: int):
         """
         Insert job experiences into the database for a given user.
@@ -326,50 +330,6 @@ class DatabaseManager:
             else:
                 logging.warning("%s already in database. Moving to next profile", profile_url)
 
-    def update_bot_credentials(self, bot_contact_list: List[Tuple[str, str, str, str]]) -> None:
-        for contact in bot_contact_list:
-            if len(contact) != 4:
-                raise ValueError("Each tuple in bot_contact_list must contain 4 values")
-
-            query = (
-                "INSERT INTO "
-                "bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)"
-                "VALUES (%s, %s, %s, %s)"
-            )
-            params = (contact[0], contact[1], contact[2], contact[3])
-            self.execute_query(
-                query=query,
-                params=params
-            )
-
-        logging.info("Bot credentials updated successfully.")
-
-    def first_and_last_exists_in_db(self, first: str, last: str) -> bool:
-        """Check if the combination of first and last name exists in the database.
-        
-        Args:
-            first (str): The first name to check.
-            last (str): The last name to check.
-        
-        Returns:
-            bool: True if the combination of first and last name exists in the database, False otherwise.
-        """
-        
-        query = (
-            "SELECT COUNT(*) FROM bots WHERE bot_first_name = %s AND bot_last_name = %s"
-        )
-        params = (first, last)
-        fetch = "ONE"
-        result = self.execute_query(
-            query=query,
-            params=params,
-            fetch=fetch
-        )[0]
-        if result == 0:
-            return False
-        
-        return True
-
     def update_experiences_in_database(
             self, user_id: str,
             zipped_list: Tuple[
@@ -380,6 +340,7 @@ class DatabaseManager:
             ]):
         # Iterate through the zipped_list
         for company, job_titles, work_descriptions, date_ranges in zipped_list:
+            print("COMPANY: ", company)
             # Multiple experiences at one company
             if isinstance(job_titles, list):
                 for i, job_title in enumerate(job_titles):
@@ -443,7 +404,8 @@ class DatabaseManager:
                 job_title = job_titles
                 work_description = work_descriptions if isinstance(work_descriptions, str) else None
                 work_description = '' if work_description is None else work_description
-                start_date, end_date = date_ranges
+                start_date, end_date = date_ranges if date_ranges is not None else (None, None)
+                print(start_date, end_date)
                 # Check if the same experience already exists in the database for the given user_id
                 if work_description != '':
                     query = (
@@ -488,6 +450,99 @@ class DatabaseManager:
                     else:
                         logging.info("Experience already exists for user_id: %s, company: %s, job_title: %s. Moving on to the next query.", user_id, company, job_title)
 
+    def update_education_in_database(self, education_zip, user_id: str):
+        """
+        Update the education of a user in the database.
+        
+        Args:
+            education_zip (list): A list of tuples containing education details.
+            user_id (str): The unique identifier of the user.
+            
+        Returns:
+            None
+        """
+        logging.info("Starting update_education_in_database")
+        # Check if the education already exists in the database
+        for school_name, degree, dates, grade, description_of_education, activities_and_societies in education_zip:
+            print("School name: %s. Degree: %s. Dates: %s. Grade: %s. Description of education: %s. Activities and societies: %s" % (school_name, degree, dates, grade, description_of_education, activities_and_societies))
+            start_date = dates[0]
+            end_date = dates[1]
+
+            print("DATES: ", start_date, end_date)
+            logging.debug(f"Checking education for school: {school_name}, degree: {degree}, user_id: {user_id}")
+            query = (
+                "SELECT COUNT(*) FROM education WHERE user_id = %s AND degree IS NOT DISTINCT FROM %s AND school_name IS NOT DISTINCT FROM %s "
+                "AND start_date IS NOT DISTINCT FROM %s AND end_date IS NOT DISTINCT FROM %s AND activities_and_societies IS NOT DISTINCT FROM %s "
+                "AND grade IS NOT DISTINCT FROM %s AND description_of_education IS NOT DISTINCT FROM %s"
+            )
+            params = (user_id, degree, school_name, start_date, end_date, activities_and_societies, grade, description_of_education)
+            fetch = "ONE"
+            count = self.execute_query(query=query, params=params, fetch=fetch)[0]
+            logging.debug(f"Education count: {count}")
+            if count == 0:
+                query = (
+                    "INSERT INTO education (user_id, degree, school_name, start_date, end_date, description_of_education, activities_and_societies, grade) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                )
+                params = (user_id, degree, school_name, start_date, end_date, description_of_education, activities_and_societies, grade)
+                logging.info("Attempting to execute the query: %s with params: %s ", query, params)
+                self.execute_query(
+                    query=query,
+                    params=params
+                )
+            else:
+                logging.info("Education already exists for user_id: %s, degree: %s, school_name: %s. Moving on to the next query.", user_id, degree, school_name)
+
+
+
+class BotCredentialsDatabaseManager(DatabaseManager):
+    def __init__(self):
+        super().__init__()
+
+    def update_bot_credentials(self, bot_contact_list: List[Tuple[str, str, str, str]]) -> None:
+        for contact in bot_contact_list:
+            if len(contact) != 4:
+                raise ValueError("Each tuple in bot_contact_list must contain 4 values")
+
+            query = (
+                "INSERT INTO "
+                "bots (bot_first_name, bot_last_name, bot_email_header, bot_email_password)"
+                "VALUES (%s, %s, %s, %s)"
+            )
+            params = (contact[0], contact[1], contact[2], contact[3])
+            self.execute_query(
+                query=query,
+                params=params
+            )
+
+        logging.info("Bot credentials updated successfully.")
+
+    def first_and_last_exists_in_db(self, first: str, last: str) -> bool:
+        """Check if the combination of first and last name exists in the database.
+        
+        Args:
+            first (str): The first name to check.
+            last (str): The last name to check.
+        
+        Returns:
+            bool: True if the combination of first and last name exists in the database, False otherwise.
+        """
+        
+        query = (
+            "SELECT COUNT(*) FROM bots WHERE bot_first_name = %s AND bot_last_name = %s"
+        )
+        params = (first, last)
+        fetch = "ONE"
+        result = self.execute_query(
+            query=query,
+            params=params,
+            fetch=fetch
+        )[0]
+        if result == 0:
+            return False
+        
+        return True
+
 
     def xlsx(self):
 
@@ -518,18 +573,38 @@ class DatabaseManager:
                 query=query,
                 params=params
             )
+        
+class CookieManager(DatabaseManager):
+    def __init__(self):
+        super().__init__()
 
-    def get_work_periods(self):
-        cursor = self.conn.cursor()
-        cursor.execute("""
-            SELECT 
-                user_id,
-                MIN(start_date) AS earliest_start_date,
-                MAX(end_date) AS latest_end_date
-            FROM 
-                work_experience
-            GROUP BY 
-                user_id
-        """)
-        work_periods = cursor.fetchall()
-        return work_periods
+    def cookie_already_exists(self, bot_id, website, cookie):
+        pass
+
+    def save_cookies(self, bot_id, website, cookie):
+        query = (
+            "INSERT INTO cookies(bot_id, website, cookie) "
+            "VALUES (%s, %s, %s);"
+        )
+        params = (bot_id, website, cookie)
+        self.execute_query(
+            query=query,
+            params=params
+        )
+
+    def retrieve_cookie(self, bot_id, website):
+        query = (
+            "SELECT cookie FROM cookies "
+            "WHERE bot_id = %s AND website = %s"
+        )
+        params = (bot_id, website)
+        fetch = "ONE"
+
+        cookie = self.execute_query(
+            query=query,
+            params=params,
+            fetch=fetch
+        )[0]
+
+        return cookie
+    

@@ -15,10 +15,13 @@ CREATE TABLE users(
 CREATE TABLE education(
     education_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES Users(user_id),
-    degree VARCHAR(255),
     school_name VARCHAR(255),
-    graduation_month INT,
-    gradiation_year INT
+    degree VARCHAR(255),
+    grade VARCHAR(10),
+    start_date DATE,
+    end_date DATE,
+    description_of_education TEXT,
+    activities_and_societies TEXT
 );
 
 -- Table: work_experience
@@ -64,13 +67,17 @@ CREATE TABLE phone_numbers(
     assigned_to INTEGER REFERENCES Bots(bot_id)
 );
 
--- Table proxies
+-- Table cookies
 
-CREATE TABLE proxies(
-    proxy_id SERIAL PRIMARY KEY,
-    proxy VARCHAR(100)
+CREATE TABLE cookies(
+    cookie_id SERIAL PRIMARY KEY,
+    bot_id INTEGER REFERENCES Bots(bot_id),
+    website VARCHAR(255),
+    cookie JSONB
 );
 
+INSERT INTO bots(bot_first_name, bot_last_name, bot_email, bot_email_password) 
+VALUES('Danny', 'Brown', 'dbrown6@umbc.edu', 'Sp@ceghost12');
 
--- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//src//database//initialize.sql';
+-- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//scrapers//src//database//initialize.sql';
 -- \i 'C:/Users/Daniel.Brown/Desktop/PreferredPartnerDB/src/database/initialize.sql'

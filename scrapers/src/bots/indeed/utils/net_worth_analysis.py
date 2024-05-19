@@ -21,13 +21,13 @@ logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
 
 class NetWorthCalculator(BaseManager):
-    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
-        super().__init__(webdriver_manager, database_manager)
+    def __init__(self) -> None:
+        super().__init__(WebDriverManager(), DatabaseManager())
 
     def access_calculator(self):
         self.webdriver_manager.driver.get("https://dqydj.com/net-worth-by-age-calculator/")
 
-    def wrapper(self, user_id):
+    def wrapper(self):
         # Get the age from the database
         work_periods = self.database_manager.get_work_periods()
         print(work_periods)

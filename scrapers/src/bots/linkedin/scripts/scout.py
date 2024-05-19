@@ -57,7 +57,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
 from .linkedinbot import BaseManager  #pylint: disable=relative-beyond-top-level
 from ...webdriver.webdriver_manager import WebDriverManager
-from ....database.scripts.database_manager import DatabaseManager  #pylint: disable=relative-beyond-top-level
+from ....database.scripts.database_manager import DatabaseManager, LinkedInDatabaseManager  #pylint: disable=relative-beyond-top-level
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -81,8 +81,8 @@ class GoogleSearcher(BaseManager):
         search_google_query(search_box: WebElement):
             Searches a Google query using the provided search box element.
     """
-    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
-        super().__init__(webdriver_manager, database_manager)
+    def __init__(self, webdriver_manager: WebDriverManager, linkedin_db_manager: LinkedInDatabaseManager) -> None:
+        super().__init__(webdriver_manager, linkedin_db_manager)
         self.webdriver_manager = webdriver_manager
 
     def navigate_to_google(self) -> None:
@@ -156,13 +156,13 @@ class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
     Attributes:
         webdriver_manager (WebDriverManager):
             An instance of the WebDriverManager class responsible for managing the WebDriver.
-        database_manager (DatabaseManager):
+        linkedin_db_manager (DatabaseManager):
             An instance of the DatabaseManager class responsible for managing the database.
         last_known_links_index (int):
             Index indicating the last known number of links processed.
 
     Methods:
-        __init__(webdriver_manager, database_manager): 
+        __init__(webdriver_manager, linkedin_db_manager): 
             Initializes a LinkExtractor instance with the provided 
             WebDriverManager and DatabaseManager.
         link_extractor_wrapper():
@@ -178,10 +178,10 @@ class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
     """
     def __init__(
             self, webdriver_manager: WebDriverManager,
-            database_manager: DatabaseManager) -> None:
-        super().__init__(webdriver_manager, database_manager)
+            linkedin_db_manager: LinkedInDatabaseManager) -> None:
+        super().__init__(webdriver_manager, linkedin_db_manager)
         self.last_known_links_index = 0
-        self.scroll_object = Scroller(webdriver_manager, database_manager)
+        self.scroll_object = Scroller(webdriver_manager, linkedin_db_manager)
 
     def _collect_links(self) -> List[WebElement]:
         """Waits for the links to load."""
@@ -320,17 +320,19 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
     def __init__(self) -> None:
         super().__init__(WebDriverManager(), DatabaseManager())
 
+        self.linkedin_db_manager = LinkedInDatabaseManager()
+
         self.google_searcher = GoogleSearcher(
             webdriver_manager=self.webdriver_manager,
-            database_manager=self.database_manager
+            linkedin_db_manager=self.linkedin_db_manager
         )
         self.link_extractor = LinkExtractor(
             webdriver_manager=self.webdriver_manager,
-            database_manager=self.database_manager
+            linkedin_db_manager=self.linkedin_db_manager
         )
         self.scroller = Scroller(
             webdriver_manager=self.webdriver_manager,
-            database_manager=self.database_manager
+            database_manager=self.linkedin_db_manager
         )
 
     def execute(self, run: bool, user_count):
@@ -352,7 +354,7 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
 
             parsed_links = self.link_extractor.link_extractor_wrapper(user_count=user_count)
 
-            self.database_manager.update_profile_urls_from_scout(parsed_links)
+            self.linkedin_db_manager.update_profile_urls_from_scout(parsed_links)
 
         else:
             print("Skipping Scout. If you want to run Scout, change the value of run to True")

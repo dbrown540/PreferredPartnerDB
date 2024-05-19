@@ -46,16 +46,16 @@ import logging
 from typing import List, Tuple
 
 #pylint: disable=relative-beyond-top-level
-from ....database.scripts.database_manager import DatabaseManager
+from ....database.scripts.database_manager import DatabaseManager, BotCredentialsDatabaseManager
 
 logging.basicConfig(filename="log.log", level=logging.INFO)
 
 class BotCredentialsManager:
     def __init__(self):
-        self.database_manager = DatabaseManager()
+        self.credentials_db_manager = BotCredentialsDatabaseManager()
 
     @staticmethod
-    def create_email_headers(file_path="src//bots//config//names.txt") -> List[str]:
+    def create_email_headers(file_path="scrapers/src/bots/linkedin/config/names.txt") -> List[str]:
         """
         Reads a text file containing names and creates email headers.
     
@@ -147,7 +147,7 @@ class BotCredentialsManager:
             last_name = item[1]
             email_header = item[2]
             # Check if the first and last name combination already exists in the database
-            bot_already_exists = self.database_manager.first_and_last_exists_in_db(first=first_name, last=last_name)
+            bot_already_exists = self.credentials_db_manager.first_and_last_exists_in_db(first=first_name, last=last_name)
             if bot_already_exists:
                 logging.info("%s %s (bot) already exists. Skipping to next bot.", first_name, last_name)
                 pass
@@ -159,5 +159,6 @@ class BotCredentialsManager:
         
 
         # Update bot credentials in the database
-        self.database_manager.update_bot_credentials(new_bots)
+        self.credentials_db_manager.update_bot_credentials(new_bots)
         
+print("Completed")

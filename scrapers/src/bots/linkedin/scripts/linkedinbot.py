@@ -62,7 +62,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 
-from ....database.scripts.database_manager import DatabaseManager
+from ....database.scripts.database_manager import DatabaseManager, LinkedInDatabaseManager
 from ...webdriver.webdriver_manager import WebDriverManager
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
@@ -710,6 +710,7 @@ class MainUserPageScraper(BaseManager):
         """
         super().__init__(webdriver_manager, database_manager)
         self.bot_id = bot_id
+        self.linkedin_db_manager = LinkedInDatabaseManager()
 
     def find_users_name(self) -> Union[str, None]:
         """
@@ -813,7 +814,7 @@ class MainUserPageScraper(BaseManager):
         users_name = self.find_users_name()
 
         # Send the user's name to the database
-        self.database_manager.send_names_to_db(
+        self.linkedin_db_manager.send_names_to_db(
             users_name=users_name, profile_url=profile_url
         )
 
@@ -821,7 +822,7 @@ class MainUserPageScraper(BaseManager):
         location = self.extract_current_location()
 
         # Update the database with the user's location
-        self.database_manager.update_location_in_db(
+        self.linkedin_db_manager.update_location_in_db(
             users_location=location, profile_url=profile_url
         )
 
@@ -878,6 +879,10 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                         position_descriptions, dates_worked_list):
             Prints the zipped list.
     """
+    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
+        super().__init__(webdriver_manager, database_manager)
+        self.linkedin_db_manager = LinkedInDatabaseManager()
+
     def _locate_show_all_experiences_button(self) -> Optional[str]:
         """
         Locate and return the href attribute of the 'Show all experiences' button on the page.
@@ -976,7 +981,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         return None
 
     def _has_multiple_experiences_at_one_company(
-            self, list_element: List[WebElement], page: str) -> Tuple[bool, Optional[WebElement]]:
+            self, list_element: WebElement, page: str) -> Tuple[bool, Optional[WebElement]]:
         """
         Check if there are multiple work experiences at one company for a given list element.
 
@@ -1091,6 +1096,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
 
                     company_names.append(company_name)
 
+        print("COMPANY NAMES: ", company_names)
         return company_names
 
     def _create_positions_list(self, list_elements: List[WebElement], page: str, user_id: int) -> List[str]:
@@ -1111,6 +1117,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         if page == "Original":
             for list_element in list_elements:
                 overflow_at_one_company = self._handle_overflow_at_one_company(list_element=list_element)
+                print("Overflow at one company: ", overflow_at_one_company)
                 if not overflow_at_one_company:
                     has_multiple_experiences, anchor_tag = self._has_multiple_experiences_at_one_company(
                         list_element=list_element,
@@ -1200,6 +1207,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                     job_position_text = span_tag.text
                     positions_list.append(job_position_text)
 
+        print("POSITIONS LIST: ", positions_list)
         return positions_list
 
     def _create_positions_descriptions_list(
@@ -1296,6 +1304,8 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                         position_descriptions_list.append(parsed_description)
                     except NoSuchElementException:
                         position_descriptions_list.append(None)
+
+        print("DESCRIPTIONS: ", position_descriptions_list)
         return position_descriptions_list
 
     def _create_dates_worked_list(
@@ -1325,26 +1335,31 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
 
                 if has_multiple_experiences:
                     dates_worked_at_multiple_experiences = []
-                    span_containing_dates_worked = list_element.find_elements(
-                        By.XPATH, ".//a/span/span[@class='pvs-entity__caption-wrapper']"
-                    )
-                    for date_range in span_containing_dates_worked:
-                        date_range_text = date_range.text
-                        parsed_dates = self.parse_date_range(date_range_text)
-                        if parsed_dates:
-                            dates_worked_at_multiple_experiences.append(parsed_dates)
+                    try:
+                        span_containing_dates_worked = list_element.find_elements(
+                            By.XPATH, ".//a/span/span[@class='pvs-entity__caption-wrapper']"
+                        )
+                        for date_range in span_containing_dates_worked:
+                            date_range_text = date_range.text
+                            parsed_dates = self.parse_date_range(date_range_text)
+                            if parsed_dates:
+                                dates_worked_at_multiple_experiences.append(parsed_dates)
 
-                    dates_worked_list.append(dates_worked_at_multiple_experiences)
+                        dates_worked_list.append(dates_worked_at_multiple_experiences)
+                    except NoSuchElementException as e:
+                        logging.warning("Could not find dates worked for this user: ", e)
 
                 else:
-                    span_containing_dates_worked = list_element.find_element(
-                        By.CLASS_NAME, "pvs-entity__caption-wrapper"
-                    )
-                    date_range_text = span_containing_dates_worked.text
-                    parsed_dates = self.parse_date_range(date_range_text)
-                    dates_worked_list.append(parsed_dates)
-
-
+                    try:
+                        span_containing_dates_worked = list_element.find_element(
+                            By.CLASS_NAME, "pvs-entity__caption-wrapper"
+                        )
+                        date_range_text = span_containing_dates_worked.text
+                        parsed_dates = self.parse_date_range(date_range_text)
+                        dates_worked_list.append(parsed_dates)
+                    except NoSuchElementException as e:
+                        dates_worked_list.append([None, None])
+                        logging.info("Could not find dates worked for this position")
 
         else:
             for list_element in list_elements:
@@ -1354,30 +1369,38 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                 )
                 if has_multiple_experiences:
                     dates_worked_at_multiple_experiences = []
-                    # Get to the li tag wrapper that contains the single position
-                    list_elements_containing_single_experience = list_element.find_elements(
-                        By.XPATH, ".//li[contains(@class, 'pvs-list__paged-list-item') "
-                        "and contains(@class, 'pvs-list__item--one-column')]"
-                    )
-                    
-                    for wrapper_list_element in list_elements_containing_single_experience:
-                        span_containing_dates_worked = wrapper_list_element.find_element(
+                    try:
+                        # Get to the li tag wrapper that contains the single position
+                        list_elements_containing_single_experience = list_element.find_elements(
+                            By.XPATH, ".//li[contains(@class, 'pvs-list__paged-list-item') "
+                            "and contains(@class, 'pvs-list__item--one-column')]"
+                        )
+                        
+                        for wrapper_list_element in list_elements_containing_single_experience:
+                            span_containing_dates_worked = wrapper_list_element.find_element(
+                                By.CLASS_NAME, "pvs-entity__caption-wrapper"
+                            )
+                            date_range_text = span_containing_dates_worked.text
+                            parsed_dates = self.parse_date_range(date_range_text)
+                            dates_worked_at_multiple_experiences.append(parsed_dates)
+
+                        dates_worked_list.append(dates_worked_at_multiple_experiences)
+                    except NoSuchElementException as e:
+                        logging.warning("Could not find dates worked for this user. ", e)
+
+                else:
+                    try:
+                        span_containing_dates_worked = list_element.find_element(
                             By.CLASS_NAME, "pvs-entity__caption-wrapper"
                         )
                         date_range_text = span_containing_dates_worked.text
                         parsed_dates = self.parse_date_range(date_range_text)
-                        dates_worked_at_multiple_experiences.append(parsed_dates)
+                        dates_worked_list.append(parsed_dates)
+                    except NoSuchElementException as e:
+                        dates_worked_list.append([None, None])
+                        logging.warning("Could not find dates worked for this user. ", e)
 
-                    dates_worked_list.append(dates_worked_at_multiple_experiences)
-
-                else:
-                    span_containing_dates_worked = list_element.find_element(
-                        By.CLASS_NAME, "pvs-entity__caption-wrapper"
-                    )
-                    date_range_text = span_containing_dates_worked.text
-                    parsed_dates = self.parse_date_range(date_range_text)
-                    dates_worked_list.append(parsed_dates)
-
+        print("DATES WORKED: ", dates_worked_list)
         return dates_worked_list
 
     def _handle_overflow_at_one_company(self, list_element: WebElement):
@@ -1387,6 +1410,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                 By.ID, 'navigation-index-see-all-positions-aggregated'
             )
             
+            print("Found overflow a tag. Has href: ", overflow_a_tag.get_attribute("href"))
             return overflow_a_tag.get_attribute("href")
 
         except NoSuchElementException:
@@ -1429,7 +1453,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         # Remove special characters
         text_without_special_characters = text_without_bullets.replace("�", "").strip()
         
-        # Remove blank lines
+        # Replace blank lines with comma
         lines = text_without_special_characters.split('\n')
         clean_lines = (line.strip() for line in lines if line.strip())
         return ' '.join(clean_lines)
@@ -1451,7 +1475,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
             list: A list containing the start and end dates in the format YYYY-MM-DD.
         """
         # Extract the start and end dates using regex
-        pattern = r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\b|Present'
+        pattern = r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\b|\b\d{4}\b|Present'
         dates = re.findall(pattern, date_range_text)
 
         # Convert dates to YYYY-MM-DD format
@@ -1463,7 +1487,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
             else:
                 # Check if the date string contains a month and a year
                 date_parts = date_str.split()
-                if len(date_parts) >= 2:
+                if len(date_parts) == 2:
                     month_str, year_str = date_parts
                     month_num = {
                         'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4,
@@ -1471,7 +1495,12 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                         'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
                     }[month_str]
                     formatted_date = f"{year_str}-{month_num:02d}-01"
-                    formatted_dates.append(formatted_date)
+                elif len(date_parts) == 1 and date_parts[0].isdigit():
+                    year_str = date_parts[0]
+                    formatted_date = f"{year_str}-01-01"
+                else:
+                    continue
+                formatted_dates.append(formatted_date)
 
         # If there are two dates, assume the first is the start date and the second is the end date
         if len(formatted_dates) == 2:
@@ -1484,7 +1513,9 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
     @staticmethod
     def _zip_all_experience_information(company_names_list: List[str], job_positions_list: List[str], position_descriptions, dates_worked_list):
         """Zips together all the lists that were created while scraping the experiences."""
-        return zip(company_names_list, job_positions_list, position_descriptions, dates_worked_list)
+        print(len(company_names_list), len(job_positions_list), len(position_descriptions), len(dates_worked_list))
+        zipped = zip(company_names_list, job_positions_list, position_descriptions, dates_worked_list)
+        return zipped
 
     def experience_wrapper(self, user_id):
         """Wrapper for all experiences logic"""
@@ -1514,7 +1545,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                 position_descriptions=position_descriptions,
                 dates_worked_list=dates_worked_list,
             ))
-            self.database_manager.update_experiences_in_database(user_id=user_id, zipped_list=zipped_experiences_list)
+            self.linkedin_db_manager.update_experiences_in_database(user_id=user_id, zipped_list=zipped_experiences_list)
 
     def _handle_new_page(self, user_id):
         """Handles the new page for the current instance"""
@@ -1530,7 +1561,8 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
             position_descriptions=position_descriptions,
             dates_worked_list=dates_worked_list,
         )
-        self.database_manager.update_experiences_in_database(zipped_list=zipped_list, user_id=user_id)
+        self.linkedin_db_manager.update_experiences_in_database(zipped_list=zipped_list, user_id=user_id)
+        self.driver.back()
 
 class SkillsManager(BaseManager):
     """
@@ -1578,6 +1610,10 @@ class SkillsManager(BaseManager):
         skills_wrapper(user_id: int) -> None:
             Generates skill set from user profile then updates the database.
     """
+    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
+        super().__init__(webdriver_manager, database_manager)
+        self.linkedin_db_manager = LinkedInDatabaseManager()
+
     def locate_skills_button(self) -> Optional[str]:
         """
         Locates the 'Show all skills' button on the page.
@@ -1779,10 +1815,21 @@ class SkillsManager(BaseManager):
             return
 
         for skill in skills_set:
-            self.database_manager.execute_query(
-                "INSERT INTO skills (skill_name, user_id) VALUES (%s, %s)", (skill, user_id)
-            )
-            logging.info("Added Skill: %s for User ID: %s into database", skill, user_id)
+            # Check if the skill already exists:
+            result = self.database_manager.execute_query(
+                query="SELECT COUNT(*) FROM skills WHERE skill_name = %s AND user_id = %s",
+                params=(skill, user_id),
+                fetch="ONE"
+            )[0]
+
+            if result == 0:
+                self.database_manager.execute_query(
+                    "INSERT INTO skills (skill_name, user_id) VALUES (%s, %s)", (skill, user_id)
+                )
+                logging.info("Added Skill: %s for User ID: %s into database", skill, user_id)
+
+            else:
+                logging.info("Skill: %s is already in the database for User ID: %s. Moving on to the next skill.", skill, user_id)
 
     def skills_wrapper(self, user_id, profile_url):
         """
@@ -1790,6 +1837,225 @@ class SkillsManager(BaseManager):
         """
         skills_set = self.scrape_skills(profile_url)
         self.update_skills_database(skills_set, user_id)
+
+class EducationManager(BaseManager):
+    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
+        super().__init__(webdriver_manager, database_manager)
+        self.linkedin_db_manager = LinkedInDatabaseManager()
+
+    def _look_for_education_header(self):
+        education_div = self.wait.until(
+            EC.presence_of_element_located((By.ID, "education"))
+        )
+        if education_div:
+            return True
+        
+        return False
+    
+    def _locate_show_all_educations_button(self):
+        try: 
+            all_educations_button = self.driver.find_element(
+                By.ID, "navigation-index-see-all-education"
+            )
+
+            return all_educations_button.get_attribute("href")
+        
+        except NoSuchElementException:
+            return False
+    
+    def _locate_list_element_wrappers(self, page):
+        if page == "Original":
+            # Locate the education section
+            education_div = self.driver.find_element(
+                By.ID, "education"
+            )
+            # Switch to second sibling element
+            sibling_div_tag = education_div.find_element(
+                By.XPATH, './following-sibling::div[2]')
+            
+            # Locate the list elements
+            list_elements = sibling_div_tag.find_elements(
+                By.XPATH, "ul/li[contains(@class, 'artdeco-list__item')]")
+            
+            return list_elements
+
+        else:
+            # Handle new page
+            return self.driver.find_elements(
+                By.CLASS_NAME, "pvs-list__paged-list-item.artdeco-list__item.pvs-list__item--line-separated.pvs-list__item--one-column"
+            )
+
+    def _get_school_names(self, list_elements: List[WebElement]):
+        school_names_list = []
+        
+        for list_element in list_elements:
+            try:
+                # Handle new page
+                school_name = list_element.find_element(
+                    By.XPATH, ".//div[contains(@class, 'mr1')]/span[@aria-hidden='true']"
+                ).text
+
+                school_names_list.append(school_name)
+            
+            except NoSuchElementException:
+                school_names_list.append(None)
+
+        return school_names_list
+
+    def _get_degrees(self, list_elements: List[WebElement]):
+        degree_names = []
+        
+        for list_element in list_elements:
+            try:
+                degree_name = list_element.find_element(
+                    By.XPATH, ".//a/span/span[@aria-hidden='true']"
+                ).text
+
+                if degree_name:
+                    # Adden none if there is a year (YYYY) inside the degree
+                    pattern = re.compile(r'\d{4}')
+                    if pattern.search(degree_name):
+                        degree_names.append(None)
+                    else:
+                        degree_names.append(degree_name)
+
+            except NoSuchElementException:
+                degree_names.append(None)
+
+        return degree_names
+                
+    def _get_dates_attended(self, list_elements: List[WebElement]):
+        # Note to self: Consider a situation where there is an education but no dates provided
+        dates_attended_list = []
+        
+        for list_element in list_elements:
+            try:
+                dates_attended_unparsed = list_element.find_element(
+                    By.CLASS_NAME, "pvs-entity__caption-wrapper"
+                )
+
+                unparsed_text = dates_attended_unparsed.text
+
+                parsed_dates = ExperienceManager.parse_date_range(unparsed_text)
+                
+                dates_attended_list.append(parsed_dates)
+
+            except NoSuchElementException:
+                dates_attended_list.append([None, None])
+
+        return dates_attended_list
+
+    def _nullify_empty_dates(self, dates_attended_list: List[List[str]]) -> List[List[Union[str, None]]]:
+        """
+        Ensures each sublist in dates_attended_list has exactly two elements.
+        If a sublist has fewer than two elements, None is inserted at the beginning.
+        
+        Args:
+            dates_attended_list (List[List[Optional[datetime]]]): A list of lists containing datetime objects or None.
+
+        Returns:
+            List[List[Optional[datetime]]]: A list of lists where each sublist has exactly two elements.
+        """
+        cleaned_dates = []
+        for dates in dates_attended_list:
+            if len(dates) == 1:
+                dates.insert(0, None)  # Add None at the beginning if there's only one date
+            elif len(dates) == 0:
+                dates = [None, None]  # Replace empty list with a list containing two None values
+            elif len(dates) > 2:
+                dates = dates[:2]  # Truncate to two elements if there are more than two dates
+            cleaned_dates.append(dates)
+
+        return cleaned_dates
+    
+    def _get_grades(self, list_elements: List[WebElement]):
+        grades_list = []
+        for list_element in list_elements:
+            try:
+                span_containing_grade = list_element.find_element(
+                    By.XPATH, ".//li/div/div/div/div/div/div/span[@aria-hidden='true' and contains(text(), 'Grade:')]"
+                ).text
+
+                grade = span_containing_grade.split("Grade:")[1].strip()
+                
+                grades_list.append(grade)
+
+            except NoSuchElementException:
+                grades_list.append(None)
+            
+        return grades_list
+
+    def _get_activities_and_clubs(self, list_elements: List[WebElement]):
+        activities_and_clubs_list = []
+        for list_element in list_elements:
+
+            try:
+                text_containing_activities_and_clubs = list_element.find_element(
+                    By.XPATH, ".//li/div/div/div/div/div/div/span[@aria-hidden='true' and contains(text(), 'Activities')]"
+                ).text
+                activities_and_societies = text_containing_activities_and_clubs.split("Activities and societies:")[1].strip()
+                activities_and_clubs_list.append(activities_and_societies)
+
+            except NoSuchElementException:
+                activities_and_clubs_list.append(None)
+
+        return activities_and_clubs_list
+
+    def _get_description_of_education(self, list_elements: List[WebElement]):
+        descriptions_of_education = []
+        for list_element in list_elements:
+            try:
+                description = list_element.find_element(
+                    By.XPATH, ".//li//li/div/div/div/span[@aria-hidden='true']"
+                ).text
+                parsed_description = ExperienceManager.remove_emojis_and_blank_lines(description)
+                descriptions_of_education.append(parsed_description)
+
+            except NoSuchElementException:
+                descriptions_of_education.append(None)
+
+
+        return descriptions_of_education
+    
+    def zip_all_education_information(self, school_names_list, degree_names, dates_attended_list, grades, activities_and_clubs_list, descriptions_of_education):
+        zipped_education = zip(school_names_list, degree_names, dates_attended_list, grades, activities_and_clubs_list, descriptions_of_education)
+        return zipped_education
+
+
+    def education_wrapper(self, user_id):
+        education_section_exists = self._look_for_education_header()
+        if education_section_exists:
+            # Handle condition where there is an education section
+            button_href = self._locate_show_all_educations_button()
+            if button_href:
+                page = "New"
+                # Handle case where there is a button href that brings you to a new page
+                self.driver.get(button_href)
+                list_elements = self._locate_list_element_wrappers(page=page)
+            else:
+                page = "Original"
+                list_elements = self._locate_list_element_wrappers(page=page)
+
+            
+            school_names_list = self._get_school_names(list_elements=list_elements)
+            degree_names = self._get_degrees(list_elements=list_elements)
+            dates_attended_list = self._get_dates_attended(list_elements=list_elements)
+            parsed_dates_list = self._nullify_empty_dates(dates_attended_list)
+            grades = self._get_grades(list_elements=list_elements)
+            activities_and_clubs_list = self._get_activities_and_clubs(list_elements=list_elements)
+            descriptions_of_education = self._get_description_of_education(list_elements=list_elements)
+            zipped_education = self.zip_all_education_information(
+                school_names_list=school_names_list,
+                degree_names=degree_names,
+                dates_attended_list=parsed_dates_list,
+                grades=grades,
+                descriptions_of_education=descriptions_of_education,
+                activities_and_clubs_list=activities_and_clubs_list
+            )
+            # Update database
+            self.linkedin_db_manager.update_education_in_database(zipped_education, user_id)
+
+        return None
 
 class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-public-methods
     """
@@ -1852,6 +2118,10 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
         self.skills_manager = SkillsManager(
             webdriver_manager=self.webdriver_manager,
             database_manager=self.database_manager,
+        )
+        self.education_manager = EducationManager(
+            webdriver_manager=self.webdriver_manager,
+            database_manager=self.database_manager
         )
 
     @classmethod
@@ -1926,12 +2196,20 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
             # Run the experience wrapper
             self.experience_manager.experience_wrapper(user_id=user_id)
 
+            # Run the education wrapper
+            self.education_manager.education_wrapper(user_id=user_id)
+
             # Wait a little to go to the next profile
             time.sleep(10)
         
-    def test(self, user_id, profile_url):
+    def test(self, user_id, profile_url="file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//scrapers//src//bots//linkedin//testing//crazy.html"):
         # Test the Experiences methods
         self.driver.get(profile_url)
         user_id = 1
-        self.experience_manager.experience_wrapper(user_id=user_id)
+        self.education_manager.education_wrapper()
         # self.database_manager.export_to_xslx()
+
+
+def show_all_items(zipped_list):
+    for item in zipped_list:
+        print(item)
