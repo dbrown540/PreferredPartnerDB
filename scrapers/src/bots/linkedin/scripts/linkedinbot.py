@@ -54,6 +54,7 @@ from typing import Union, Tuple, Optional, Set, List
 import re
 from datetime import datetime
 import os
+import asyncio
 
 import psycopg2
 from selenium.common.exceptions import (
@@ -66,7 +67,7 @@ from geopy.geocoders import Nominatim
 
 from ....database.scripts.database_manager import DatabaseManager, LinkedInDatabaseManager
 from ...webdriver.webdriver_manager import WebDriverManager
-from ..utils.location_formatter.location_formatter import LocationFormatter
+from ..utils.location_formatter.location_formatter import LocationFormatter, process_locations
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -1454,10 +1455,8 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
                 except NoSuchElementException:
                     locations_worked.append(None)
 
-        for i, loc in enumerate(locations_worked):
-            newloc = self.location_formatter.reformat_location(loc)
-            locations_worked[i] = newloc
-            time.sleep(1.1)
+        # Run the async process
+        asyncio.run(process_locations(locations_worked, self.location_formatter))
 
         return locations_worked
 
