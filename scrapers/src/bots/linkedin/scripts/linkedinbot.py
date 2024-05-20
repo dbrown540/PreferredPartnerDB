@@ -66,7 +66,7 @@ from geopy.geocoders import Nominatim
 
 from ....database.scripts.database_manager import DatabaseManager, LinkedInDatabaseManager
 from ...webdriver.webdriver_manager import WebDriverManager
-from ..utils.location_formatter import LocationFormatter
+from ..utils.location_formatter.location_formatter import LocationFormatter
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
