@@ -131,9 +131,7 @@ class GoogleSearcher(BaseManager):
         try:
             # Search query
             search_query = (
-                '("Fort Collins" OR "San Francisco") AND '
-                '"Data Analyst" '
-                'site:linkedin.com/in'
+                '''("Fort Collins" OR "San Francisco") AND "Equine" AND "Executive" site:linkedin.com/in'''
             )
 
             self.webdriver_manager.humanized_send_keys(search_box, search_query)

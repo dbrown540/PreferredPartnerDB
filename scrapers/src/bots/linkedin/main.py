@@ -40,13 +40,13 @@ def main():
 
     
 
-    """# Scout
+    # Scout
     scout = Scout()
-    scout.execute(run=True, user_count=3)
+    scout.execute(run=True, user_count=100)
 
-    # Bot Credential Manager
+    """# Bot Credential Manager
     bot_credentials_manager = BotCredentialsManager()
-    bot_credentials_manager.bot_credentials_wrapper()"""
+    bot_credentials_manager.bot_credentials_wrapper()
 
     # LinkedIn Bot
     usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
@@ -56,7 +56,7 @@ def main():
         bot_instance.test(user_id=1)
         time.sleep(random.uniform(7, 12))
     
-    """phone_number_scraper = PhoneNumberScraper()
+    phone_number_scraper = PhoneNumberScraper()
     phone_number_scraper.wrapper()   """
     
 if __name__ == '__main__':
