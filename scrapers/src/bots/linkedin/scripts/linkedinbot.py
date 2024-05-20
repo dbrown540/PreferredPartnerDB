@@ -844,9 +844,11 @@ class ContactInfoManager(BaseManager):
                 EC.presence_of_element_located((By.ID, "top-card-text-details-contact-info"))
             )
             contact_info_button.click()
+            return True
 
         except NoSuchElementException:
             logging.info("User does not have additional contact info available on their page")
+            return False
 
     def extract_phone_number(self):
         # Locate the 'Phone' h3 element
@@ -909,15 +911,16 @@ class ContactInfoManager(BaseManager):
             return None
 
     def contact_info_manager_wrapper(self, user_id):
-        self.click_contact_info_button()
-        time.sleep(3)
-        phone_number = self.extract_phone_number()
-        email = self.extract_email()
-        address = self.extract_address()
+        clicked = self.click_contact_info_button()
+        if clicked:
+            time.sleep(3)
+            phone_number = self.extract_phone_number()
+            email = self.extract_email()
+            address = self.extract_address()
 
-        self.linkedin_database_manager.update_email_in_datebase(email, user_id)
-        self.linkedin_database_manager.update_phone_in_datebase(phone_number, user_id)
-        self.linkedin_database_manager.update_address_in_database(address, user_id)
+            self.linkedin_database_manager.update_email_in_datebase(email, user_id)
+            self.linkedin_database_manager.update_phone_in_datebase(phone_number, user_id)
+            self.linkedin_database_manager.update_address_in_database(address, user_id)
 
 class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
     """
@@ -2325,6 +2328,9 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
 
             # Run the main page wrapper
             self.main_page_scraper.main_user_page_scraper_wrapper(profile_url=profile_url)
+
+            # Run the contact info manager wrapper
+            self.contact_info_manager.contact_info_manager_wrapper(user_id=user_id)
 
             # Run the skills wrapper
             self.skills_manager.skills_wrapper(self.get_user_id(profile_url=profile_url), profile_url=profile_url)
