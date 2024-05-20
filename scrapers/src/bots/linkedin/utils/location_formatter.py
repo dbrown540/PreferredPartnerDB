@@ -1,8 +1,13 @@
 import re
 import pycountry
+import logging
+
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
-from .scratch2 import state_abbreviations
+from .states import state_abbreviations
+
+logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
+                    format="%(asctime)s - %(levelname)s - %(message)s")
 
 class LocationFormatter:
     def __init__(self):
@@ -54,16 +59,13 @@ class LocationFormatter:
                         elif city and country:
                             return f'{city}, {country}'
                         else:
-                            print("Unknown location: ", location)
-                            return 'Unknown Location'
+                            logging.warning("Unknown location: ", location)
+                            return 'United States'
                     else:
-                        return 'No geolocation found.'
+                        logging.warning("No geolocation found for ", location)
+                        return 'United States'
                 except GeocoderTimedOut:
                     retry_count += 1
                     print(f"Connection timed out. Retrying attempt {retry_count}.")
         
-        return location
-
-locator = LocationFormatter()
-result = locator.reformat_location("Los Angeles Metropolitan Area")
-print(result)
+        return 'United States'

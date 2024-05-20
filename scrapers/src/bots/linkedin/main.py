@@ -53,7 +53,7 @@ def main():
 
     for bot_id in usable_bot_id_list:
         bot_instance = LinkedInBot(bot_id=bot_id)
-        bot_instance.scrape_linkedin_page()
+        bot_instance.test(user_id=1)
         time.sleep(random.uniform(7, 12))
     
     """phone_number_scraper = PhoneNumberScraper()

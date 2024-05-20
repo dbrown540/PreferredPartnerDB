@@ -1,0 +1,7 @@
+duke
+user mdkoepke
+pass Koreanspa2015!
+
+unc
+user mdkoepke
+pass Koreanspa2015!

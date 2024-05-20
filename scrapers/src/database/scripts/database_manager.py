@@ -150,6 +150,8 @@ class DatabaseManager:
             with self.conn, self.conn.cursor() as cursor:
                 # Ensure the database connection is valid
                 self.check_database_connection()
+                # Set encoding to UTF-8
+                cursor.execute("SET client_encoding = 'UTF8';")
                 # Execute the query with optional parameters
                 if params is None:
                     cursor.execute(query)
@@ -336,10 +338,12 @@ class LinkedInDatabaseManager(DatabaseManager):
                 str,  # company
                 Union[str, List[str], None],  # job_title (either a string or a list of strings)
                 Union[str, List[str], None],  # work_description (either a string or a list of strings)
-                List[str]  # start_date and end_date
+                List[str],  # start_date and end_date
+                List[str] # locations of work
             ]):
+        
         # Iterate through the zipped_list
-        for company, job_titles, work_descriptions, date_ranges in zipped_list:
+        for company, job_titles, work_descriptions, date_ranges, locations_of_work in zipped_list:
             print("COMPANY: ", company)
             # Multiple experiences at one company
             if isinstance(job_titles, list):
@@ -347,14 +351,17 @@ class LinkedInDatabaseManager(DatabaseManager):
                     work_description = work_descriptions[i]
                     work_description = '' if work_description is None else work_description
                     start_date, end_date = date_ranges[i]
+                    location = locations_of_work
                     # Check if the same experience already exists in the database for the given user_id
                     # Non-empty work_description
                     if work_description != '':
                         query = (
                             "SELECT COUNT(*) FROM work_experience WHERE user_id = %s AND company = %s "
-                            "AND job_title = %s AND work_description = %s AND start_date = %s AND end_date = %s"
+                            "AND job_title IS NOT DISTINCT FROM %s AND work_description IS NOT DISTINCT FROM %s "
+                            "AND start_date IS NOT DISTINCT FROM %s AND end_date IS NOT DISTINCT FROM %s"
+                            "AND location_of_job IS NOT DISTINCT FROM %s"
                         )
-                        params = (user_id, company, job_title, work_description, start_date, end_date)
+                        params = (user_id, company, job_title, work_description, start_date, end_date, location)
                         fetch = "ONE"
                         count = self.execute_query(
                             query=query,
@@ -362,12 +369,15 @@ class LinkedInDatabaseManager(DatabaseManager):
                             fetch=fetch
                         )[0]
 
+                        print("COUNT TEST: ", count)
+
                         if count == 0:
                             query = (
-                                "INSERT INTO work_experience (user_id, company, job_title, work_description, start_date, end_date) "
-                                "VALUES (%s, %s, %s, %s, %s, %s)"
+                                "INSERT INTO work_experience "
+                                "(user_id, company, job_title, work_description, start_date, end_date, location_of_job) "
+                                "VALUES (%s, %s, %s, %s, %s, %s, %s)"
                             )
-                            params = (user_id, company, job_title, work_description, start_date, end_date)
+                            params = (user_id, company, job_title, work_description, start_date, end_date, location)
                             logging.info("Attempting to execute the query: %s with params: %s ", query, params)
                             self.execute_query(
                                 query=query,
@@ -380,17 +390,22 @@ class LinkedInDatabaseManager(DatabaseManager):
                     else:
                         # If work_description is an empty string, use IS NULL
                         query = (
-                            "SELECT COUNT(*) FROM work_experience WHERE user_id = %s AND company = %s AND job_title = %s AND start_date = %s AND end_date = %s"
+                            "SELECT COUNT(*) "
+                            "FROM work_experience "
+                            "WHERE user_id = %s AND company = %s AND job_title IS NOT DISTINCT FROM %s "
+                            "AND start_date IS NOT DISTINCT FROM %s AND end_date IS NOT DISTINCT FROM %s "
+                            "AND location_of_job IS NOT DISTINCT FROM %s"
                         )
-                        params = (user_id, company, job_title, start_date, end_date)
+                        params = (user_id, company, job_title, start_date, end_date, location)
                         fetch = "ONE"
                         count = self.execute_query(query=query, params=params, fetch=fetch)[0]
                         if count == 0:
                             query = (
-                                "INSERT INTO work_experience (user_id, company, job_title, start_date, end_date) "
-                                "VALUES (%s, %s, %s, %s, %s)"
+                                "INSERT INTO work_experience "
+                                "(user_id, company, job_title, start_date, end_date, location_of_job) "
+                                "VALUES (%s, %s, %s, %s, %s, %s)"
                             )
-                            params = (user_id, company, job_title, start_date, end_date)
+                            params = (user_id, company, job_title, start_date, end_date, location)
                             logging.info("Attempting to execute the query: %s with params: %s ", query, params)
                             self.execute_query(
                                 query=query,
@@ -405,21 +420,27 @@ class LinkedInDatabaseManager(DatabaseManager):
                 work_description = work_descriptions if isinstance(work_descriptions, str) else None
                 work_description = '' if work_description is None else work_description
                 start_date, end_date = date_ranges if date_ranges is not None else (None, None)
+                location = locations_of_work
                 print(start_date, end_date)
                 # Check if the same experience already exists in the database for the given user_id
                 if work_description != '':
                     query = (
-                        "SELECT COUNT(*) FROM work_experience WHERE user_id = %s AND company = %s AND job_title = %s AND work_description = %s AND start_date = %s AND end_date = %s"
+                        "SELECT COUNT(*) "
+                        "FROM work_experience "
+                        "WHERE user_id = %s AND company = %s AND job_title IS NOT DISTINCT FROM %s "
+                        "AND work_description IS NOT DISTINCT FROM %s AND start_date IS NOT DISTINCT FROM %s "
+                        "AND end_date IS NOT DISTINCT FROM %s AND location_of_job IS NOT DISTINCT FROM %s"
                     )
-                    params = (user_id, company, job_title, work_description, start_date, end_date)
+                    params = (user_id, company, job_title, work_description, start_date, end_date, location)
                     fetch = "ONE"
                     count = self.execute_query(query=query, params=params, fetch=fetch)[0]
                     if count == 0:
                         query = (
-                            "INSERT INTO work_experience (user_id, company, job_title, work_description, start_date, end_date) "
-                            "VALUES (%s, %s, %s, %s, %s, %s)"
+                            "INSERT INTO work_experience "
+                            "(user_id, company, job_title, work_description, start_date, end_date, location_of_job) "
+                            "VALUES (%s, %s, %s, %s, %s, %s, %s)"
                         )
-                        params = (user_id, company, job_title, work_description, start_date, end_date)
+                        params = (user_id, company, job_title, work_description, start_date, end_date, location)
                         logging.info("Attempting to execute the query: %s with params: %s ", query, params)
                         self.execute_query(
                             query=query,
@@ -431,17 +452,21 @@ class LinkedInDatabaseManager(DatabaseManager):
                 else:
                     # If work_description is an empty string, use IS NULL
                     query = (
-                        "SELECT COUNT(*) FROM work_experience WHERE user_id = %s AND company = %s AND job_title = %s AND start_date = %s AND end_date = %s"
+                        "SELECT COUNT(*) "
+                        "FROM work_experience "
+                        "WHERE user_id = %s AND company = %s AND job_title IS NOT DISTINCT FROM %s "
+                        "AND start_date IS NOT DISTINCT FROM %s AND end_date IS NOT DISTINCT FROM %s "
+                        "AND location_of_job IS NOT DISTINCT FROM %s"
                     )
-                    params = (user_id, company, job_title, start_date, end_date)
+                    params = (user_id, company, job_title, start_date, end_date, location)
                     fetch = "ONE"
                     count = self.execute_query(query=query, params=params, fetch=fetch)[0]
                     if count == 0:
                         query = (
-                            "INSERT INTO work_experience (user_id, company, job_title, start_date, end_date) "
-                            "VALUES (%s, %s, %s, %s, %s)"
+                            "INSERT INTO work_experience (user_id, company, job_title, start_date, end_date, location_of_job) "
+                            "VALUES (%s, %s, %s, %s, %s, %s)"
                         )
-                        params = (user_id, company, job_title, start_date, end_date)
+                        params = (user_id, company, job_title, start_date, end_date, location)
                         logging.info("Attempting to execute the query: %s with params: %s ", query, params)
                         self.execute_query(
                             query=query,
@@ -608,3 +633,17 @@ class CookieManager(DatabaseManager):
 
         return cookie
     
+class SalaryDatabaseManager(DatabaseManager):
+    def __init__(self):
+        super().__init__()
+
+    def get_search_params(self):
+        query = (
+            "SELECT job_title, company FROM work_experience WHERE estimated_net_earnings IS NULL"
+        )
+        fetch = "ALL"
+        result = self.execute_query(
+            query=query,
+            fetch=fetch
+        )
+        return result

@@ -53,6 +53,7 @@ import time
 from typing import Union, Tuple, Optional, Set, List
 import re
 from datetime import datetime
+import os
 
 import psycopg2
 from selenium.common.exceptions import (
@@ -61,9 +62,11 @@ from selenium.common.exceptions import (
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
+from geopy.geocoders import Nominatim
 
 from ....database.scripts.database_manager import DatabaseManager, LinkedInDatabaseManager
 from ...webdriver.webdriver_manager import WebDriverManager
+from ..utils.location_formatter import LocationFormatter
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -711,6 +714,7 @@ class MainUserPageScraper(BaseManager):
         super().__init__(webdriver_manager, database_manager)
         self.bot_id = bot_id
         self.linkedin_db_manager = LinkedInDatabaseManager()
+        self.location_formatter = LocationFormatter()
 
     def find_users_name(self) -> Union[str, None]:
         """
@@ -763,6 +767,8 @@ class MainUserPageScraper(BaseManager):
             users_location = self.wait.until(
                 EC.presence_of_element_located((By.XPATH, location_xpath))
             ).text
+
+            users_location = self.location_formatter.reformat_location(users_location)
 
             return users_location
 
@@ -882,6 +888,7 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
     def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
         super().__init__(webdriver_manager, database_manager)
         self.linkedin_db_manager = LinkedInDatabaseManager()
+        self.location_formatter = LocationFormatter()
 
     def _locate_show_all_experiences_button(self) -> Optional[str]:
         """
@@ -1419,6 +1426,41 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         except StaleElementReferenceException:
             print("Stale element. I don't know why this is happening")
 
+    def _create_location_worked_list(self, list_elements: List[WebElement], page):
+        locations_worked = []
+        for list_element in list_elements:
+            has_multiple_experiences, _ = self._has_multiple_experiences_at_one_company(
+            list_element=list_element,
+            page=page
+            )
+            if has_multiple_experiences:
+                try:
+                    location = list_element.find_element(
+                        By.XPATH, ".//span[contains(@class, 't-black--light')]/span[@aria-hidden='true' and not(contains(@class, 'pvs-entity__caption-wrapper'))]"
+                    ).text
+                    locations_worked.append(location)
+
+                except NoSuchElementException:
+                    locations_worked.append(location)
+
+            else:
+                try:
+                    location = list_element.find_element(
+                        By.XPATH, ".//span[contains(@class, 't-black--light')]/span[@aria-hidden='true' and not(contains(@class, 'pvs-entity__caption-wrapper'))]"
+                    ).text
+
+                    locations_worked.append(location)
+
+                except NoSuchElementException:
+                    locations_worked.append(None)
+
+        for i, loc in enumerate(locations_worked):
+            newloc = self.location_formatter.reformat_location(loc)
+            locations_worked[i] = newloc
+            time.sleep(1.1)
+
+        return locations_worked
+
     @staticmethod
     def remove_emojis_and_blank_lines(text):
         """
@@ -1511,21 +1553,22 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         return formatted_dates
     
     @staticmethod
-    def _zip_all_experience_information(company_names_list: List[str], job_positions_list: List[str], position_descriptions, dates_worked_list):
+    def _zip_all_experience_information(company_names_list: List[str], job_positions_list: List[str], position_descriptions, dates_worked_list, locations_of_work):
         """Zips together all the lists that were created while scraping the experiences."""
         print(len(company_names_list), len(job_positions_list), len(position_descriptions), len(dates_worked_list))
-        zipped = zip(company_names_list, job_positions_list, position_descriptions, dates_worked_list)
+        zipped = zip(company_names_list, job_positions_list, position_descriptions, dates_worked_list, locations_of_work)
         return zipped
 
     def experience_wrapper(self, user_id):
         """Wrapper for all experiences logic"""
-        button_href = self._locate_show_all_experiences_button()
+        #button_href = self._locate_show_all_experiences_button()
+        button_href = True
         if not button_href:
             print(False)
             self._handle_original_page(user_id=user_id)
         else:
             print(True)
-            self.driver.get(button_href)
+            # self.driver.get(button_href)
             self._handle_new_page(user_id=user_id)
 
     def _handle_original_page(self, user_id):
@@ -1539,11 +1582,13 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         else:
             position_descriptions = self._create_positions_descriptions_list(list_elements=list_elements, page=page)
             dates_worked_list = self._create_dates_worked_list(list_elements=list_elements, page=page)
+            locations_of_work = self._create_location_worked_list(list_elements=list_elements, page=page)
             zipped_experiences_list = list(self._zip_all_experience_information(
                 company_names_list=company_name_list,
                 job_positions_list=job_positions_list,
                 position_descriptions=position_descriptions,
                 dates_worked_list=dates_worked_list,
+                locations_of_work=locations_of_work
             ))
             self.linkedin_db_manager.update_experiences_in_database(user_id=user_id, zipped_list=zipped_experiences_list)
 
@@ -1555,11 +1600,13 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
         job_positions_list = self._create_positions_list(list_elements=list_elements, page=page, user_id=user_id)
         position_descriptions = self._create_positions_descriptions_list(list_elements=list_elements, page=page)
         dates_worked_list = self._create_dates_worked_list(list_elements=list_elements, page=page)
+        locations_of_work = self._create_location_worked_list(list_elements=list_elements, page=page)
         zipped_list = self._zip_all_experience_information(
             company_names_list=company_name_list,
             job_positions_list=job_positions_list,
             position_descriptions=position_descriptions,
             dates_worked_list=dates_worked_list,
+            locations_of_work=locations_of_work
         )
         self.linkedin_db_manager.update_experiences_in_database(zipped_list=zipped_list, user_id=user_id)
         self.driver.back()
@@ -2202,14 +2249,9 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
             # Wait a little to go to the next profile
             time.sleep(10)
         
-    def test(self, user_id, profile_url="file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//scrapers//src//bots//linkedin//testing//crazy.html"):
+    def test(self, user_id, profile_url="file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//scrapers//src//bots//linkedin//testing//test.html"):
         # Test the Experiences methods
         self.driver.get(profile_url)
         user_id = 1
-        self.education_manager.education_wrapper()
+        self.experience_manager.experience_wrapper(user_id)
         # self.database_manager.export_to_xslx()
-
-
-def show_all_items(zipped_list):
-    for item in zipped_list:
-        print(item)

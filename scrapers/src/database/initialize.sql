@@ -1,3 +1,6 @@
+-- Create a new database with UTF-8 encoding
+-- CREATE DATABASE psycotest WITH ENCODING 'UTF8';
+
 -- Table: users
 
 CREATE TABLE users(
@@ -74,6 +77,15 @@ CREATE TABLE cookies(
     bot_id INTEGER REFERENCES Bots(bot_id),
     website VARCHAR(255),
     cookie JSONB
+);
+
+CREATE TABLE salaries(
+    salary_id SERIAL PRIMARY KEY,
+    job_title VARCHAR(255),
+    salary DECIMAL(12, 2),
+    location VARCHAR(255),
+    company VARCHAR(255),
+    date DATE
 );
 
 INSERT INTO bots(bot_first_name, bot_last_name, bot_email, bot_email_password) 
