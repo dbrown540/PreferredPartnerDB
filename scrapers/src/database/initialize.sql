@@ -10,7 +10,9 @@ CREATE TABLE users(
     location_of_user VARCHAR(255),
     profile_url TEXT NOT NULL UNIQUE,
     estimated_net_worth DECIMAL(12, 2),
-    estimated_age INT
+    estimated_age INT,
+    phone_number VARCHAR(20),
+    address VARCHAR(255)
 );
 
 -- Table: education

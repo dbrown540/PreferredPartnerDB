@@ -518,6 +518,87 @@ class LinkedInDatabaseManager(DatabaseManager):
             else:
                 logging.info("Education already exists for user_id: %s, degree: %s, school_name: %s. Moving on to the next query.", user_id, degree, school_name)
 
+    def update_phone_in_datebase(self, phone_number, user_id):
+        # Check if the phone number already exists for the user_id
+        query = (
+            "SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s"
+        )
+        params = (phone_number, user_id)
+        fetch = "ONE"
+
+        count = self.execute_query(
+            query=query,
+            params=params,
+            fetch=fetch
+        )[0]
+
+        if count == 0:
+            # Insert the phone number into the database
+            query = (
+                "UPDATE users "
+                "SET phone_number = %s "
+                "WHERE user_id = %s;"
+            )
+
+            self.execute_query(
+                query=query,
+                params=params
+            )
+
+    def update_email_in_datebase(self, email, user_id):
+        # Check if the phone number already exists for the user_id
+        query = (
+            "SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s"
+        )
+        params = (email, user_id)
+        fetch = "ONE"
+
+        count = self.execute_query(
+            query=query,
+            params=params,
+            fetch=fetch
+        )[0]
+
+        if count == 0:
+            # Insert the phone number into the database
+            query = (
+                "UPDATE users "
+                "SET email = %s "
+                "WHERE user_id = %s;"
+            )
+
+            self.execute_query(
+                query=query,
+                params=params
+            )
+
+    def update_address_in_database(self, address, user_id):
+        # Check if the phone number already exists for the user_id
+        query = (
+            "SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s"
+        )
+        params = (address, user_id)
+        fetch = "ONE"
+
+        count = self.execute_query(
+            query=query,
+            params=params,
+            fetch=fetch
+        )[0]
+
+        if count == 0:
+            # Insert the phone number into the database
+            query = (
+                "UPDATE users "
+                "SET address = %s "
+                "WHERE user_id = %s;"
+            )
+
+            self.execute_query(
+                query=query,
+                params=params
+            )
+
 
 
 class BotCredentialsDatabaseManager(DatabaseManager):

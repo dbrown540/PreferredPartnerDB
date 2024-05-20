@@ -833,6 +833,92 @@ class MainUserPageScraper(BaseManager):
             users_location=location, profile_url=profile_url
         )
 
+class ContactInfoManager(BaseManager):
+    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
+        super().__init__(webdriver_manager, database_manager)
+        self.linkedin_database_manager = LinkedInDatabaseManager()
+
+    def click_contact_info_button(self):
+        try:
+            contact_info_button = self.wait.until(
+                EC.presence_of_element_located((By.ID, "top-card-text-details-contact-info"))
+            )
+            contact_info_button.click()
+
+        except NoSuchElementException:
+            logging.info("User does not have additional contact info available on their page")
+
+    def extract_phone_number(self):
+        # Locate the 'Phone' h3 element
+        try:
+            phone_h3 = self.driver.find_elements(
+                By.TAG_NAME, "h3"
+            )
+            for header in phone_h3:
+                if "Phone" == header.text:
+                    ul_sibling = header.find_element(
+                        By.XPATH, "./following-sibling::*[1]"
+                    )
+                    phone_number = ul_sibling.find_element(
+                        By.CLASS_NAME, "t-14.t-black.t-normal"
+                    ).text
+                    return phone_number
+
+        except NoSuchElementException:
+            logging.info("No phone number found for this person")
+            return None
+
+    def extract_email(self):
+        # Locate the 'Phone' h3 element
+        try:
+            email_h3 = self.driver.find_elements(
+                By.TAG_NAME, "h3"
+            )
+            for header in email_h3:
+                if "Email" == header.text:
+                    div_sibling = header.find_element(
+                        By.XPATH, "./following-sibling::*[1]"
+                    )
+                    email = div_sibling.find_element(
+                        By.TAG_NAME, "a"
+                    ).text
+                    return email
+
+        except NoSuchElementException:
+            logging.info("No phone number found for this person")
+            return None
+        
+    def extract_address(self):
+        # Locate the 'Phone' h3 element
+        try:
+            address_h3 = self.driver.find_elements(
+                By.TAG_NAME, "h3"
+            )
+            for header in address_h3:
+                if "Address" == header.text:
+                    div_sibling = header.find_element(
+                        By.XPATH, "./following-sibling::*[1]"
+                    )
+                    address = div_sibling.find_element(
+                        By.TAG_NAME, "a"
+                    ).text
+                    return address
+
+        except NoSuchElementException:
+            logging.info("No phone number found for this person")
+            return None
+
+    def contact_info_manager_wrapper(self, user_id):
+        self.click_contact_info_button()
+        time.sleep(3)
+        phone_number = self.extract_phone_number()
+        email = self.extract_email()
+        address = self.extract_address()
+
+        self.linkedin_database_manager.update_email_in_datebase(email, user_id)
+        self.linkedin_database_manager.update_phone_in_datebase(phone_number, user_id)
+        self.linkedin_database_manager.update_address_in_database(address, user_id)
+
 class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
     """
     Manages the extraction and processing of work experience information from LinkedIn profiles.
@@ -2157,6 +2243,10 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
             database_manager=self.database_manager,
             bot_id=self.bot_id
         )
+        self.contact_info_manager = ContactInfoManager(
+            webdriver_manager=self.webdriver_manager,
+            database_manager=self.database_manager
+        )
         self.experience_manager = ExperienceManager(
             webdriver_manager=self.webdriver_manager,
             database_manager=self.database_manager,
@@ -2248,9 +2338,9 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
             # Wait a little to go to the next profile
             time.sleep(10)
         
-    def test(self, user_id, profile_url="file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//scrapers//src//bots//linkedin//testing//test.html"):
+    def test(self, user_id, profile_url="file://C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//scrapers//src//bots//linkedin//testing//hom.html"):
         # Test the Experiences methods
         self.driver.get(profile_url)
         user_id = 1
-        self.experience_manager.experience_wrapper(user_id)
+        self.contact_info_manager.contact_info_manager_wrapper(user_id=1)
         # self.database_manager.export_to_xslx()
