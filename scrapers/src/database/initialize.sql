@@ -12,7 +12,9 @@ CREATE TABLE users(
     estimated_net_worth DECIMAL(12, 2),
     estimated_age INT,
     phone_number VARCHAR(20),
-    address VARCHAR(255)
+    address VARCHAR(255),
+    approved VARCHAR(20),
+    website VARCHAR(255)
 );
 
 -- Table: education

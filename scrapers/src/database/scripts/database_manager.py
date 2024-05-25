@@ -599,6 +599,33 @@ class LinkedInDatabaseManager(DatabaseManager):
                 params=params
             )
 
+    def update_website_in_database(self, website, user_id):
+        # Check if the website already exists for the user_id
+        query = (
+            "SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s"
+        )
+        params = (website, user_id)
+        fetch = "ONE"
+
+        count = self.execute_query(
+            query=query,
+            params=params,
+            fetch=fetch
+        )[0]
+
+        if count == 0:
+            # Insert the website into the database
+            query = (
+                "UPDATE users "
+                "SET website = %s "
+                "WHERE user_id = %s;"
+            )
+
+            self.execute_query(
+                query=query,
+                params=params
+            )
+
 
 
 class BotCredentialsDatabaseManager(DatabaseManager):

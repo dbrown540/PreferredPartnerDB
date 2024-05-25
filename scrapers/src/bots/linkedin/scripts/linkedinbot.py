@@ -54,12 +54,12 @@ from typing import Union, Tuple, Optional, Set, List
 import re
 from datetime import datetime
 import os
-import asyncio
 
 import psycopg2
 from selenium.common.exceptions import (
     NoSuchElementException, TimeoutException, WebDriverException,
-    StaleElementReferenceException, ElementNotInteractableException)
+    StaleElementReferenceException, ElementNotInteractableException,
+    InvalidArgumentException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -67,7 +67,7 @@ from geopy.geocoders import Nominatim
 
 from ....database.scripts.database_manager import DatabaseManager, LinkedInDatabaseManager
 from ...webdriver.webdriver_manager import WebDriverManager
-from ..utils.location_formatter.location_formatter import LocationFormatter, process_locations
+from ..utils.location_formatter.location_formatter import LocationFormatter
 
 logging.basicConfig(level=logging.INFO, filename="log.log", filemode="w",
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -589,7 +589,7 @@ class UserProfileInteractor(BaseManager):
     def get_profile_urls(self, number_of_users_per_bot: int = 20) -> list:
         """
         Retrieves the profile URLs of users from the database based on the 
-        provided bot ID and number of users per bot.
+        provided bot ID and number of users per bot, where the users_name is NULL.
 
         Args:
             bot_id (int):
@@ -600,10 +600,14 @@ class UserProfileInteractor(BaseManager):
         Returns:
             list:
                 A list containing the profile URLs of users within 
-                the specified range for the given bot ID.
+                the specified range for the given bot ID, where the users_name is NULL.
         """
-        # Create query
-        query = "SELECT profile_url FROM users WHERE user_id BETWEEN %s AND %s ORDER BY user_id;"
+        # Create query with the additional condition for users_name being NULL
+        query = """
+        SELECT profile_url FROM users 
+        WHERE user_id BETWEEN %s AND %s AND users_name IS NULL
+        ORDER BY user_id;
+        """
 
         # Calculate parameter values
         starting_index = 1
@@ -619,6 +623,7 @@ class UserProfileInteractor(BaseManager):
 
         # Extract urls from the tuples
         profile_urls = [url[0] for url in raw_profile_urls]
+        print("PROFILE URL LENGTH", len(profile_urls))
 
         return profile_urls
 
@@ -635,32 +640,36 @@ class UserProfileInteractor(BaseManager):
             WebDriverException: 
                 If a WebDriver related error occurs 
                 while trying to access the user's profile.
+            InvalidArgumentException:
+                If the provided argument is invalid.
             Exception: 
                 If an unexpected error occurs while 
                 attempting to visit the user's profile.
         """
         try:
-            self.driver.get(f"{profile_url}")
+            self.driver.get(profile_url)
 
-        except WebDriverException:
-            # Log and raise critical WebDriver exception for a driver related error
+        except InvalidArgumentException as e:
+            logging.warning(f"Invalid argument: {profile_url} - {e}")
+            # Optionally re-raise if you want to handle it differently higher up
+            # raise
+
+        except WebDriverException as e:
             error_message = (
                 f"A WebDriver related error occurred while trying to "
-                f"access the user's profile. Link:\n{profile_url}"
+                f"access the user's profile. Link: {profile_url}"
             )
             logging.critical(error_message, exc_info=True)
-            raise
+            raise e
 
-        except Exception:
-            # Log and raise a critical error if an unexpected error occurred
+        except Exception as e:
             error_message = (
                 f"An unexpected error occurred while "
-                f"attempting to visit the user's profile. "
-                f"Link:\n{profile_url}"
+                f"attempting to visit the user's profile. Link: {profile_url}"
             )
+            logging.critical(error_message, exc_info=True)
+            raise e
 
-            logging.critical(error_message)
-            raise
 
 class MainUserPageScraper(BaseManager):
     """
@@ -910,6 +919,26 @@ class ContactInfoManager(BaseManager):
             logging.info("No phone number found for this person")
             return None
 
+    def extract_website(self):
+        # Locate the 'Phone' h3 element
+        try:
+            phone_h3 = self.driver.find_elements(
+                By.TAG_NAME, "h3"
+            )
+            for header in phone_h3:
+                if "Website" == header.text:
+                    ul_sibling = header.find_element(
+                        By.XPATH, "./following-sibling::*[1]"
+                    )
+                    website = ul_sibling.find_element(
+                        By.TAG_NAME, "a"
+                    ).text
+                    return website
+
+        except NoSuchElementException:
+            logging.info("No phone number found for this person")
+            return None
+
     def contact_info_manager_wrapper(self, user_id):
         clicked = self.click_contact_info_button()
         if clicked:
@@ -917,10 +946,15 @@ class ContactInfoManager(BaseManager):
             phone_number = self.extract_phone_number()
             email = self.extract_email()
             address = self.extract_address()
+            website = self.extract_website()
 
             self.linkedin_database_manager.update_email_in_datebase(email, user_id)
             self.linkedin_database_manager.update_phone_in_datebase(phone_number, user_id)
             self.linkedin_database_manager.update_address_in_database(address, user_id)
+            self.linkedin_database_manager.update_website_in_database(website, user_id)
+
+        else:
+            pass
 
 class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
     """
@@ -1543,9 +1577,6 @@ class ExperienceManager(BaseManager):  # pylint: disable=too-few-public-methods
 
                 except NoSuchElementException:
                     locations_worked.append(None)
-
-        # Run the async process
-        asyncio.run(process_locations(locations_worked, self.location_formatter))
 
         return locations_worked
 
@@ -2350,3 +2381,43 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
         user_id = 1
         self.contact_info_manager.contact_info_manager_wrapper(user_id=1)
         # self.database_manager.export_to_xslx()
+
+    def scrape_name_and_contact_info(self):
+        
+        # Handle login
+        self.sign_in_manager.sign_in_wrapper(bot_id=self.bot_id)
+
+        # Get the user profiles from the database
+        profile_urls: List[str] = self.profile_interactor.get_profile_urls()
+
+        # Loop through profile urls
+        for profile_url in profile_urls:
+            
+            # Get the user id
+            user_id = self.get_user_id(profile_url=profile_url)
+
+            print("USER ID: ", user_id)
+
+            # Visit the user's profile
+            try:
+                self.profile_interactor.visit_user(profile_url=profile_url)
+
+            except InvalidArgumentException:
+                continue
+
+            approval = input("Do you approve this page to be used in the database?")
+
+            if approval.lower() == "n":
+                pass
+
+            else:
+                # Run the main page wrapper
+                self.main_page_scraper.main_user_page_scraper_wrapper(profile_url=profile_url)
+
+                # Run the contact info manager wrapper
+                self.contact_info_manager.contact_info_manager_wrapper(user_id=user_id)
+
+            # Wait a little to go to the next profile
+            time.sleep(10)
+
+

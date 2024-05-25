@@ -55,7 +55,7 @@ from selenium.common.exceptions import (
 )
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
-from .linkedinbot import BaseManager  #pylint: disable=relative-beyond-top-level
+from .linkedinbot import BaseManager, LinkedInSignInManager  #pylint: disable=relative-beyond-top-level
 from ...webdriver.webdriver_manager import WebDriverManager
 from ....database.scripts.database_manager import DatabaseManager, LinkedInDatabaseManager  #pylint: disable=relative-beyond-top-level
 
@@ -118,7 +118,7 @@ class GoogleSearcher(BaseManager):
 
         return None
 
-    def search_google_query(self, search_box: WebElement) -> None:
+    def search_query(self, search_box: WebElement) -> None:
         """
         Searches a Google query using the provided search box element.
     
@@ -131,7 +131,7 @@ class GoogleSearcher(BaseManager):
         try:
             # Search query
             search_query = (
-                '''("Fort Collins" OR "San Francisco") AND "Equine" AND "Executive" site:linkedin.com/in'''
+                '''("California") ("CEO" OR "Founder" OR "Co-Founder") ("horseback riding" OR "equestrian" OR "horse riding" OR "horse lover")'''
             )
 
             self.webdriver_manager.humanized_send_keys(search_box, search_query)
@@ -143,6 +143,43 @@ class GoogleSearcher(BaseManager):
             logging.critical(
                 "Search box is not interactable.", exc_info=True
             )
+
+class LinkedInSearcher(BaseManager):
+    def __init__(self, webdriver_manager: WebDriverManager, database_manager: DatabaseManager) -> None:
+        super().__init__(webdriver_manager, database_manager)
+        self.scroller = Scroller(webdriver_manager, database_manager)
+        self.link_extractor = LinkExtractor(self.webdriver_manager, self.database_manager)
+
+    def locate_search_bar(self):
+        try:
+            return self.wait.until(
+                EC.presence_of_element_located((By.CLASS_NAME, "search-global-typeahead__input"))
+            )
+        
+        except NoSuchElementException:
+            raise ValueError("Could not find the LinkedIn Search Bar")
+
+    def search_linkedin_query(self, search_box):
+        GoogleSearcher.search_query(self, search_box=search_box)
+
+    def click_see_all_people_button(self):
+        try:
+            button = self.wait.until(
+                EC.element_to_be_clickable((By.XPATH, "//div[@class='search-results__cluster-bottom-banner.artdeco-button.artdeco-button--tertiary.artdeco-button--muted']/a"))
+            )
+            if button:
+                button.click()
+            else:
+                print("Couldn't find the see all people button")
+        except NoSuchElementException:
+            logging.info("No see all people results button")
+        except TimeoutException:
+            logging.info("Timeout occurred while searching for the people results button")
+
+    def linkedin_searcher(self):
+        search_bar = self.locate_search_bar()
+        self.search_linkedin_query(search_bar)
+
 
 class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
     """
@@ -199,24 +236,37 @@ class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
             raise
 
 
-    def _parse_links(self, links: List[WebElement]) -> List[str]:
+    def _parse_links(self, links: List[WebElement], site: str) -> List[str]:
         """Parses LinkedIn profile links."""
-        return [
-            link.get_attribute('href')
-            for link in links
-            if link.get_attribute('href') is not None
-            and 'www.linkedin.com/in' in link.get_attribute('href')
-        ]
+        if site.lower() == 'google':
+            return [
+                link.get_attribute('href')
+                for link in links
+                if link.get_attribute('href') is not None
+                and 'www.linkedin.com/in' in link.get_attribute('href')
+            ]
+        
+        else:
+            return [
+                link.get_attribute('href')
+                for link in links
+                if link.get_attribute('href') is not None
+                and 'www.linkedin.com/in' in link.get_attribute('href')
+                and 'app-aware-link' in link.get_attribute('class')
+                and 'scale-down' in link.get_attribute('class')
+                and link.get_attribute('target') != '_self'
+            ]
     
-    def link_extractor_wrapper(self, user_count):
+    def link_extractor_wrapper(self, user_count, site):
         parsed_links = set()
         unchanged_count = 0  # Counter to track consecutive loops with no change in set length
         max_unchanged_loops = 5  # Maximum consecutive loops with no change allowed
 
         while len(parsed_links) < user_count:
             unfiltered_links = self._collect_links()
-            newly_parsed_links = self._parse_links(unfiltered_links)
-            self.scroll_object.scroll()
+            newly_parsed_links = self._parse_links(unfiltered_links, site)
+            self.scroll_object.scroll_site(site)
+            time.sleep(random.uniform(4, 6))
 
             prev_length = len(parsed_links)
             for new_link in newly_parsed_links:
@@ -259,11 +309,23 @@ class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
         _click_more_results_button():
             Clicks the 'More Results' button if found on the webpage.
     """
-    def scroll(self):
+    def scroll_google(self):
         """Scrolls down to load more search results"""
         time.sleep(random.uniform(1, 3))
         self._scroll_to_bottom()
         self._click_more_results_button()
+
+    def scroll_linkedin(self):
+        self._scroll_to_bottom()
+        time.sleep(2)
+        self.click_next_button()
+
+    def scroll_site(self, site: str):
+        if site.lower() == "google":
+            self.scroll_google()
+
+        else:
+            self.scroll_linkedin()
 
     def _scroll_to_bottom(self):
         """Scrolls the webpage to the bottom."""
@@ -291,6 +353,19 @@ class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
         except ElementNotInteractableException:
             logging.warning("More results button is non interactable. wait a little")
             time.sleep(15)
+
+    def click_next_button(self):
+        time.sleep(random.uniform(4, 8))
+        try:
+            next_button = self.wait.until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label='Next']"))
+            )
+            next_button.click()
+
+        except NoSuchElementException:
+            logging.info("Next button is not available")
+        except TimeoutException:
+            logging.info("A timeout occurred while trying to look for the next button on LinkedIn.")
 
 class Scout(BaseManager):  #pylint: disable=too-few-public-methods
     """
@@ -324,6 +399,10 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
             webdriver_manager=self.webdriver_manager,
             linkedin_db_manager=self.linkedin_db_manager
         )
+        self.linkedin_searcher = LinkedInSearcher(
+            webdriver_manager=self.webdriver_manager,
+            database_manager=self.database_manager
+        )
         self.link_extractor = LinkExtractor(
             webdriver_manager=self.webdriver_manager,
             linkedin_db_manager=self.linkedin_db_manager
@@ -332,14 +411,19 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
             webdriver_manager=self.webdriver_manager,
             database_manager=self.linkedin_db_manager
         )
+        self.sign_in_manager = LinkedInSignInManager(
+            webdriver_manager=self.webdriver_manager,
+            database_manager=self.database_manager,
+            bot_id=1
+        )
 
-    def execute(self, run: bool, user_count):
+    def execute(self, site: str, user_count):
         """
         Optional wrapper. If the code doesn't become complex, 
         then I will move this to main
         """
 
-        if run:
+        if site.lower() == 'google':
 
             # Navigate to Google
             self.google_searcher.navigate_to_google()
@@ -348,11 +432,28 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
             google_search_box_element = self.google_searcher.locate_google_search_box()
 
             # Type search into the search box element
-            self.google_searcher.search_google_query(google_search_box_element)
+            self.google_searcher.search_query(google_search_box_element)
 
-            parsed_links = self.link_extractor.link_extractor_wrapper(user_count=user_count)
+            parsed_links = self.link_extractor.link_extractor_wrapper(user_count=user_count, site=site)
 
             self.linkedin_db_manager.update_profile_urls_from_scout(parsed_links)
 
         else:
             print("Skipping Scout. If you want to run Scout, change the value of run to True")
+
+    def test(self):
+        self.driver.get("C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//scrapers//src//bots//linkedin//testing//test.html")
+        self.link_extractor.link_extractor_wrapper(user_count=20, site="linkedin")
+
+    def get_profile_urls_from_linkedin(self, user_count, bot_id):
+        site = "linkedin"
+
+        # Handle log in 
+        self.sign_in_manager.sign_in_wrapper(bot_id=bot_id)
+
+        # Get profile_urls from linkedin
+        self.linkedin_searcher.linkedin_searcher()
+        self.linkedin_searcher.click_see_all_people_button()
+        links = self.link_extractor.link_extractor_wrapper(user_count=user_count, site=site)
+        self.linkedin_db_manager.update_profile_urls_from_scout(links)
+
