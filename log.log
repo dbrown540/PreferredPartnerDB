@@ -4574,3 +4574,303 @@ LINE 1: SELECT COUNT(*) FROM users WHERE wesbite = 'southernstarrs.o...
                                          ^
 HINT:  Perhaps you meant to reference the column "users.website".
 
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_id FROM bots WHERE bot_id IS NOT NULL ORDER BY bot_id; with parameters: None
+INFO:root:Service path: chromedriver-win64/chromedriver.exe
+Options: <selenium.webdriver.chrome.options.Options object at 0x000001D1BD5808C0>
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Connecting to PostgreSQL database ...
+INFO:root:Database connection re-established.
+INFO:root:Successfully located the sign-in button.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_email FROM bots WHERE bot_id = %s with parameters: (1,)
+INFO:root:Successfully retrieved email dbrown6@umbc.edu from the database.
+INFO:root:Successfully typed email into the input field.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT bot_email_password FROM bots WHERE bot_id = %s with parameters: (1,)
+INFO:root:Successfully retrieved the LinkedIn password ('Sp@ceghost12',) from the database.
+INFO:root:Successfully typed password in the password input
+INFO:root:Sign-in button located on the login screen.
+INFO:root:Using existing database connection.
+INFO:root:Executed query: 
+        SELECT profile_url FROM users 
+        WHERE user_id BETWEEN %s AND %s AND users_name IS NULL
+        ORDER BY user_id;
+         with parameters: (1, 20)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/russell-fomby-93298a24?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAUgvLYBd3yeqtk0XyWRzuGsabTk2ewxQgo',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Russell Fomby', 'https://www.linkedin.com/in/russell-fomby-93298a24?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAUgvLYBd3yeqtk0XyWRzuGsabTk2ewxQgo')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Gainesville, TX', 'https://www.linkedin.com/in/russell-fomby-93298a24?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAUgvLYBd3yeqtk0XyWRzuGsabTk2ewxQgo')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 2)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 2)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 2)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 2)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 2)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 2)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: ('kdequestrian.com', 2)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: ('kdequestrian.com', 2)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/jeffpapows?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABeeQngBydSqXe-D1qA01daRWPzT7TmWaw8',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Jeff Papows', 'https://www.linkedin.com/in/jeffpapows?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABeeQngBydSqXe-D1qA01daRWPzT7TmWaw8')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Gloucester, MA', 'https://www.linkedin.com/in/jeffpapows?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABeeQngBydSqXe-D1qA01daRWPzT7TmWaw8')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 3)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 3)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 3)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 3)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 3)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 3)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: (None, 3)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: (None, 3)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/saranne-winfield-a76b7421?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAASfK_oBaN3G2YX5C1dyCL_8MwdN3sYh_po',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Saranne Winfield', 'https://www.linkedin.com/in/saranne-winfield-a76b7421?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAASfK_oBaN3G2YX5C1dyCL_8MwdN3sYh_po')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Lebanon, TN', 'https://www.linkedin.com/in/saranne-winfield-a76b7421?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAASfK_oBaN3G2YX5C1dyCL_8MwdN3sYh_po')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 4)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 4)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 4)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 4)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 4)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 4)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: ('southernstarrs.org', 4)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: ('southernstarrs.org', 4)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/jomcgraw?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAACy3hMB2DvxAwZ3KgibOO0oLxRnaAqBkLo',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('John McGraw', 'https://www.linkedin.com/in/jomcgraw?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAACy3hMB2DvxAwZ3KgibOO0oLxRnaAqBkLo')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Las Vegas, NV', 'https://www.linkedin.com/in/jomcgraw?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAACy3hMB2DvxAwZ3KgibOO0oLxRnaAqBkLo')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 5)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 5)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 5)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 5)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 5)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 5)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: ('equestrianlife.com', 5)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: ('equestrianlife.com', 5)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/ray-thomas-b5a87224?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAUcavYBMtuqSrIAUDHuOb-f3ZhmR3PV6gg',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('ray thomas', 'https://www.linkedin.com/in/ray-thomas-b5a87224?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAUcavYBMtuqSrIAUDHuOb-f3ZhmR3PV6gg')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Jackson, NJ', 'https://www.linkedin.com/in/ray-thomas-b5a87224?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAUcavYBMtuqSrIAUDHuOb-f3ZhmR3PV6gg')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 6)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 6)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 6)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 6)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 6)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 6)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: ('synvet.eu', 6)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: ('synvet.eu', 6)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/don-bielak-193bb9a?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAH1HL8BDzzk9g6T9Q5IObHjbGV6rdOLeT4',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Don Bielak', 'https://www.linkedin.com/in/don-bielak-193bb9a?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAH1HL8BDzzk9g6T9Q5IObHjbGV6rdOLeT4')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Philadelphia, PA', 'https://www.linkedin.com/in/don-bielak-193bb9a?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAH1HL8BDzzk9g6T9Q5IObHjbGV6rdOLeT4')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 7)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 7)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 7)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 7)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 7)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 7)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: ('monetran.com/', 7)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: ('monetran.com/', 7)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/jessicawjones?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAA5MXEByixJZNfUS7W7zmaoImLSJgHGIDQ',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Jessica Jones', 'https://www.linkedin.com/in/jessicawjones?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAA5MXEByixJZNfUS7W7zmaoImLSJgHGIDQ')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Village of Garden City, NY', 'https://www.linkedin.com/in/jessicawjones?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAA5MXEByixJZNfUS7W7zmaoImLSJgHGIDQ')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 8)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 8)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 8)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 8)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 8)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 8)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: (None, 8)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: (None, 8)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/natalia-g-47a65a179?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACpG8x4Bq5dIqrqxWazZCe4gcNkJWrnJtMw',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Natalia G.', 'https://www.linkedin.com/in/natalia-g-47a65a179?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACpG8x4Bq5dIqrqxWazZCe4gcNkJWrnJtMw')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Washington, DC', 'https://www.linkedin.com/in/natalia-g-47a65a179?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACpG8x4Bq5dIqrqxWazZCe4gcNkJWrnJtMw')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 9)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 9)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 9)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 9)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 9)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 9)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: (None, 9)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: (None, 9)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/julia-conn-4b0680203?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADPkAsQBvhrYHbvcPKruC_41mQh63tgQZhg',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Julia Conn', 'https://www.linkedin.com/in/julia-conn-4b0680203?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADPkAsQBvhrYHbvcPKruC_41mQh63tgQZhg')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Washington, DC', 'https://www.linkedin.com/in/julia-conn-4b0680203?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADPkAsQBvhrYHbvcPKruC_41mQh63tgQZhg')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 10)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 10)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 10)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 10)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 10)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 10)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: ('dogboneperformance.com', 10)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: ('dogboneperformance.com', 10)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/celinehh?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABmXo_MBYM3BreyMlC1bBGZ9ygnNbL85iow',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Celine Halioua', 'https://www.linkedin.com/in/celinehh?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABmXo_MBYM3BreyMlC1bBGZ9ygnNbL85iow')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('San Francisco, CA', 'https://www.linkedin.com/in/celinehh?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABmXo_MBYM3BreyMlC1bBGZ9ygnNbL85iow')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 11)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 11)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 11)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 11)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 11)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 11)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: (None, 11)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: (None, 11)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/riesa-lakin-0217053?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAACjZdkB5yfux6qVrrvPlPsKWHQPHZ3Kl58',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Riesa Lakin', 'https://www.linkedin.com/in/riesa-lakin-0217053?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAACjZdkB5yfux6qVrrvPlPsKWHQPHZ3Kl58')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('City of New York, NY', 'https://www.linkedin.com/in/riesa-lakin-0217053?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAACjZdkB5yfux6qVrrvPlPsKWHQPHZ3Kl58')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 12)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 12)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 12)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 12)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 12)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 12)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: (None, 12)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: (None, 12)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/wetrs?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAEymZ8BHLL5iuxSVHFD04WlkwvxLrufLRM',)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET users_name = %s WHERE profile_url = %s with parameters: ('Ray Barnidge 5,500+', 'https://www.linkedin.com/in/wetrs?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAEymZ8BHLL5iuxSVHFD04WlkwvxLrufLRM')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET location_of_user = %s WHERE profile_url = %s; with parameters: ('Elmer, LA', 'https://www.linkedin.com/in/wetrs?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAEymZ8BHLL5iuxSVHFD04WlkwvxLrufLRM')
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE email = %s AND user_id = %s with parameters: (None, 13)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET email = %s WHERE user_id = %s; with parameters: (None, 13)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE phone_number = %s AND user_id = %s with parameters: (None, 13)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET phone_number = %s WHERE user_id = %s; with parameters: (None, 13)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE address = %s AND user_id = %s with parameters: (None, 13)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET address = %s WHERE user_id = %s; with parameters: (None, 13)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT COUNT(*) FROM users WHERE website = %s AND user_id = %s with parameters: (None, 13)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: UPDATE users SET website = %s WHERE user_id = %s; with parameters: (None, 13)
+INFO:root:Using existing database connection.
+INFO:root:Executed query: SELECT user_id FROM users WHERE profile_url = %s with parameters: ('https://www.linkedin.com/in/lucinda-fanta-37b333145?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACMcPU8BZnFcy9YaCQJxefRXnZDHY02fcv0',)
