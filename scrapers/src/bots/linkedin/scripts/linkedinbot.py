@@ -508,10 +508,10 @@ class LinkedInSignInManager(BaseManager):
             None
         """
 
-        is_captcha_solved = input("Type y when you solve the captcha:\n")
+        """is_captcha_solved = input("Type y when you solve the captcha:\n")
 
         if is_captcha_solved == 'y':
-            pass
+            pass"""
 
     def sign_in_wrapper(self, bot_id) -> None:
         """
@@ -611,8 +611,11 @@ class UserProfileInteractor(BaseManager):
 
         # Calculate parameter values
         starting_index = 1
-        start_user_id = (number_of_users_per_bot * (self.bot_id - 1)) + starting_index
-        end_user_id = number_of_users_per_bot * self.bot_id
+        # start_user_id = (number_of_users_per_bot * (self.bot_id - 1)) + starting_index
+        start_user_id = (number_of_users_per_bot * (self.bot_id + 1)) + starting_index
+        end_user_id = number_of_users_per_bot * (self.bot_id + 2)
+
+        print("start: %s, end: %s", start_user_id, end_user_id)
 
         # Query the database and store the urls in a list
         raw_profile_urls = self.database_manager.execute_query(
@@ -2382,8 +2385,7 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
         self.contact_info_manager.contact_info_manager_wrapper(user_id=1)
         # self.database_manager.export_to_xslx()
 
-    def scrape_name_and_contact_info(self):
-        
+    def scrape_name_and_contact_info(self):        
         # Handle login
         self.sign_in_manager.sign_in_wrapper(bot_id=self.bot_id)
 
@@ -2405,17 +2407,17 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
             except InvalidArgumentException:
                 continue
 
-            approval = input("Do you approve this page to be used in the database?")
+            """approval = input("Do you approve this page to be used in the database?")
 
             if approval.lower() == "n":
-                pass
+                pass"""
 
-            else:
-                # Run the main page wrapper
-                self.main_page_scraper.main_user_page_scraper_wrapper(profile_url=profile_url)
+            # else:
+            # Run the main page wrapper
+            self.main_page_scraper.main_user_page_scraper_wrapper(profile_url=profile_url)
 
-                # Run the contact info manager wrapper
-                self.contact_info_manager.contact_info_manager_wrapper(user_id=user_id)
+            # Run the contact info manager wrapper
+            self.contact_info_manager.contact_info_manager_wrapper(user_id=user_id)
 
             # Wait a little to go to the next profile
             time.sleep(10)
