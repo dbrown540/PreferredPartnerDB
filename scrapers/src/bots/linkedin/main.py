@@ -40,20 +40,21 @@ def main():
 
     
 
-    """# Scout
+    # Scout
     scout = Scout()
-    scout.get_profile_urls_from_linkedin(user_count=75, bot_id=1)
+    scout.get_profiles_from_excel()
 
-    # Bot Credential Manager
+    """# Bot Credential Manager
     bot_credentials_manager = BotCredentialsManager()
     bot_credentials_manager.bot_credentials_wrapper()"""
+
 
     # LinkedIn Bot
     usable_bot_id_list = LinkedInBot.get_total_number_of_bot_ids()
 
     for bot_id in usable_bot_id_list:
         bot_instance = LinkedInBot(bot_id=bot_id)
-        bot_instance.scrape_name_and_contact_info()
+        bot_instance.scrape_name_and_location()
     
     """phone_number_scraper = PhoneNumberScraper()
     phone_number_scraper.wrapper()"""

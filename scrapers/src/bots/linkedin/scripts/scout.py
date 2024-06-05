@@ -47,6 +47,7 @@ import random
 import time
 from typing import List
 
+import pandas as pd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
@@ -118,7 +119,7 @@ class GoogleSearcher(BaseManager):
 
         return None
 
-    def search_query(self, search_box: WebElement) -> None:
+    def search_query(self, search_box: WebElement, search_query) -> None:
         """
         Searches a Google query using the provided search box element.
     
@@ -129,14 +130,12 @@ class GoogleSearcher(BaseManager):
             None
         """
         try:
-            # Search query
-            search_query = (
-                '''("California") ("CEO" OR "Founder" OR "Co-Founder") ("horseback riding" OR "equestrian" OR "horse riding" OR "horse lover")'''
-            )
-
-            self.webdriver_manager.humanized_send_keys(search_box, search_query)
 
             # Press enter to search
+            search_box.clear()
+            
+            self.webdriver_manager.humanized_send_keys(search_box, search_query)
+
             search_box.send_keys(Keys.ENTER)
 
         except ElementNotInteractableException:
@@ -159,8 +158,8 @@ class LinkedInSearcher(BaseManager):
         except NoSuchElementException:
             raise ValueError("Could not find the LinkedIn Search Bar")
 
-    def search_linkedin_query(self, search_box):
-        GoogleSearcher.search_query(self, search_box=search_box)
+    def search_linkedin_query(self, search_box, search_query):
+        GoogleSearcher.search_query(self, search_box=search_box, search_query=search_query)
 
     def click_see_all_people_button(self):
         try:
@@ -176,9 +175,9 @@ class LinkedInSearcher(BaseManager):
         except TimeoutException:
             logging.info("Timeout occurred while searching for the people results button")
 
-    def linkedin_searcher(self):
+    def linkedin_searcher(self, search_query):
         search_bar = self.locate_search_bar()
-        self.search_linkedin_query(search_bar)
+        self.search_linkedin_query(search_bar, search_query)
 
 
 class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
@@ -265,7 +264,7 @@ class LinkExtractor(BaseManager):  #pylint: disable=too-few-public-methods
         while len(parsed_links) < user_count:
             unfiltered_links = self._collect_links()
             newly_parsed_links = self._parse_links(unfiltered_links, site)
-            self.scroll_object.scroll_site(site)
+            # self.scroll_object.scroll_site(site)
             time.sleep(random.uniform(4, 6))
 
             prev_length = len(parsed_links)
@@ -318,7 +317,7 @@ class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
     def scroll_linkedin(self):
         self._scroll_to_bottom()
         time.sleep(2)
-        self.click_next_button()
+        # self.click_next_button()
 
     def scroll_site(self, site: str):
         if site.lower() == "google":
@@ -366,6 +365,7 @@ class Scroller(BaseManager):  #pylint: disable=too-few-public-methods
             logging.info("Next button is not available")
         except TimeoutException:
             logging.info("A timeout occurred while trying to look for the next button on LinkedIn.")
+
 
 class Scout(BaseManager):  #pylint: disable=too-few-public-methods
     """
@@ -457,3 +457,32 @@ class Scout(BaseManager):  #pylint: disable=too-few-public-methods
         links = self.link_extractor.link_extractor_wrapper(user_count=user_count, site=site)
         self.linkedin_db_manager.update_profile_urls_from_scout(links)
 
+    def get_profiles_from_excel(self):
+
+        # Load the Excel file
+        file_path = 'C://Users//Doug Brown//Desktop//BD Conference Parsed.xlsx'
+        excel_data = pd.ExcelFile(file_path)
+
+        # Assuming the data is in the first sheet, change the sheet name if necessary
+        df = pd.read_excel(excel_data, sheet_name=0)
+
+        # Specify the column name you want to collect values from
+        column_name = 'Contact Information'
+
+        # Collect all values from the specified column
+        queries = df[column_name].dropna().tolist()
+
+        # Print the collected values
+        print(queries)
+
+        # Handle log in 
+        self.sign_in_manager.sign_in_wrapper(bot_id=1)
+
+        links = []
+
+        for query in queries:
+            self.linkedin_searcher.linkedin_searcher(search_query=query)
+            link = self.link_extractor.link_extractor_wrapper(user_count=1, site="linkedin")
+            links.append(link[0])
+            time.sleep(random.uniform(5, 8))
+            self.linkedin_db_manager.update_profile_urls_from_scout(links)

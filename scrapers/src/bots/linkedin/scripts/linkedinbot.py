@@ -586,7 +586,7 @@ class UserProfileInteractor(BaseManager):
         super().__init__(webdriver_manager, database_manager)
         self.bot_id = bot_id
 
-    def get_profile_urls(self, number_of_users_per_bot: int = 20) -> list:
+    def get_profile_urls(self, number_of_users_per_bot: int = 50) -> list:
         """
         Retrieves the profile URLs of users from the database based on the 
         provided bot ID and number of users per bot, where the users_name is NULL.
@@ -612,8 +612,8 @@ class UserProfileInteractor(BaseManager):
         # Calculate parameter values
         starting_index = 1
         # start_user_id = (number_of_users_per_bot * (self.bot_id - 1)) + starting_index
-        start_user_id = (number_of_users_per_bot * (self.bot_id + 1)) + starting_index
-        end_user_id = number_of_users_per_bot * (self.bot_id + 2)
+        start_user_id = (number_of_users_per_bot * (self.bot_id - 1)) + starting_index
+        end_user_id = number_of_users_per_bot + start_user_id
 
         print("start: %s, end: %s", start_user_id, end_user_id)
 
@@ -2422,4 +2422,38 @@ class LinkedInBot(BaseManager):  # pylint: disable=too-many-arguments, too-few-p
             # Wait a little to go to the next profile
             time.sleep(10)
 
+    def scrape_name_and_location(self):
+        # Handle login
+        self.sign_in_manager.sign_in_wrapper(bot_id=self.bot_id)
 
+        # Get the user profiles from the database
+        profile_urls: List[str] = self.profile_interactor.get_profile_urls()
+
+        print("Profile URLS sent to LinkedinBot: ", profile_urls)
+
+        # Loop through profile urls
+        for profile_url in profile_urls:
+            
+            # Get the user id
+            user_id = self.get_user_id(profile_url=profile_url)
+
+            print("USER ID: ", user_id)
+
+            # Visit the user's profile
+            try:
+                self.profile_interactor.visit_user(profile_url=profile_url)
+
+            except InvalidArgumentException:
+                continue
+
+            """approval = input("Do you approve this page to be used in the database?")
+
+            if approval.lower() == "n":
+                pass"""
+
+            # else:
+            # Run the main page wrapper
+            self.main_page_scraper.main_user_page_scraper_wrapper(profile_url=profile_url)
+
+            # Wait a little to go to the next profile
+            time.sleep(10)

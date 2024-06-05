@@ -755,3 +755,46 @@ class SalaryDatabaseManager(DatabaseManager):
             fetch=fetch
         )
         return result
+    
+class DukeDatabaseManager(DatabaseManager):
+    def __init__(self):
+        super().__init__()
+
+    def send_duke_info_to_db(self, zipped_duke):
+        # First check to see if the duke url is already in the database
+        for item in zipped_duke:
+            alumni_url = item[0]
+            email = item[1]
+            phone = item[2]
+            linkedin_url = item[3]
+            name = item[4]
+
+            print("ENTERING QUERY ", alumni_url, email, phone, linkedin_url, name)
+
+            query = (
+                "SELECT COUNT(*) FROM users WHERE alumni_url = %s"
+            )
+            params = (alumni_url,)
+            fetch="ONE"
+            count = self.execute_query(
+                query=query,
+                params=params,
+                fetch=fetch
+            )[0]
+
+            print("COUNT: ", count)
+
+            # If the entry doesn't exist, add the information
+            if count == 0:
+                query = (
+                    "INSERT INTO users (alumni_url, email, phone_number, profile_url, users_name) "
+                    "VALUES (%s, %s, %s, %s, %s)"
+                )
+                params = (alumni_url, email, phone, linkedin_url, name)
+                self.execute_query(
+                    query=query,
+                    params=params
+                )
+
+            else:
+                print("Data already exists for the alumni url: ", alumni_url)

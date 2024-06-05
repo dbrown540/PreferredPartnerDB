@@ -6,15 +6,16 @@
 CREATE TABLE users(
     user_id SERIAL PRIMARY KEY,
     users_name VARCHAR(255),
-    email VARCHAR(100),
+    email TEXT,
     location_of_user VARCHAR(255),
-    profile_url TEXT NOT NULL UNIQUE,
+    profile_url TEXT,
     estimated_net_worth DECIMAL(12, 2),
     estimated_age INT,
     phone_number VARCHAR(20),
     address VARCHAR(255),
     approved VARCHAR(20),
-    website VARCHAR(255)
+    website VARCHAR(255),
+    alumni_url TEXT UNIQUE
 );
 
 -- Table: education
@@ -94,6 +95,8 @@ CREATE TABLE salaries(
 
 INSERT INTO bots(bot_first_name, bot_last_name, bot_email, bot_email_password) 
 VALUES('Danny', 'Brown', 'dbrown6@umbc.edu', 'Sp@ceghost12');
+
+
 
 -- \i 'C://Users//Doug Brown//Desktop//Dannys Stuff//Job//PreferredPartnerDB//scrapers//src//database//initialize.sql';
 -- \i 'C:/Users/Daniel.Brown/Desktop/PreferredPartnerDB/src/database/initialize.sql'
